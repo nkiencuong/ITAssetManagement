@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ITAssetManagement.Common\ITAssetManagement.Common.csproj" />
+    <ProjectReference Include="..\ITAssetManagement.Mapper\ITAssetManagement.Mapper.csproj" />
+    <ProjectReference Include="..\ITAssetManagement.Models\ITAssetManagement.Models.csproj" />
+    <ProjectReference Include="..\ITAssetManagement.Repo\ITAssetManagement.Repo.csproj" />
+    <ProjectReference Include="..\ITAssetManagement.Request\ITAssetManagement.Request.csproj" />
+    <ProjectReference Include="..\ITAssetManagement.Response\ITAssetManagement.Response.csproj" />
+  </ItemGroup>
+
+</Project>

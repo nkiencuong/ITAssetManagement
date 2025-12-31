@@ -1,0 +1,38 @@
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Repo\bin\Debug\net9.0\ITAssetManagement.Repo.deps.json
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Repo\bin\Debug\net9.0\ITAssetManagement.Repo.dll
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Repo\bin\Debug\net9.0\ITAssetManagement.Repo.pdb
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Repo\bin\Debug\net9.0\ITAssetManagement.Common.dll
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Repo\bin\Debug\net9.0\ITAssetManagement.Models.dll
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Repo\bin\Debug\net9.0\ITAssetManagement.Common.pdb
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Repo\bin\Debug\net9.0\ITAssetManagement.Models.pdb
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Repo\obj\Debug\net9.0\ITAssetManagement.Repo.csproj.AssemblyReference.cache
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Repo\obj\Debug\net9.0\ITAssetManagement.Repo.GeneratedMSBuildEditorConfig.editorconfig
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Repo\obj\Debug\net9.0\ITAssetManagement.Repo.AssemblyInfoInputs.cache
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Repo\obj\Debug\net9.0\ITAssetManagement.Repo.AssemblyInfo.cs
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Repo\obj\Debug\net9.0\ITAssetManagement.Repo.csproj.CoreCompileInputs.cache
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Repo\obj\Debug\net9.0\ITAssetM.367EC703.Up2Date
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Repo\obj\Debug\net9.0\ITAssetManagement.Repo.dll
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Repo\obj\Debug\net9.0\refint\ITAssetManagement.Repo.dll
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Repo\obj\Debug\net9.0\ITAssetManagement.Repo.pdb
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Repo\obj\Debug\net9.0\ref\ITAssetManagement.Repo.dll
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Repo\bin\Debug\net9.0\ITAssetManagement.Repo.runtimeconfig.json
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Repo\obj\Debug\net9.0\ITAssetManagement.Repo.genruntimeconfig.cache
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Repo\bin\Debug\net9.0\ITAssetManagement.Repo.deps.json
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Repo\bin\Debug\net9.0\ITAssetManagement.Repo.runtimeconfig.json
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Repo\bin\Debug\net9.0\ITAssetManagement.Repo.dll
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Repo\bin\Debug\net9.0\ITAssetManagement.Repo.pdb
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Repo\bin\Debug\net9.0\ITAssetManagement.Common.dll
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Repo\bin\Debug\net9.0\ITAssetManagement.Models.dll
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Repo\bin\Debug\net9.0\ITAssetManagement.Common.pdb
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Repo\bin\Debug\net9.0\ITAssetManagement.Models.pdb
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Repo\obj\Debug\net9.0\ITAssetManagement.Repo.csproj.AssemblyReference.cache
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Repo\obj\Debug\net9.0\ITAssetManagement.Repo.GeneratedMSBuildEditorConfig.editorconfig
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Repo\obj\Debug\net9.0\ITAssetManagement.Repo.AssemblyInfoInputs.cache
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Repo\obj\Debug\net9.0\ITAssetManagement.Repo.AssemblyInfo.cs
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Repo\obj\Debug\net9.0\ITAssetManagement.Repo.csproj.CoreCompileInputs.cache
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Repo\obj\Debug\net9.0\ITAssetM.367EC703.Up2Date
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Repo\obj\Debug\net9.0\ITAssetManagement.Repo.dll
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Repo\obj\Debug\net9.0\refint\ITAssetManagement.Repo.dll
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Repo\obj\Debug\net9.0\ITAssetManagement.Repo.pdb
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Repo\obj\Debug\net9.0\ITAssetManagement.Repo.genruntimeconfig.cache
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Repo\obj\Debug\net9.0\ref\ITAssetManagement.Repo.dll

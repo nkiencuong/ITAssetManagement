@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "ITAssetManagement\\ITAssetManagement.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "ITAssetManagement.Client\\ITAssetManagement.Client.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

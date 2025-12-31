@@ -1,0 +1,50 @@
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Service\bin\Debug\net9.0\ITAssetManagement.Service.deps.json
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Service\bin\Debug\net9.0\ITAssetManagement.Service.dll
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Service\bin\Debug\net9.0\ITAssetManagement.Service.pdb
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Service\bin\Debug\net9.0\ITAssetManagement.Common.dll
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Service\bin\Debug\net9.0\ITAssetManagement.Mapper.dll
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Service\bin\Debug\net9.0\ITAssetManagement.Models.dll
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Service\bin\Debug\net9.0\ITAssetManagement.Repo.dll
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Service\bin\Debug\net9.0\ITAssetManagement.Request.dll
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Service\bin\Debug\net9.0\ITAssetManagement.Response.dll
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Service\bin\Debug\net9.0\ITAssetManagement.Common.pdb
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Service\bin\Debug\net9.0\ITAssetManagement.Mapper.pdb
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Service\bin\Debug\net9.0\ITAssetManagement.Models.pdb
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Service\bin\Debug\net9.0\ITAssetManagement.Repo.pdb
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Service\bin\Debug\net9.0\ITAssetManagement.Request.pdb
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Service\bin\Debug\net9.0\ITAssetManagement.Response.pdb
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Service\obj\Debug\net9.0\ITAssetManagement.Service.csproj.AssemblyReference.cache
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Service\obj\Debug\net9.0\ITAssetManagement.Service.GeneratedMSBuildEditorConfig.editorconfig
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Service\obj\Debug\net9.0\ITAssetManagement.Service.AssemblyInfoInputs.cache
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Service\obj\Debug\net9.0\ITAssetManagement.Service.AssemblyInfo.cs
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Service\obj\Debug\net9.0\ITAssetManagement.Service.csproj.CoreCompileInputs.cache
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Service\obj\Debug\net9.0\ITAssetM.C5D591DD.Up2Date
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Service\obj\Debug\net9.0\ITAssetManagement.Service.dll
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Service\obj\Debug\net9.0\refint\ITAssetManagement.Service.dll
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Service\obj\Debug\net9.0\ITAssetManagement.Service.pdb
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Service\obj\Debug\net9.0\ref\ITAssetManagement.Service.dll
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Service\bin\Debug\net9.0\ITAssetManagement.Service.deps.json
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Service\bin\Debug\net9.0\ITAssetManagement.Service.dll
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Service\bin\Debug\net9.0\ITAssetManagement.Service.pdb
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Service\bin\Debug\net9.0\ITAssetManagement.Common.dll
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Service\bin\Debug\net9.0\ITAssetManagement.Mapper.dll
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Service\bin\Debug\net9.0\ITAssetManagement.Models.dll
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Service\bin\Debug\net9.0\ITAssetManagement.Repo.dll
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Service\bin\Debug\net9.0\ITAssetManagement.Request.dll
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Service\bin\Debug\net9.0\ITAssetManagement.Response.dll
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Service\bin\Debug\net9.0\ITAssetManagement.Common.pdb
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Service\bin\Debug\net9.0\ITAssetManagement.Mapper.pdb
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Service\bin\Debug\net9.0\ITAssetManagement.Models.pdb
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Service\bin\Debug\net9.0\ITAssetManagement.Repo.pdb
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Service\bin\Debug\net9.0\ITAssetManagement.Request.pdb
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Service\bin\Debug\net9.0\ITAssetManagement.Response.pdb
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Service\obj\Debug\net9.0\ITAssetManagement.Service.csproj.AssemblyReference.cache
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Service\obj\Debug\net9.0\ITAssetManagement.Service.GeneratedMSBuildEditorConfig.editorconfig
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Service\obj\Debug\net9.0\ITAssetManagement.Service.AssemblyInfoInputs.cache
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Service\obj\Debug\net9.0\ITAssetManagement.Service.AssemblyInfo.cs
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Service\obj\Debug\net9.0\ITAssetManagement.Service.csproj.CoreCompileInputs.cache
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Service\obj\Debug\net9.0\ITAssetM.C5D591DD.Up2Date
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Service\obj\Debug\net9.0\ITAssetManagement.Service.dll
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Service\obj\Debug\net9.0\refint\ITAssetManagement.Service.dll
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Service\obj\Debug\net9.0\ITAssetManagement.Service.pdb
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Service\obj\Debug\net9.0\ref\ITAssetManagement.Service.dll

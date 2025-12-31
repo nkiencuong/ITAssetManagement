@@ -1,0 +1,28 @@
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Models\bin\Debug\net9.0\ITAssetManagement.Models.deps.json
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Models\bin\Debug\net9.0\ITAssetManagement.Models.dll
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Models\bin\Debug\net9.0\ITAssetManagement.Models.pdb
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Models\obj\Debug\net9.0\ITAssetManagement.Models.GeneratedMSBuildEditorConfig.editorconfig
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Models\obj\Debug\net9.0\ITAssetManagement.Models.AssemblyInfoInputs.cache
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Models\obj\Debug\net9.0\ITAssetManagement.Models.AssemblyInfo.cs
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Models\obj\Debug\net9.0\ITAssetManagement.Models.csproj.CoreCompileInputs.cache
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Models\obj\Debug\net9.0\ITAssetManagement.Models.dll
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Models\obj\Debug\net9.0\refint\ITAssetManagement.Models.dll
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Models\obj\Debug\net9.0\ITAssetManagement.Models.pdb
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Models\obj\Debug\net9.0\ref\ITAssetManagement.Models.dll
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Models\obj\Debug\net9.0\ITAssetManagement.Models.csproj.AssemblyReference.cache
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Models\bin\Debug\net9.0\ITAssetManagement.Models.runtimeconfig.json
+D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Models\obj\Debug\net9.0\ITAssetManagement.Models.genruntimeconfig.cache
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Models\bin\Debug\net9.0\ITAssetManagement.Models.deps.json
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Models\bin\Debug\net9.0\ITAssetManagement.Models.runtimeconfig.json
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Models\bin\Debug\net9.0\ITAssetManagement.Models.dll
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Models\bin\Debug\net9.0\ITAssetManagement.Models.pdb
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Models\obj\Debug\net9.0\ITAssetManagement.Models.csproj.AssemblyReference.cache
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Models\obj\Debug\net9.0\ITAssetManagement.Models.GeneratedMSBuildEditorConfig.editorconfig
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Models\obj\Debug\net9.0\ITAssetManagement.Models.AssemblyInfoInputs.cache
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Models\obj\Debug\net9.0\ITAssetManagement.Models.AssemblyInfo.cs
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Models\obj\Debug\net9.0\ITAssetManagement.Models.csproj.CoreCompileInputs.cache
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Models\obj\Debug\net9.0\ITAssetManagement.Models.dll
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Models\obj\Debug\net9.0\refint\ITAssetManagement.Models.dll
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Models\obj\Debug\net9.0\ITAssetManagement.Models.pdb
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Models\obj\Debug\net9.0\ITAssetManagement.Models.genruntimeconfig.cache
+D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Models\obj\Debug\net9.0\ref\ITAssetManagement.Models.dll

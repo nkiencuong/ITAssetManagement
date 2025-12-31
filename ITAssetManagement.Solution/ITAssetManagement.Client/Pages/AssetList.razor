@@ -1,0 +1,231 @@
+﻿@page "/assets"
+@using ITAssetManagement.Client.Models
+@inject HttpClient Http
+
+<PageTitle>Quản lý Tài sản - Phòng CNTT</PageTitle>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="text-primary fw-bold"><i class="bi bi-box-seam me-2"></i>Kho Tài sản</h3>
+    <button class="btn btn-primary shadow-sm" @onclick="OpenCreateModal">
+        <i class="bi bi-plus-lg me-2"></i> Nhập tài sản mới
+    </button>
+</div>
+
+@if (assets == null)
+{
+    <div class="text-center mt-5">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mt-2 text-muted">Đang tải dữ liệu...</p>
+    </div>
+}
+else
+{
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light text-secondary">
+                        <tr>
+                            <th class="ps-4">Mã TS</th>
+                            <th>Tên thiết bị</th>
+                            <th>Serial / Model</th>
+                            <th>Cấu hình</th>
+                            <th>Vị trí</th>
+                            <th>Trạng thái</th>
+                            <th class="text-end">Giá trị</th>
+                            <th class="text-center">Tác vụ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in assets)
+                        {
+                            <tr>
+                                <td class="ps-4 fw-bold text-muted">TS-@item.AssetID</td>
+                                <td>
+                                    <span class="fw-bold text-dark">@item.AssetName</span>
+                                </td>
+                                <td>
+                                    <div class="small">SN: <span class="fw-bold">@item.Serial</span></div>
+                                    <div class="small text-muted">Model: @item.Model</div>
+                                </td>
+                                <td class="small text-secondary" style="max-width: 200px;">@item.Config</td>
+                                <td><span class="badge bg-light text-dark border">@item.Location</span></td>
+                                <td>
+                                    @if (item.Status == 0)
+                                    {
+                                        <span class="badge bg-success bg-opacity-10 text-success px-2 py-1">Sẵn sàng</span>
+                                    }
+                                    else if (item.Status == 1)
+                                    {
+                                        <span class="badge bg-primary bg-opacity-10 text-primary px-2 py-1">Đang dùng</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger bg-opacity-10 text-danger px-2 py-1">Hỏng/Thanh lý</span>
+                                    }
+                                </td>
+                                <td class="text-end fw-bold text-secondary">
+                                    @string.Format("{0:N0}", item.Price) <small>@item.Currency</small>
+                                </td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-outline-danger border-0" title="Xóa" @onclick="() => DeleteAsset(item.AssetID)">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+
+@if (showModal)
+{
+    <div class="custom-modal-backdrop">
+        <div class="custom-modal-dialog">
+
+            <div class="modal-header bg-primary text-white p-3 rounded-top">
+                <h5 class="modal-title m-0"><i class="bi bi-pencil-square me-2"></i>Phiếu Nhập Kho</h5>
+                <button type="button" class="btn-close btn-close-white" @onclick="CloseModal"></button>
+            </div>
+
+            <div class="modal-body p-4">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small text-muted">Tên thiết bị <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" @bind="newAsset.AssetName" placeholder="VD: Laptop Dell Vostro" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small text-muted">Số Serial (S/N) <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" @bind="newAsset.Serial" placeholder="VD: SN-123456" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small text-muted">Model</label>
+                        <input type="text" class="form-control" @bind="newAsset.Model" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small text-muted">Giá trị (VNĐ)</label>
+                        <input type="number" class="form-control" @bind="newAsset.Price" />
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-bold small text-muted">Cấu hình chi tiết</label>
+                        <textarea class="form-control" rows="2" @bind="newAsset.Config" placeholder="Chip, RAM, SSD..."></textarea>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-bold small text-muted">Vị trí nhập kho</label>
+                        <input type="text" class="form-control" @bind="newAsset.Location" placeholder="Mặc định: Kho CNTT" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer p-3 bg-light rounded-bottom d-flex justify-content-end gap-2">
+                <button type="button" class="btn btn-secondary px-4" @onclick="CloseModal">Hủy</button>
+                <button type="button" class="btn btn-primary px-4" @onclick="SaveAsset">
+                    <i class="bi bi-save me-2"></i> Lưu phiếu
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+    .custom-modal-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.5); /* Màu đen mờ 50% */
+        z-index: 9999; /* Đảm bảo nằm trên cùng */
+        display: flex;
+        align-items: center; /* Căn giữa dọc */
+        justify-content: center; /* Căn giữa ngang */
+        backdrop-filter: blur(4px); /* Làm mờ nền đằng sau cho đẹp */
+    }
+
+    .custom-modal-dialog {
+        background-color: white;
+        width: 650px;
+        max-width: 90%;
+        border-radius: 8px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2); /* Đổ bóng cho nổi */
+        animation: slideDown 0.3s ease-out; /* Hiệu ứng trượt xuống */
+    }
+
+    /* Hiệu ứng trượt nhẹ */
+    @@keyframes slideDown {
+        from {
+            transform: translateY(-50px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+</style>
+
+@code {
+    private Asset[]? assets;
+    private bool showModal = false;
+    private Asset newAsset = new Asset();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        try
+        {
+            // Sửa lại đúng Port API của ông ở đây
+            assets = await Http.GetFromJsonAsync<Asset[]>("https://localhost:7239/api/admin/assets");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Lỗi: " + ex.Message);
+        }
+    }
+
+    private void OpenCreateModal()
+    {
+        newAsset = new Asset();
+        newAsset.CreatedDate = DateTime.Now;
+        newAsset.Currency = "VNĐ";
+        newAsset.Status = 0;
+        newAsset.Location = "Kho CNTT";
+        showModal = true;
+    }
+
+    private void CloseModal()
+    {
+        showModal = false;
+    }
+
+    private async Task SaveAsset()
+    {
+        if (string.IsNullOrEmpty(newAsset.AssetName) || string.IsNullOrEmpty(newAsset.Serial))
+        {
+            return; // Validate đơn giản
+        }
+
+        // Sửa lại đúng Port API của ông ở đây
+        var response = await Http.PostAsJsonAsync("https://localhost:7239/api/admin/assets", newAsset);
+
+        if (response.IsSuccessStatusCode)
+        {
+            showModal = false;
+            await LoadData();
+        }
+    }
+
+    private async Task DeleteAsset(int id) 
+    {
+        await Http.DeleteAsync($"https://localhost:7239/api/admin/assets/{id}");
+        await LoadData();
+    }
+}

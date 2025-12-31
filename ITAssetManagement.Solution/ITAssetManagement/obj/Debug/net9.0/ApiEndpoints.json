@@ -1,0 +1,75 @@
+[
+  {
+    "ContainingType": "ITAssetManagement.Controllers.Admin.AllocationsController",
+    "Method": "GetHistory",
+    "RelativePath": "api/admin/allocations",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ITAssetManagement.Controllers.Admin.AssetsController",
+    "Method": "GetAll",
+    "RelativePath": "api/admin/assets",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ITAssetManagement.Controllers.Api.ApiAllocationsController",
+    "Method": "AllocateAssets",
+    "RelativePath": "api/allocations",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "ITAssetManagement.Request.Allocations.AllocateAssetsRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ITAssetManagement.Controllers.Api.ApiAssetsController",
+    "Method": "Create",
+    "RelativePath": "api/assets",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "ITAssetManagement.Request.Assets.CreateAssetRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "ITAssetManagement.Controllers.WeatherForecastController",
+    "Method": "Get",
+    "RelativePath": "WeatherForecast",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[ITAssetManagement.WeatherForecast, ITAssetManagement, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ],
+    "EndpointName": "GetWeatherForecast"
+  }
+]

@@ -1,0 +1,59 @@
+﻿@page "/allocations"
+<PageTitle>Lịch sử Phân bổ - Phòng CNTT</PageTitle>
+@using ITAssetManagement.Client.Models
+@inject HttpClient Http
+
+<h3>Danh sách Phân bổ Tài sản</h3>
+
+@if (allocations == null)
+{
+    <p><em>Đang tải dữ liệu...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Tài sản</th>
+                <th>Phòng ban</th>
+                <th>Trạng thái</th>
+                <th>Ngày cấp</th>
+                <th>Ghi chú</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in allocations)
+            {
+                <tr>
+                    <td>@item.AssetName</td>
+                    <td>@item.DepartmentName</td>
+
+                    <td>
+                        @if (item.Status == 1)
+                        {
+                            <span class="badge bg-success">Đang sử dụng</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">Đã trả</span>
+                        }
+                    </td>
+
+                    <td>@item.AllocatedDate.ToShortDateString()</td>
+                    <td>@item.Note</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private Allocation[]? allocations;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // QUAN TRỌNG: Bạn nhớ thay đúng cái Port 7239 mà nãy bạn chụp trong Postman nhé
+        // Nếu chạy lỗi thì kiểm tra lại cái port này đầu tiên
+        allocations = await Http.GetFromJsonAsync<Allocation[]>("https://localhost:7239/api/admin/allocations");
+    }
+}
