@@ -1,0 +1,2 @@
+F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement.Client\obj\Release\net9.0\staticwebassets.build.json
+F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement.Client\obj\Release\net9.0\staticwebassets.build.json

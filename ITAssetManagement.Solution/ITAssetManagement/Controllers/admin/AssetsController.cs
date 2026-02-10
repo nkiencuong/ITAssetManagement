@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ITAssetManagement.Controllers.Admin
 {
-    // Route vẫn giữ nguyên để phân biệt trên URL: api/admin/assets
+    // Route: api/admin/assets
     [Route("api/admin/assets")]
     [ApiController]
     public class AssetsController : ControllerBase
@@ -22,6 +22,20 @@ namespace ITAssetManagement.Controllers.Admin
         {
             var result = await _assetService.GetAllAssetsAsync();
             return Ok(result);
+        }
+
+        // --- MỚI THÊM: LẤY CHI TIẾT ---
+        // GET: api/admin/assets/{id}
+        // Chức năng: Lấy thông tin 1 tài sản để xem chi tiết hoặc đổ vào form sửa
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var asset = await _assetService.GetAssetByIdAsync(id);
+            if (asset == null)
+            {
+                return NotFound(new { message = "Không tìm thấy tài sản" });
+            }
+            return Ok(asset);
         }
     }
 }

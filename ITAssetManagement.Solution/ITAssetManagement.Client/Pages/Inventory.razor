@@ -1,0 +1,148 @@
+﻿@page "/inventory"
+@inject HttpClient Http
+
+<div class="container mt-4">
+    <h3 class="text-primary">📋 Kiểm Kê Tài Sản</h3>
+
+    <div class="card mb-4 p-3 shadow-sm">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label>ID Tài sản (Hoặc quét mã):</label>
+                <input type="number" class="form-control" @bind="newCheck.AssetID" placeholder="Nhập Asset ID..." />
+            </div>
+            <div class="col-md-3">
+                <label>Trạng thái thực tế:</label>
+                <select class="form-select" @bind="newCheck.ActualStatus">
+                    <option value="Sẵn sàng">Sẵn sàng</option>
+                    <option value="Đang sử dụng">Đang sử dụng</option>
+                    <option value="Hỏng">Hỏng</option>
+                    <option value="Mất">Mất</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label>Sai lệch hồ sơ?</label>
+                <div class="form-check mt-2">
+                    <input class="form-check-input" type="checkbox" @bind="newCheck.Discrepancy" />
+                    <label class="form-check-label">Có</label>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label>Ghi chú:</label>
+                <input type="text" class="form-control" @bind="newCheck.Note" />
+            </div>
+            <div class="col-12 text-end">
+                <button class="btn btn-success" @onclick="SubmitCheck">✅ Lưu kết quả</button>
+            </div>
+        </div>
+    </div>
+
+    <h5 class="text-secondary">Lịch sử kiểm kê gần đây</h5>
+    <table class="table table-bordered table-hover">
+        <thead class="table-light">
+            <tr>
+                <th>Ngày</th>
+                <th>Tài sản</th>
+                <th>Người kiểm</th>
+                <th>Tình trạng</th>
+                <th>Sai lệch</th>
+                <th>Ghi chú</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (checkList == null)
+            {
+                <tr><td colspan="6" class="text-center">Loading...</td></tr>
+            }
+            else if (checkList.Count == 0)
+            {
+                <tr><td colspan="6" class="text-center">Chưa có dữ liệu kiểm kê.</td></tr>
+            }
+            else
+            {
+                @foreach (var item in checkList)
+                {
+                    <tr>
+                        <td>@item.CheckDate.ToString("dd/MM/yyyy")</td>
+                        <td class="fw-bold">@item.AssetName</td>
+                        <td>@item.UserName</td>
+                        <td>@item.ActualStatus</td>
+                        <td>@(item.Discrepancy ? "⚠️ Có" : "Không")</td>
+                        <td>@item.Note</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    // List hiển thị
+    private List<InventoryCheckResponse> checkList = new();
+
+    // Object để gửi đi (Form)
+    private InventoryCheckDTO newCheck = new() { UserID = 1, ActualStatus = "Sẵn sàng" };
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        // Gọi API GET của Admin để lấy danh sách hiển thị
+        // Lưu ý: Đảm bảo bạn gọi đúng API AdminInventoryController
+        try
+        {
+            checkList = await Http.GetFromJsonAsync<List<InventoryCheckResponse>>("api/admin/inventory");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Lỗi load data: " + ex.Message);
+        }
+    }
+
+    private async Task SubmitCheck()
+    {
+        // Gọi API POST của Client để gửi dữ liệu
+        var response = await Http.PostAsJsonAsync("api/inventory", newCheck);
+        if (response.IsSuccessStatusCode)
+        {
+            // Reset form
+            newCheck = new() { UserID = 1, ActualStatus = "Sẵn sàng" };
+            await LoadData(); // Tải lại danh sách
+
+            // Có thể thêm thông báo thành công ở đây
+        }
+        else
+        {
+            Console.WriteLine("Lỗi gửi phiếu kiểm kê");
+        }
+    }
+
+    // --- ĐỊNH NGHĨA CLASS DTO (CLIENT ONLY) ---
+
+    // 1. Class dùng để hiển thị danh sách (Response)
+    public class InventoryCheckResponse
+    {
+        public int CheckID { get; set; }
+        public DateTime CheckDate { get; set; }
+        public string UserName { get; set; } = string.Empty;
+        public string AssetName { get; set; } = string.Empty;
+        public string ActualStatus { get; set; } = string.Empty;
+        public bool Discrepancy { get; set; }
+        public string Note { get; set; } = string.Empty;
+    }
+
+    // 2. Class dùng để gửi dữ liệu đi (Request)
+    // Đặt tên InventoryCheckDTO để tránh nhầm với Entity bên Server, nhưng các trường phải khớp
+    public class InventoryCheckDTO
+    {
+        public int AssetID { get; set; }
+        public int UserID { get; set; }
+        public string ActualStatus { get; set; } = string.Empty;
+        public bool Discrepancy { get; set; }
+        public string? Note { get; set; }
+
+        // Không cần CheckDate vì Server sẽ tự tạo DateTime.Now
+    }
+}

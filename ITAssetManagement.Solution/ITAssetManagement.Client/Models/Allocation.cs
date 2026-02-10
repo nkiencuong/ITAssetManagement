@@ -1,21 +1,30 @@
-﻿// File: Client/Models/Allocation.cs
-using System;
-using System.Collections.Generic; // Để dùng List
+﻿using System;
+using System.Collections.Generic;
 
 namespace ITAssetManagement.Client.Models
 {
     public class Allocation
     {
-        // Các trường để HIỂN THỊ danh sách (GET)
+        // --- PHẦN 1: Dùng để HIỂN THỊ (GET) ---
         public int AllocationID { get; set; }
-        public string? AssetName { get; set; }     // Tên để hiện lên bảng
-        public string? DepartmentName { get; set; } // Tên phòng ban để hiện
+        public string? AssetName { get; set; }
+        public string? DepartmentName { get; set; }
         public DateTime AllocatedDate { get; set; }
         public string? Note { get; set; }
 
-        // Các trường để GỬI ĐI tạo mới (POST) - Khớp với cái lỗi AssetIds nãy bạn thấy
-        public List<int> AssetIds { get; set; } = new List<int>(); // Cái này quan trọng nè!
+        // Mới thêm: Để hiện tên người nhận và số lượng/serial
+        public string? ReceiverName { get; set; }
+        public string? Serial { get; set; }
+
+        // --- PHẦN 2: Dùng để TẠO MỚI (POST) ---
+        public List<int> AssetIds { get; set; } = new List<int>();
         public int DepartmentID { get; set; }
-        public int Status { get; set; } = 1;
+        public int Status { get; set; } = 1; // 1: Đang cấp, 2: Đã trả
+    }
+
+    // --- PHẦN 3: Class phụ dùng cho chức năng THU HỒI ---
+    public class ReturnRequest
+    {
+        public string Note { get; set; } = string.Empty;
     }
 }

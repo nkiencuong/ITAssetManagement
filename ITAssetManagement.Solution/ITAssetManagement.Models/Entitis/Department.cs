@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ITAssetManagement.Models.Entitis
 {
+    [Table("Department")] // QUAN TRỌNG: Map đúng tên bảng trong SQL
     public class Department
     {
         [Key]
@@ -14,16 +11,15 @@ namespace ITAssetManagement.Models.Entitis
 
         [Required]
         [StringLength(200)]
-        public string DeptName { get; set; } = string.Empty;
+        public string DeptName { get; set; } = string.Empty; // Khớp với cột SQL của bạn
 
         [StringLength(50)]
         public string? Code { get; set; }
 
-        public int? ManagerID { get; set; }  // FK to User
+        public int? ManagerID { get; set; }
 
-        // Navigation
-        public virtual User? Manager { get; set; }  // Nếu dùng Identity custom User
-        public virtual ICollection<AssetAllocation> AssetAllocations { get; set; } = new List<AssetAllocation>();
-        public virtual ICollection<WarehouseTransaction> WarehouseTransactions { get; set; } = new List<WarehouseTransaction>();
+        // Navigation (Giữ nguyên để sau này dùng nếu cần)
+        [ForeignKey("ManagerID")]
+        public virtual User? Manager { get; set; }
     }
 }

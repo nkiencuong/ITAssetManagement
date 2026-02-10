@@ -2925,23 +2925,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\ADMIN\\.nuget\\packages\\": {},
+    "C:\\Users\\User\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\BVDKHD_IT\\ITAssetManagement.Solution\\ITAssetManagement.Service\\ITAssetManagement.Service.csproj",
+      "projectUniqueName": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Service\\ITAssetManagement.Service.csproj",
       "projectName": "ITAssetManagement.Service",
-      "projectPath": "D:\\BVDKHD_IT\\ITAssetManagement.Solution\\ITAssetManagement.Service\\ITAssetManagement.Service.csproj",
-      "packagesPath": "C:\\Users\\ADMIN\\.nuget\\packages\\",
-      "outputPath": "D:\\BVDKHD_IT\\ITAssetManagement.Solution\\ITAssetManagement.Service\\obj\\",
+      "projectPath": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Service\\ITAssetManagement.Service.csproj",
+      "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
+      "outputPath": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Service\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\ADMIN\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -2956,23 +2956,23 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "projectReferences": {
-            "D:\\BVDKHD_IT\\ITAssetManagement.Solution\\ITAssetManagement.Common\\ITAssetManagement.Common.csproj": {
-              "projectPath": "D:\\BVDKHD_IT\\ITAssetManagement.Solution\\ITAssetManagement.Common\\ITAssetManagement.Common.csproj"
+            "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Common\\ITAssetManagement.Common.csproj": {
+              "projectPath": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Common\\ITAssetManagement.Common.csproj"
             },
-            "D:\\BVDKHD_IT\\ITAssetManagement.Solution\\ITAssetManagement.Mapper\\ITAssetManagement.Mapper.csproj": {
-              "projectPath": "D:\\BVDKHD_IT\\ITAssetManagement.Solution\\ITAssetManagement.Mapper\\ITAssetManagement.Mapper.csproj"
+            "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Mapper\\ITAssetManagement.Mapper.csproj": {
+              "projectPath": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Mapper\\ITAssetManagement.Mapper.csproj"
             },
-            "D:\\BVDKHD_IT\\ITAssetManagement.Solution\\ITAssetManagement.Models\\ITAssetManagement.Models.csproj": {
-              "projectPath": "D:\\BVDKHD_IT\\ITAssetManagement.Solution\\ITAssetManagement.Models\\ITAssetManagement.Models.csproj"
+            "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Models\\ITAssetManagement.Models.csproj": {
+              "projectPath": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Models\\ITAssetManagement.Models.csproj"
             },
-            "D:\\BVDKHD_IT\\ITAssetManagement.Solution\\ITAssetManagement.Repo\\ITAssetManagement.Repo.csproj": {
-              "projectPath": "D:\\BVDKHD_IT\\ITAssetManagement.Solution\\ITAssetManagement.Repo\\ITAssetManagement.Repo.csproj"
+            "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Repo\\ITAssetManagement.Repo.csproj": {
+              "projectPath": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Repo\\ITAssetManagement.Repo.csproj"
             },
-            "D:\\BVDKHD_IT\\ITAssetManagement.Solution\\ITAssetManagement.Request\\ITAssetManagement.Request.csproj": {
-              "projectPath": "D:\\BVDKHD_IT\\ITAssetManagement.Solution\\ITAssetManagement.Request\\ITAssetManagement.Request.csproj"
+            "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Request\\ITAssetManagement.Request.csproj": {
+              "projectPath": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Request\\ITAssetManagement.Request.csproj"
             },
-            "D:\\BVDKHD_IT\\ITAssetManagement.Solution\\ITAssetManagement.Response\\ITAssetManagement.Response.csproj": {
-              "projectPath": "D:\\BVDKHD_IT\\ITAssetManagement.Solution\\ITAssetManagement.Response\\ITAssetManagement.Response.csproj"
+            "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Response\\ITAssetManagement.Response.csproj": {
+              "projectPath": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Response\\ITAssetManagement.Response.csproj"
             }
           }
         }
@@ -2985,9 +2985,9 @@
       "restoreAuditProperties": {
         "enableAudit": "true",
         "auditLevel": "low",
-        "auditMode": "all"
+        "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "9.0.100"
+      "SdkAnalysisLevel": "10.0.100"
     },
     "frameworks": {
       "net9.0": {
@@ -3008,7 +3008,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.100/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.102/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

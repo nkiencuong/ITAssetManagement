@@ -15,5 +15,6 @@ namespace ITAssetManagement.Repo.Interfaces
 
         // Lưu tất cả thay đổi xuống Database (Commit Transaction)
         Task<int> CompleteAsync();
+        Task<int> CommitAsync();
     }
 }

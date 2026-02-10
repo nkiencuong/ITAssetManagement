@@ -22,6 +22,43 @@ namespace ITAssetManagement.Models.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("ITAssetManagement.Models.Entities.InventoryCheck", b =>
+                {
+                    b.Property<int>("CheckID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CheckID"));
+
+                    b.Property<string>("ActualStatus")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("AssetID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CheckDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Discrepancy")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserID")
+                        .HasColumnType("int");
+
+                    b.HasKey("CheckID");
+
+                    b.HasIndex("AssetID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("InventoryCheck", (string)null);
+                });
+
             modelBuilder.Entity("ITAssetManagement.Models.Entitis.Asset", b =>
                 {
                     b.Property<int>("AssetID")
@@ -49,6 +86,12 @@ namespace ITAssetManagement.Models.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("DepartmentID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ImportDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Location")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
@@ -59,7 +102,7 @@ namespace ITAssetManagement.Models.Migrations
 
                     b.Property<decimal>("Price")
                         .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<DateTime?>("PurchaseDate")
                         .HasColumnType("datetime2");
@@ -68,9 +111,8 @@ namespace ITAssetManagement.Models.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("Serial")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -78,13 +120,19 @@ namespace ITAssetManagement.Models.Migrations
                     b.Property<int?>("SupplierID")
                         .HasColumnType("int");
 
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime?>("WarrantyExpr")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("AssetID");
 
                     b.HasIndex("AssetTypeID");
 
-                    b.HasIndex("Serial")
-                        .IsUnique()
-                        .HasFilter("[Serial] IS NOT NULL");
+                    b.HasIndex("DepartmentID");
 
                     b.HasIndex("Status");
 
@@ -113,6 +161,9 @@ namespace ITAssetManagement.Models.Migrations
                     b.Property<string>("Note")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("ReturnedDate")
                         .HasColumnType("datetime2");
@@ -169,6 +220,12 @@ namespace ITAssetManagement.Models.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<DateTime>("ActionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Details")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("NewValue")
                         .HasColumnType("nvarchar(max)");
 
@@ -224,43 +281,6 @@ namespace ITAssetManagement.Models.Migrations
                     b.ToTable("Department", (string)null);
                 });
 
-            modelBuilder.Entity("ITAssetManagement.Models.Entitis.InventoryCheck", b =>
-                {
-                    b.Property<int>("CheckID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CheckID"));
-
-                    b.Property<int?>("ActualStatus")
-                        .HasColumnType("int");
-
-                    b.Property<int>("AssetID")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CheckDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Discrepancy")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("Note")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<int>("UserID")
-                        .HasColumnType("int");
-
-                    b.HasKey("CheckID");
-
-                    b.HasIndex("AssetID");
-
-                    b.HasIndex("UserID");
-
-                    b.ToTable("InventoryCheck", (string)null);
-                });
-
             modelBuilder.Entity("ITAssetManagement.Models.Entitis.RepairTicket", b =>
                 {
                     b.Property<int>("TicketID")
@@ -269,19 +289,28 @@ namespace ITAssetManagement.Models.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TicketID"));
 
-                    b.Property<int>("AssetID")
+                    b.Property<int?>("AssetID")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Cost")
                         .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18, 2)");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("DepartmentID")
+                        .HasColumnType("int");
+
                     b.Property<string>("Description")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("DinhKemUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LoaiFile")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Note")
                         .HasMaxLength(500)
@@ -293,21 +322,65 @@ namespace ITAssetManagement.Models.Migrations
                     b.Property<int?>("ReplacedAssetID")
                         .HasColumnType("int");
 
+                    b.Property<string>("ReporterName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReporterPosition")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Solution")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserID")
+                    b.Property<int?>("UserID")
                         .HasColumnType("int");
 
                     b.HasKey("TicketID");
 
                     b.HasIndex("AssetID");
 
+                    b.HasIndex("DepartmentID");
+
                     b.HasIndex("ReplacedAssetID");
 
                     b.HasIndex("UserID");
 
                     b.ToTable("RepairTicket", (string)null);
+                });
+
+            modelBuilder.Entity("ITAssetManagement.Models.Entitis.RepairTicketDetail", b =>
+                {
+                    b.Property<int>("DetailID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DetailID"));
+
+                    b.Property<int>("AssetID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Note")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TicketID")
+                        .HasColumnType("int");
+
+                    b.HasKey("DetailID");
+
+                    b.HasIndex("AssetID");
+
+                    b.HasIndex("TicketID");
+
+                    b.ToTable("RepairTicketDetail");
                 });
 
             modelBuilder.Entity("ITAssetManagement.Models.Entitis.Supplier", b =>
@@ -347,8 +420,10 @@ namespace ITAssetManagement.Models.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("DepartmentID")
+                        .HasColumnType("int");
+
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
@@ -356,8 +431,14 @@ namespace ITAssetManagement.Models.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<bool>("MustChangePassword")
+                        .HasColumnType("bit");
+
                     b.Property<string>("PasswordHash")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Role")
@@ -372,8 +453,11 @@ namespace ITAssetManagement.Models.Migrations
 
                     b.HasKey("UserID");
 
+                    b.HasIndex("DepartmentID");
+
                     b.HasIndex("Email")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[Email] IS NOT NULL");
 
                     b.HasIndex("Username")
                         .IsUnique();
@@ -414,7 +498,7 @@ namespace ITAssetManagement.Models.Migrations
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
 
-                    b.Property<int>("UserID")
+                    b.Property<int?>("UserID")
                         .HasColumnType("int");
 
                     b.HasKey("TransactionID");
@@ -428,6 +512,25 @@ namespace ITAssetManagement.Models.Migrations
                     b.ToTable("WarehouseTransaction", (string)null);
                 });
 
+            modelBuilder.Entity("ITAssetManagement.Models.Entities.InventoryCheck", b =>
+                {
+                    b.HasOne("ITAssetManagement.Models.Entitis.Asset", "Asset")
+                        .WithMany("InventoryChecks")
+                        .HasForeignKey("AssetID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ITAssetManagement.Models.Entitis.User", "User")
+                        .WithMany("InventoryChecks")
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Asset");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("ITAssetManagement.Models.Entitis.Asset", b =>
                 {
                     b.HasOne("ITAssetManagement.Models.Entitis.AssetType", "AssetType")
@@ -436,11 +539,17 @@ namespace ITAssetManagement.Models.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("ITAssetManagement.Models.Entitis.Department", "Department")
+                        .WithMany()
+                        .HasForeignKey("DepartmentID");
+
                     b.HasOne("ITAssetManagement.Models.Entitis.Supplier", "Supplier")
                         .WithMany("Assets")
                         .HasForeignKey("SupplierID");
 
                     b.Navigation("AssetType");
+
+                    b.Navigation("Department");
 
                     b.Navigation("Supplier");
                 });
@@ -454,7 +563,7 @@ namespace ITAssetManagement.Models.Migrations
                         .IsRequired();
 
                     b.HasOne("ITAssetManagement.Models.Entitis.Department", "Department")
-                        .WithMany("AssetAllocations")
+                        .WithMany()
                         .HasForeignKey("DepartmentID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -490,32 +599,17 @@ namespace ITAssetManagement.Models.Migrations
                     b.Navigation("Manager");
                 });
 
-            modelBuilder.Entity("ITAssetManagement.Models.Entitis.InventoryCheck", b =>
-                {
-                    b.HasOne("ITAssetManagement.Models.Entitis.Asset", "Asset")
-                        .WithMany("InventoryChecks")
-                        .HasForeignKey("AssetID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ITAssetManagement.Models.Entitis.User", "User")
-                        .WithMany("InventoryChecks")
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Asset");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("ITAssetManagement.Models.Entitis.RepairTicket", b =>
                 {
                     b.HasOne("ITAssetManagement.Models.Entitis.Asset", "Asset")
                         .WithMany("RepairTickets")
                         .HasForeignKey("AssetID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("ITAssetManagement.Models.Entitis.Department", "Department")
+                        .WithMany()
+                        .HasForeignKey("DepartmentID")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("ITAssetManagement.Models.Entitis.Asset", "ReplacedAsset")
                         .WithMany()
@@ -524,15 +618,44 @@ namespace ITAssetManagement.Models.Migrations
 
                     b.HasOne("ITAssetManagement.Models.Entitis.User", "User")
                         .WithMany("RepairTickets")
-                        .HasForeignKey("UserID")
+                        .HasForeignKey("UserID");
+
+                    b.Navigation("Asset");
+
+                    b.Navigation("Department");
+
+                    b.Navigation("ReplacedAsset");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ITAssetManagement.Models.Entitis.RepairTicketDetail", b =>
+                {
+                    b.HasOne("ITAssetManagement.Models.Entitis.Asset", "Asset")
+                        .WithMany()
+                        .HasForeignKey("AssetID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ITAssetManagement.Models.Entitis.RepairTicket", "RepairTicket")
+                        .WithMany("RepairDetails")
+                        .HasForeignKey("TicketID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Asset");
 
-                    b.Navigation("ReplacedAsset");
+                    b.Navigation("RepairTicket");
+                });
 
-                    b.Navigation("User");
+            modelBuilder.Entity("ITAssetManagement.Models.Entitis.User", b =>
+                {
+                    b.HasOne("ITAssetManagement.Models.Entitis.Department", "Department")
+                        .WithMany()
+                        .HasForeignKey("DepartmentID")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Department");
                 });
 
             modelBuilder.Entity("ITAssetManagement.Models.Entitis.WarehouseTransaction", b =>
@@ -544,14 +667,12 @@ namespace ITAssetManagement.Models.Migrations
                         .IsRequired();
 
                     b.HasOne("ITAssetManagement.Models.Entitis.Department", "Department")
-                        .WithMany("WarehouseTransactions")
+                        .WithMany()
                         .HasForeignKey("DepartmentID");
 
                     b.HasOne("ITAssetManagement.Models.Entitis.User", "User")
                         .WithMany("WarehouseTransactions")
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserID");
 
                     b.Navigation("Asset");
 
@@ -576,11 +697,9 @@ namespace ITAssetManagement.Models.Migrations
                     b.Navigation("Assets");
                 });
 
-            modelBuilder.Entity("ITAssetManagement.Models.Entitis.Department", b =>
+            modelBuilder.Entity("ITAssetManagement.Models.Entitis.RepairTicket", b =>
                 {
-                    b.Navigation("AssetAllocations");
-
-                    b.Navigation("WarehouseTransactions");
+                    b.Navigation("RepairDetails");
                 });
 
             modelBuilder.Entity("ITAssetManagement.Models.Entitis.Supplier", b =>

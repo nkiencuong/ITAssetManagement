@@ -1,30 +1,16 @@
-D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Response\bin\Debug\net9.0\ITAssetManagement.Response.deps.json
-D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Response\bin\Debug\net9.0\ITAssetManagement.Response.dll
-D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Response\bin\Debug\net9.0\ITAssetManagement.Response.pdb
-D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Response\bin\Debug\net9.0\ITAssetManagement.Models.dll
-D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Response\bin\Debug\net9.0\ITAssetManagement.Models.pdb
-D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Response\obj\Debug\net9.0\ITAssetManagement.Response.csproj.AssemblyReference.cache
-D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Response\obj\Debug\net9.0\ITAssetManagement.Response.GeneratedMSBuildEditorConfig.editorconfig
-D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Response\obj\Debug\net9.0\ITAssetManagement.Response.AssemblyInfoInputs.cache
-D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Response\obj\Debug\net9.0\ITAssetManagement.Response.AssemblyInfo.cs
-D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Response\obj\Debug\net9.0\ITAssetManagement.Response.csproj.CoreCompileInputs.cache
-D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Response\obj\Debug\net9.0\ITAssetM.496ED5A3.Up2Date
-D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Response\obj\Debug\net9.0\ITAssetManagement.Response.dll
-D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Response\obj\Debug\net9.0\refint\ITAssetManagement.Response.dll
-D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Response\obj\Debug\net9.0\ITAssetManagement.Response.pdb
-D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Response\obj\Debug\net9.0\ref\ITAssetManagement.Response.dll
-D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Response\bin\Debug\net9.0\ITAssetManagement.Response.deps.json
-D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Response\bin\Debug\net9.0\ITAssetManagement.Response.dll
-D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Response\bin\Debug\net9.0\ITAssetManagement.Response.pdb
-D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Response\bin\Debug\net9.0\ITAssetManagement.Models.dll
-D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Response\bin\Debug\net9.0\ITAssetManagement.Models.pdb
-D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Response\obj\Debug\net9.0\ITAssetManagement.Response.csproj.AssemblyReference.cache
-D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Response\obj\Debug\net9.0\ITAssetManagement.Response.GeneratedMSBuildEditorConfig.editorconfig
-D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Response\obj\Debug\net9.0\ITAssetManagement.Response.AssemblyInfoInputs.cache
-D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Response\obj\Debug\net9.0\ITAssetManagement.Response.AssemblyInfo.cs
-D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Response\obj\Debug\net9.0\ITAssetManagement.Response.csproj.CoreCompileInputs.cache
-D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Response\obj\Debug\net9.0\ITAssetM.496ED5A3.Up2Date
-D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Response\obj\Debug\net9.0\ITAssetManagement.Response.dll
-D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Response\obj\Debug\net9.0\refint\ITAssetManagement.Response.dll
-D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Response\obj\Debug\net9.0\ITAssetManagement.Response.pdb
-D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Response\obj\Debug\net9.0\ref\ITAssetManagement.Response.dll
+F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement.Response\bin\Debug\net9.0\ITAssetManagement.Response.deps.json
+F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement.Response\bin\Debug\net9.0\ITAssetManagement.Response.dll
+F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement.Response\bin\Debug\net9.0\ITAssetManagement.Response.pdb
+F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement.Response\bin\Debug\net9.0\ITAssetManagement.Models.dll
+F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement.Response\bin\Debug\net9.0\ITAssetManagement.Models.pdb
+F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement.Response\obj\Debug\net9.0\ITAssetManagement.Response.csproj.AssemblyReference.cache
+F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement.Response\obj\Debug\net9.0\ITAssetManagement.Response.GeneratedMSBuildEditorConfig.editorconfig
+F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement.Response\obj\Debug\net9.0\ITAssetManagement.Response.AssemblyInfoInputs.cache
+F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement.Response\obj\Debug\net9.0\ITAssetManagement.Response.AssemblyInfo.cs
+F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement.Response\obj\Debug\net9.0\ITAssetManagement.Response.csproj.CoreCompileInputs.cache
+F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement.Response\obj\Debug\net9.0\ITAssetManagement.Response.sourcelink.json
+F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement.Response\obj\Debug\net9.0\ITAssetM.496ED5A3.Up2Date
+F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement.Response\obj\Debug\net9.0\ITAssetManagement.Response.dll
+F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement.Response\obj\Debug\net9.0\refint\ITAssetManagement.Response.dll
+F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement.Response\obj\Debug\net9.0\ITAssetManagement.Response.pdb
+F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement.Response\obj\Debug\net9.0\ref\ITAssetManagement.Response.dll

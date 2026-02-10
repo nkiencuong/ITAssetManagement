@@ -1,38 +1,20 @@
-D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Mapper\bin\Debug\net9.0\ITAssetManagement.Mapper.deps.json
-D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Mapper\bin\Debug\net9.0\ITAssetManagement.Mapper.dll
-D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Mapper\bin\Debug\net9.0\ITAssetManagement.Mapper.pdb
-D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Mapper\bin\Debug\net9.0\ITAssetManagement.Models.dll
-D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Mapper\bin\Debug\net9.0\ITAssetManagement.Request.dll
-D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Mapper\bin\Debug\net9.0\ITAssetManagement.Response.dll
-D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Mapper\bin\Debug\net9.0\ITAssetManagement.Models.pdb
-D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Mapper\bin\Debug\net9.0\ITAssetManagement.Request.pdb
-D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Mapper\bin\Debug\net9.0\ITAssetManagement.Response.pdb
-D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Mapper\obj\Debug\net9.0\ITAssetManagement.Mapper.csproj.AssemblyReference.cache
-D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Mapper\obj\Debug\net9.0\ITAssetManagement.Mapper.GeneratedMSBuildEditorConfig.editorconfig
-D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Mapper\obj\Debug\net9.0\ITAssetManagement.Mapper.AssemblyInfoInputs.cache
-D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Mapper\obj\Debug\net9.0\ITAssetManagement.Mapper.AssemblyInfo.cs
-D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Mapper\obj\Debug\net9.0\ITAssetManagement.Mapper.csproj.CoreCompileInputs.cache
-D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Mapper\obj\Debug\net9.0\ITAssetM.8B18CC24.Up2Date
-D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Mapper\obj\Debug\net9.0\ITAssetManagement.Mapper.dll
-D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Mapper\obj\Debug\net9.0\refint\ITAssetManagement.Mapper.dll
-D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Mapper\obj\Debug\net9.0\ITAssetManagement.Mapper.pdb
-D:\Bệnh viện ĐKHD - IT\ITAssetManagement.Solution\ITAssetManagement.Mapper\obj\Debug\net9.0\ref\ITAssetManagement.Mapper.dll
-D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Mapper\bin\Debug\net9.0\ITAssetManagement.Mapper.deps.json
-D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Mapper\bin\Debug\net9.0\ITAssetManagement.Mapper.dll
-D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Mapper\bin\Debug\net9.0\ITAssetManagement.Mapper.pdb
-D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Mapper\bin\Debug\net9.0\ITAssetManagement.Models.dll
-D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Mapper\bin\Debug\net9.0\ITAssetManagement.Request.dll
-D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Mapper\bin\Debug\net9.0\ITAssetManagement.Response.dll
-D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Mapper\bin\Debug\net9.0\ITAssetManagement.Models.pdb
-D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Mapper\bin\Debug\net9.0\ITAssetManagement.Request.pdb
-D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Mapper\bin\Debug\net9.0\ITAssetManagement.Response.pdb
-D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Mapper\obj\Debug\net9.0\ITAssetManagement.Mapper.csproj.AssemblyReference.cache
-D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Mapper\obj\Debug\net9.0\ITAssetManagement.Mapper.GeneratedMSBuildEditorConfig.editorconfig
-D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Mapper\obj\Debug\net9.0\ITAssetManagement.Mapper.AssemblyInfoInputs.cache
-D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Mapper\obj\Debug\net9.0\ITAssetManagement.Mapper.AssemblyInfo.cs
-D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Mapper\obj\Debug\net9.0\ITAssetManagement.Mapper.csproj.CoreCompileInputs.cache
-D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Mapper\obj\Debug\net9.0\ITAssetM.8B18CC24.Up2Date
-D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Mapper\obj\Debug\net9.0\ITAssetManagement.Mapper.dll
-D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Mapper\obj\Debug\net9.0\refint\ITAssetManagement.Mapper.dll
-D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Mapper\obj\Debug\net9.0\ITAssetManagement.Mapper.pdb
-D:\BVDKHD_IT\ITAssetManagement.Solution\ITAssetManagement.Mapper\obj\Debug\net9.0\ref\ITAssetManagement.Mapper.dll
+F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement.Mapper\bin\Debug\net9.0\ITAssetManagement.Mapper.deps.json
+F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement.Mapper\bin\Debug\net9.0\ITAssetManagement.Mapper.dll
+F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement.Mapper\bin\Debug\net9.0\ITAssetManagement.Mapper.pdb
+F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement.Mapper\bin\Debug\net9.0\ITAssetManagement.Models.dll
+F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement.Mapper\bin\Debug\net9.0\ITAssetManagement.Request.dll
+F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement.Mapper\bin\Debug\net9.0\ITAssetManagement.Response.dll
+F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement.Mapper\bin\Debug\net9.0\ITAssetManagement.Models.pdb
+F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement.Mapper\bin\Debug\net9.0\ITAssetManagement.Request.pdb
+F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement.Mapper\bin\Debug\net9.0\ITAssetManagement.Response.pdb
+F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement.Mapper\obj\Debug\net9.0\ITAssetManagement.Mapper.csproj.AssemblyReference.cache
+F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement.Mapper\obj\Debug\net9.0\ITAssetManagement.Mapper.GeneratedMSBuildEditorConfig.editorconfig
+F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement.Mapper\obj\Debug\net9.0\ITAssetManagement.Mapper.AssemblyInfoInputs.cache
+F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement.Mapper\obj\Debug\net9.0\ITAssetManagement.Mapper.AssemblyInfo.cs
+F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement.Mapper\obj\Debug\net9.0\ITAssetManagement.Mapper.csproj.CoreCompileInputs.cache
+F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement.Mapper\obj\Debug\net9.0\ITAssetManagement.Mapper.sourcelink.json
+F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement.Mapper\obj\Debug\net9.0\ITAssetM.8B18CC24.Up2Date
+F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement.Mapper\obj\Debug\net9.0\ITAssetManagement.Mapper.dll
+F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement.Mapper\obj\Debug\net9.0\refint\ITAssetManagement.Mapper.dll
+F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement.Mapper\obj\Debug\net9.0\ITAssetManagement.Mapper.pdb
+F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement.Mapper\obj\Debug\net9.0\ref\ITAssetManagement.Mapper.dll

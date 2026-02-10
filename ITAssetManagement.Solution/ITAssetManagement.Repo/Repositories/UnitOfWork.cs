@@ -21,6 +21,11 @@ namespace ITAssetManagement.Repo.Repositories
             _context = context;
         }
 
+        public async Task<int> CommitAsync()
+        {
+            return await _context.SaveChangesAsync();
+        }
+
         public async Task<int> CompleteAsync()
         {
             // Chỉ khi gọi hàm này, lệnh SQL mới thực sự chạy xuống Database

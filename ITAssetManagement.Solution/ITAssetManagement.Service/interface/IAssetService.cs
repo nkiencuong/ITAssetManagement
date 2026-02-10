@@ -1,19 +1,28 @@
-﻿using ITAssetManagement.Request.Assets;
+﻿using ITAssetManagement.Models.Entitis;
+using ITAssetManagement.Request.Assets;
 using ITAssetManagement.Response.Assets;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ITAssetManagement.Service.Interfaces
 {
     public interface IAssetService
     {
-        // Hàm tạo tài sản mới (xử lý cả nhập kho + tạo phiếu kiểm nhập)
+        // 1. Tạo mới
         Task<AssetResponse> CreateAssetAsync(CreateAssetRequest request);
 
-        // Hàm lấy danh sách tài sản (để hiện lên lưới)
+        // 2. Lấy danh sách
         Task<IEnumerable<AssetResponse>> GetAllAssetsAsync();
+
+        // --- CÁC HÀM MỚI THÊM ---
+
+        // 3. Lấy chi tiết theo ID (để hiển thị form sửa)
+        Task<Asset> GetAssetByIdAsync(int id);
+
+        // 4. Cập nhật tài sản
+        Task<bool> UpdateAssetAsync(int id, Asset request);
+
+        // 5. Xóa tài sản
+        Task<bool> DeleteAssetAsync(int id);
     }
 }

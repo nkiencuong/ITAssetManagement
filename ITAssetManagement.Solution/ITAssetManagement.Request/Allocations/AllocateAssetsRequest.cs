@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations; // Thêm dòng này để dùng [Required] nếu cần
+using System.ComponentModel.DataAnnotations;
 
 namespace ITAssetManagement.Request.Allocations
 {
@@ -9,13 +9,16 @@ namespace ITAssetManagement.Request.Allocations
         // Danh sách ID tài sản
         public List<int> AssetIds { get; set; } = new List<int>();
 
-        // Phải viết hoa chữ 'ID' để khớp với Service
+        // ID phòng ban là bắt buộc
         public int DepartmentID { get; set; }
 
+        // Người nhận có thể để trống
         public int? UserID { get; set; }
 
+        // Ngày cấp phát (Hứng từ giao diện)
         public DateTime AllocatedDate { get; set; } = DateTime.Now;
 
         public string? Note { get; set; }
+        public int Quantity { get; set; } = 1;
     }
 }

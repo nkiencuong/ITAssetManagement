@@ -10,7 +10,8 @@ namespace ITAssetManagement.Response.Assets
     {
         public int AssetID { get; set; }
         public string AssetName { get; set; }
-        public string Serial { get; set; }
+        public int Quantity { get; set; }
+        public string Unit { get; set; } = string.Empty;
         public string Model { get; set; }
 
         // Thông tin loại và nhà cung cấp (để hiển thị lên lưới)
@@ -24,6 +25,7 @@ namespace ITAssetManagement.Response.Assets
         public int Status { get; set; } // 0: Kho, 1: Dùng...
         public string Location { get; set; }
         public string Config { get; set; }
+        public DateTime ImportDate { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? WarrantyExpr { get; set; }
     }

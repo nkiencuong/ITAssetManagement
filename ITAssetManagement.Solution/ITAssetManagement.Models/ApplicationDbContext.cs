@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using ITAssetManagement.Models;
-using ITAssetManagement.Models.Entitis;
+﻿using ITAssetManagement.Models.Entities; // Hoặc .Entitis tùy tên thư mục của bạn
+using ITAssetManagement.Models.Entitis;  // Giữ dòng này nếu namespace của bạn đang để là Entitis
+using Microsoft.EntityFrameworkCore;
 
 namespace ITAssetManagement.Models
 {
@@ -11,6 +11,7 @@ namespace ITAssetManagement.Models
         {
         }
 
+        // --- Danh sách các bảng trong Database ---
         public DbSet<AssetType> AssetTypes { get; set; } = null!;
         public DbSet<Supplier> Suppliers { get; set; } = null!;
         public DbSet<Department> Departments { get; set; } = null!;
@@ -21,12 +22,13 @@ namespace ITAssetManagement.Models
         public DbSet<AuditLog> AuditLogs { get; set; } = null!;
         public DbSet<InventoryCheck> InventoryChecks { get; set; } = null!;
         public DbSet<RepairTicket> RepairTickets { get; set; } = null!;
+        public DbSet<RepairTicketDetail> RepairTicketDetails { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // === Buộc tên bảng là số ít (không có "s") ===
+            // 1. Đặt tên bảng là số ít
             modelBuilder.Entity<AssetType>().ToTable("AssetType");
             modelBuilder.Entity<Supplier>().ToTable("Supplier");
             modelBuilder.Entity<Department>().ToTable("Department");
@@ -38,11 +40,7 @@ namespace ITAssetManagement.Models
             modelBuilder.Entity<InventoryCheck>().ToTable("InventoryCheck");
             modelBuilder.Entity<RepairTicket>().ToTable("RepairTicket");
 
-            // === Unique constraints ===
-            modelBuilder.Entity<Asset>()
-                .HasIndex(a => a.Serial)
-                .IsUnique();
-
+            // 2. Ràng buộc duy nhất (Unique)
             modelBuilder.Entity<User>()
                 .HasIndex(u => u.Username)
                 .IsUnique();
@@ -51,21 +49,29 @@ namespace ITAssetManagement.Models
                 .HasIndex(u => u.Email)
                 .IsUnique();
 
-            // === Fix cascade path cho RepairTicket (rất quan trọng) ===
+            // 3. CẤU HÌNH CHO REPAIR TICKET
             modelBuilder.Entity<RepairTicket>(entity =>
             {
+                // A. Liên kết với Máy hỏng: Xóa Máy -> Xóa phiếu (Cascade)
                 entity.HasOne(rt => rt.Asset)
                       .WithMany(a => a.RepairTickets)
                       .HasForeignKey(rt => rt.AssetID)
                       .OnDelete(DeleteBehavior.Cascade);
 
+                // B. Liên kết với Linh kiện thay thế: Xóa Linh kiện -> KHÔNG xóa phiếu (Restrict)
                 entity.HasOne(rt => rt.ReplacedAsset)
                       .WithMany()
                       .HasForeignKey(rt => rt.ReplacedAssetID)
-                      .OnDelete(DeleteBehavior.Restrict); // Đổi thành Restrict để tránh lỗi cascade
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                // C. Liên kết với Khoa phòng: Xóa Khoa -> Set NULL phiếu
+                entity.HasOne(rt => rt.Department)
+                      .WithMany()
+                      .HasForeignKey(rt => rt.DepartmentID)
+                      .OnDelete(DeleteBehavior.SetNull);
             });
 
-            // === Precision cho decimal ===
+            // 4. Định dạng tiền tệ
             modelBuilder.Entity<Asset>()
                 .Property(a => a.Price)
                 .HasPrecision(18, 2);
@@ -74,9 +80,21 @@ namespace ITAssetManagement.Models
                 .Property(rt => rt.Cost)
                 .HasPrecision(18, 2);
 
-            // === Index nhanh cho Status ===
+            // 5. Index tìm kiếm nhanh
             modelBuilder.Entity<Asset>()
                 .HasIndex(a => a.Status);
+
+            // 👇👇👇 6. CẤU HÌNH QUAN TRỌNG: USER - DEPARTMENT (FIX LỖI MIGRATION) 👇👇👇
+            // Đoạn này giúp EF Core hiểu: User thuộc về Department, 
+            // nhưng nếu xóa Department thì KHÔNG ĐƯỢC xóa User (Restrict) -> Tránh lỗi vòng lặp.
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.HasOne(u => u.Department)       // User có 1 Khoa
+                      .WithMany()                      // Khoa có nhiều User
+                      .HasForeignKey(u => u.DepartmentID) // Khóa ngoại là DepartmentID
+                      .OnDelete(DeleteBehavior.Restrict); // QUAN TRỌNG: Chặn xóa cascade
+            });
+            // 👆👆👆 HẾT PHẦN FIX 👆👆👆
         }
     }
 }

@@ -3,11 +3,6 @@ using ITAssetManagement.Models.Entitis;
 using ITAssetManagement.Request.Assets;
 using ITAssetManagement.Response.Assets;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ITAssetManagement.Mapper
 {
@@ -15,15 +10,21 @@ namespace ITAssetManagement.Mapper
     {
         public MappingProfile()
         {
-            // 1. Map từ Request (Form nhập) sang Entity (Database)
+            // 1. Map từ Request -> Entity
             CreateMap<CreateAssetRequest, Asset>()
-                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => 0)) // Mặc định trạng thái là 0 (Trong kho)
-                .ForMember(dest => dest.CreatedDate, opt => opt.MapFrom(src => DateTime.Now));
+                // Mặc định Status là 0 (Mới)
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => 0))
 
-            // 2. Map từ Entity (Database) sang Response (Hiển thị)
+              
+                // CreatedDate sẽ tự lấy DateTime.Now. ImportDate sẽ tự map sang ImportDate.
+                .ForMember(dest => dest.CreatedDate, opt => opt.Ignore());
+
+            // 2. Map từ Entity -> Response
             CreateMap<Asset, AssetResponse>()
-                .ForMember(dest => dest.AssetTypeName, opt => opt.MapFrom(src => src.AssetType.TypeName)) // Lấy tên loại
-                .ForMember(dest => dest.SupplierName, opt => opt.MapFrom(src => src.Supplier != null ? src.Supplier.SupplierName : "N/A")); // Lấy tên NCC
+                // Lấy tên Loại, nếu null thì báo "Chưa phân loại"
+                .ForMember(dest => dest.AssetTypeName, opt => opt.MapFrom(src => src.AssetType != null ? src.AssetType.TypeName : "Chưa phân loại"))
+                // Lấy tên NCC, nếu null thì báo "N/A"
+                .ForMember(dest => dest.SupplierName, opt => opt.MapFrom(src => src.Supplier != null ? src.Supplier.SupplierName : "N/A"));
         }
     }
 }

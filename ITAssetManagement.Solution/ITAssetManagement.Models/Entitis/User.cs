@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using ITAssetManagement.Models.Entities;
 namespace ITAssetManagement.Models.Entitis
 {
     public class User
@@ -16,10 +16,10 @@ namespace ITAssetManagement.Models.Entitis
         [StringLength(100)]
         public string Username { get; set; } = string.Empty;
 
-        [Required]
+       
         [EmailAddress]
         [StringLength(200)]
-        public string Email { get; set; } = string.Empty;
+        public string? Email { get; set; } = string.Empty;
 
         [Required]
         public string PasswordHash { get; set; } = string.Empty;  // Hash bằng BCrypt sau
@@ -29,9 +29,12 @@ namespace ITAssetManagement.Models.Entitis
 
         [StringLength(200)]
         public string? FullName { get; set; }
-
+        public int? DepartmentID { get; set; } // Khóa ngoại
+        [System.Text.Json.Serialization.JsonIgnore] // Tránh lỗi vòng lặp khi API trả về
+        public virtual Department? Department { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.Now;
-
+        public string? PhoneNumber { get; set; }
+        public bool MustChangePassword { get; set; } = true; // Mặc định là TRUE (Phải đổi)
         // Navigation properties (lịch sử thao tác, phiếu, cấp phát...)
         public virtual ICollection<WarehouseTransaction> WarehouseTransactions { get; set; } = new List<WarehouseTransaction>();
         public virtual ICollection<AssetAllocation> AssetAllocations { get; set; } = new List<AssetAllocation>();

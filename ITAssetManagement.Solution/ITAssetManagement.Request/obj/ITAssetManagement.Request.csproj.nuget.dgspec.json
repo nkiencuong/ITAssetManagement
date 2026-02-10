@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "D:\\BVDKHD_IT\\ITAssetManagement.Solution\\ITAssetManagement.Request\\ITAssetManagement.Request.csproj": {}
+    "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Request\\ITAssetManagement.Request.csproj": {}
   },
   "projects": {
-    "D:\\BVDKHD_IT\\ITAssetManagement.Solution\\ITAssetManagement.Models\\ITAssetManagement.Models.csproj": {
+    "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Models\\ITAssetManagement.Models.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\BVDKHD_IT\\ITAssetManagement.Solution\\ITAssetManagement.Models\\ITAssetManagement.Models.csproj",
+        "projectUniqueName": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Models\\ITAssetManagement.Models.csproj",
         "projectName": "ITAssetManagement.Models",
-        "projectPath": "D:\\BVDKHD_IT\\ITAssetManagement.Solution\\ITAssetManagement.Models\\ITAssetManagement.Models.csproj",
-        "packagesPath": "C:\\Users\\ADMIN\\.nuget\\packages\\",
-        "outputPath": "D:\\BVDKHD_IT\\ITAssetManagement.Solution\\ITAssetManagement.Models\\obj\\",
+        "projectPath": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Models\\ITAssetManagement.Models.csproj",
+        "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
+        "outputPath": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Models\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\ADMIN\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -42,9 +42,9 @@
         "restoreAuditProperties": {
           "enableAudit": "true",
           "auditLevel": "low",
-          "auditMode": "all"
+          "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.100"
+        "SdkAnalysisLevel": "10.0.100"
       },
       "frameworks": {
         "net9.0": {
@@ -81,24 +81,24 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.100/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.102/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "D:\\BVDKHD_IT\\ITAssetManagement.Solution\\ITAssetManagement.Request\\ITAssetManagement.Request.csproj": {
+    "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Request\\ITAssetManagement.Request.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\BVDKHD_IT\\ITAssetManagement.Solution\\ITAssetManagement.Request\\ITAssetManagement.Request.csproj",
+        "projectUniqueName": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Request\\ITAssetManagement.Request.csproj",
         "projectName": "ITAssetManagement.Request",
-        "projectPath": "D:\\BVDKHD_IT\\ITAssetManagement.Solution\\ITAssetManagement.Request\\ITAssetManagement.Request.csproj",
-        "packagesPath": "C:\\Users\\ADMIN\\.nuget\\packages\\",
-        "outputPath": "D:\\BVDKHD_IT\\ITAssetManagement.Solution\\ITAssetManagement.Request\\obj\\",
+        "projectPath": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Request\\ITAssetManagement.Request.csproj",
+        "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
+        "outputPath": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Request\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\ADMIN\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -113,8 +113,8 @@
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "D:\\BVDKHD_IT\\ITAssetManagement.Solution\\ITAssetManagement.Models\\ITAssetManagement.Models.csproj": {
-                "projectPath": "D:\\BVDKHD_IT\\ITAssetManagement.Solution\\ITAssetManagement.Models\\ITAssetManagement.Models.csproj"
+              "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Models\\ITAssetManagement.Models.csproj": {
+                "projectPath": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Models\\ITAssetManagement.Models.csproj"
               }
             }
           }
@@ -127,9 +127,9 @@
         "restoreAuditProperties": {
           "enableAudit": "true",
           "auditLevel": "low",
-          "auditMode": "all"
+          "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.100"
+        "SdkAnalysisLevel": "10.0.100"
       },
       "frameworks": {
         "net9.0": {
@@ -150,7 +150,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.100/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.102/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

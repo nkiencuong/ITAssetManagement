@@ -1,16 +1,47 @@
 ﻿@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager Navigation
+
 <div class="page">
     <div class="sidebar">
         <NavMenu />
     </div>
 
     <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+        <div class="top-header">
+            <div style="font-weight: 600; font-size: 1.25rem;"></div>
+
+            <AuthorizeView>
+                <Authorized>
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span style="font-size: 0.875rem; color: var(--text-gray);">
+                            Xin chào, <strong style="color: var(--text-dark);">@context.User.Identity?.Name</strong>
+                        </span>
+                        <button class="btn btn-sm btn-outline-danger" style="border-radius: 20px; font-size: 0.75rem;" @onclick="Logout">
+                            <span class="bi bi-box-arrow-right me-1"></span> Đăng xuất
+                        </button>
+                    </div>
+                </Authorized>
+                <NotAuthorized>
+                    <a href="login" class="btn btn-primary btn-sm" style="border-radius: 6px;">
+                        <span class="bi bi-box-arrow-in-right me-1"></span> Đăng nhập
+                    </a>
+                </NotAuthorized>
+            </AuthorizeView>
         </div>
 
-        <article class="content px-4">
+        <div class="content-scroll">
             @Body
-        </article>
+        </div>
     </main>
 </div>
+
+@code {
+    private async Task Logout()
+    {
+        var customAuthStateProvider = (CustomAuthStateProvider)AuthStateProvider;
+        await customAuthStateProvider.Logout();
+        Navigation.NavigateTo("/login");
+    }
+}

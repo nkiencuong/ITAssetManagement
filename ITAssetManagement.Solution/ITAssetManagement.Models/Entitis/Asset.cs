@@ -1,12 +1,13 @@
-﻿using System;
+﻿using ITAssetManagement.Models.Entities;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations.Schema;
+
 
 namespace ITAssetManagement.Models.Entitis
 {
+    [Table("Asset")]
     public class Asset
     {
         [Key]
@@ -16,25 +17,35 @@ namespace ITAssetManagement.Models.Entitis
         [StringLength(200)]
         public string AssetName { get; set; } = string.Empty;
 
-        [StringLength(100)]
-        public string? Serial { get; set; }  // Unique in DB config
+        public int Quantity { get; set; } = 0;
+
+        [StringLength(50)]
+        public string Unit { get; set; } = "Cái";
 
         [StringLength(100)]
         public string? Model { get; set; }
 
-        public int AssetTypeID { get; set; }
+        // --- KHÓA NGOẠI (SỬA LẠI int? ĐỂ AN TOÀN TUYỆT ĐỐI) ---
 
-        public int Status { get; set; } = 0;  // 0: Kho, 1: Cấp phát, 2: Sửa, 3: Hỏng, 4: Mất
+        public int AssetTypeID { get; set; } // Loại thì nên bắt buộc
 
+        public int? SupplierID { get; set; } // Cho phép Null (để tránh lỗi dữ liệu cũ)
+
+        public int? DepartmentID { get; set; } // Cho phép Null
+
+        public int Status { get; set; } = 0;
+
+        // --- NGÀY THÁNG ---
         public DateTime CreatedDate { get; set; } = DateTime.Now;
-
+        public DateTime ImportDate { get; set; } = DateTime.Now;  // Cột mới thêm
         public DateTime? PurchaseDate { get; set; }
+        public DateTime? WarrantyExpr { get; set; }
 
+        // --- TÀI CHÍNH ---
+        [Column(TypeName = "decimal(18, 2)")]
         public decimal Price { get; set; }
 
         public string Currency { get; set; } = "VND";
-
-        public int? SupplierID { get; set; }
 
         [StringLength(200)]
         public string? Location { get; set; }
@@ -45,15 +56,21 @@ namespace ITAssetManagement.Models.Entitis
         [StringLength(100)]
         public string? QRCode { get; set; }
 
-        public DateTime? WarrantyExpr { get; set; } // Thêm dòng này (Hạn bảo hành)
+        // --- LIÊN KẾT ---
+        [ForeignKey("AssetTypeID")]
+        public virtual AssetType? AssetType { get; set; }
 
-        // Navigation
-        public virtual AssetType AssetType { get; set; } = null!;
+        [ForeignKey("SupplierID")]
         public virtual Supplier? Supplier { get; set; }
+
+        [ForeignKey("DepartmentID")]
+        public virtual Department? Department { get; set; }
+        
+        // --- DANH SÁCH CON ---
         public virtual ICollection<WarehouseTransaction> WarehouseTransactions { get; set; } = new List<WarehouseTransaction>();
         public virtual ICollection<AssetAllocation> AssetAllocations { get; set; } = new List<AssetAllocation>();
         public virtual ICollection<RepairTicket> RepairTickets { get; set; } = new List<RepairTicket>();
-        public ICollection<InventoryCheck> InventoryChecks { get; set; } = new List<InventoryCheck>();
+        public virtual ICollection<InventoryCheck> InventoryChecks { get; set; } = new List<InventoryCheck>();
+        
     }
 }
-

@@ -1,7 +1,580 @@
 ﻿@page "/"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using ITAssetManagement.Request.Reports
+@using System.Net.Http.Json
+@inject HttpClient Http
+@attribute [Authorize]
 
-<PageTitle>Trang chủ - Phòng CNTT</PageTitle>
+<PageTitle>Trang Chủ - Dashboard</PageTitle>
 
-<h1>Hello, world!</h1>
+<div class="dashboard-container fade-in">
 
-Welcome to your new app.
+    @* --- 1. HERO SECTION (BANNER) - AI CŨNG THẤY --- *@
+    <div class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title">PHÒNG CÔNG NGHỆ THÔNG TIN</h1>
+            <h3 class="hero-subtitle">Bệnh Viện Đa Khoa Hải Dương</h3>
+            <div class="hero-quote">
+                "Bệnh viện điện tử hướng tới tương lai - Hết việc chứ không hết giờ."
+            </div>
+        </div>
+        <div class="hero-decoration">NKC</div>
+    </div>
+
+    @* --- 2. PHẦN THỐNG KÊ (CHỈ DÀNH CHO ADMIN) --- *@
+    <AuthorizeView Roles="Admin">
+        <Authorized>
+            <div class="modern-card mb-4 p-4">
+                <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
+                    <div class="d-flex align-items-center">
+                        <div class="icon-circle-sm bg-blue-light text-primary me-3">
+                            <i class="bi bi-bar-chart-line-fill"></i>
+                        </div>
+                        <h5 class="mb-0 fw-bold text-dark text-uppercase">Tổng hợp số liệu sửa chữa</h5>
+                    </div>
+
+                    @* Bộ lọc ngày tháng *@
+                    <div class="d-flex gap-2 align-items-center mt-3 mt-md-0 filter-group">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-white">Từ</span>
+                            <input type="date" class="form-control" @bind="startDate" />
+                        </div>
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text bg-white">Đến</span>
+                            <input type="date" class="form-control" @bind="endDate" />
+                        </div>
+                        <button class="btn btn-primary btn-sm px-3 shadow-sm" @onclick="LoadStats">
+                            <i class="bi bi-search me-1"></i> Lọc
+                        </button>
+                    </div>
+                </div>
+
+                @* Các thẻ Card số liệu *@
+                <div class="row g-4">
+                    <div class="col-12 col-sm-6 col-xl-3">
+                        <div class="stat-card blue">
+                            <div class="stat-body">
+                                <span class="stat-label">Tổng đơn nhận</span>
+                                <h2 class="stat-value">@stats.TotalReceived</h2>
+                            </div>
+                            <div class="stat-icon-bg"><i class="bi bi-journal-plus"></i></div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-xl-3">
+                        <div class="stat-card orange">
+                            <div class="stat-body">
+                                <span class="stat-label">Đang sửa chữa</span>
+                                <h2 class="stat-value">@stats.Processing</h2>
+                            </div>
+                            <div class="stat-icon-bg"><i class="bi bi-gear-wide-connected"></i></div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-xl-3">
+                        <div class="stat-card green">
+                            <div class="stat-body">
+                                <span class="stat-label">Đã hoàn thành</span>
+                                <h2 class="stat-value">@stats.Completed</h2>
+                            </div>
+                            <div class="stat-icon-bg"><i class="bi bi-check2-all"></i></div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-xl-3">
+                        <div class="stat-card red">
+                            <div class="stat-body">
+                                <span class="stat-label">Tỷ lệ xong</span>
+                                <h2 class="stat-value">@stats.CompletionRate%</h2>
+                            </div>
+                            <div class="stat-icon-bg"><i class="bi bi-lightning-charge"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </Authorized>
+    </AuthorizeView>
+
+    @* --- 3. PHẦN CHÀO MỪNG (CHỈ DÀNH CHO USER THƯỜNG) --- *@
+    <AuthorizeView Roles="User">
+        <Authorized>
+            <div class="alert alert-light border-start border-primary border-4 shadow-sm mb-4 p-4">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-emoji-smile fs-1 text-primary me-3"></i>
+                    <div>
+                        <h4 class="fw-bold text-dark mb-1">Xin chào, đồng chí!</h4>
+                        <p class="mb-0 text-muted">Chúc đồng chí một ngày làm việc hiệu quả. Nếu thiết bị gặp sự cố, vui lòng chọn mục <b>"Sửa Chữa"</b> ở menu bên trái để báo hỏng.</p>
+                    </div>
+                </div>
+            </div>
+        </Authorized>
+    </AuthorizeView>
+
+    @* --- 4. GIỚI THIỆU VÀ LÃNH ĐẠO (AI CŨNG THẤY) --- *@
+    <div class="row g-4 mb-5">
+        <div class="col-lg-8">
+            <div class="modern-card h-100">
+                <div class="card-header-clean">
+                    <i class="bi bi-info-circle text-primary fs-4 me-2"></i>
+                    <h5 class="mb-0 fw-bold text-primary">Giới Thiệu Chung</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-secondary text-justify mb-4" style="line-height: 1.6;">
+                        Phòng Công nghệ thông tin Bệnh viện Đa khoa Hải Dương được thành lập ngày <strong>01/06/2009</strong>.
+                        Với đội ngũ nhân sự trẻ, năng động và có trình độ chuyên môn cao, phòng luôn hoàn thành xuất sắc nhiệm vụ
+                        đảm bảo hệ thống CNTT bệnh viện vận hành thông suốt.
+                    </p>
+
+                    <div class="sub-info-box">
+                        <h6 class="text-primary fw-bold mb-3 text-uppercase small">CƠ CẤU NHÂN SỰ</h6>
+                        <ul class="list-unstyled mb-0 text-dark">
+                            <li class="mb-2"><span class="bullet">•</span> <strong>Tổng số:</strong> 11 cán bộ.</li>
+                            <li><span class="bullet">•</span> <strong>Trình độ:</strong> Được đào tạo bài bản, chuyên sâu.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="modern-card h-100">
+                <div class="card-header-green">
+                    <i class="bi bi-people-fill me-2"></i>
+                    <h5 class="mb-0 fw-bold">Ban Lãnh Đạo Phòng</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="leader-list">
+                        <div class="leader-item">
+                            <div class="leader-avatar bg-red-light text-danger"><i class="bi bi-star-fill"></i></div>
+                            <div class="leader-info">
+                                <h6 class="leader-name">ThS. Nguyễn Quốc Dũng</h6>
+                                <span class="leader-pos">TRƯỞNG PHÒNG</span>
+                            </div>
+                        </div>
+                        <div class="leader-item">
+                            <div class="leader-avatar bg-orange-light text-warning"><i class="bi bi-star-fill"></i></div>
+                            <div class="leader-info">
+                                <h6 class="leader-name">CN. Nguyễn Thị Hương</h6>
+                                <span class="leader-pos">PHÓ TRƯỞNG PHÒNG</span>
+                            </div>
+                        </div>
+                        <div class="leader-item border-0">
+                            <div class="leader-avatar bg-blue-light text-primary"><i class="bi bi-star-fill"></i></div>
+                            <div class="leader-info">
+                                <h6 class="leader-name">KS. Nguyễn Thành Đông</h6>
+                                <span class="leader-pos">PHÓ TRƯỞNG PHÒNG</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* --- 5. CONTACT SECTION --- *@
+    <div class="contact-section mt-5">
+        <div class="text-center mb-4">
+            <h5 class="fw-bold text-uppercase text-primary">Thông Tin Liên Hệ</h5>
+            <div class="title-underline mx-auto"></div>
+        </div>
+
+        <div class="contact-card-white">
+            <div class="row text-center gy-4">
+                <div class="col-md-4">
+                    <div class="contact-item">
+                        <div class="icon-circle-lg bg-red-light text-danger mx-auto mb-3">
+                            <i class="bi bi-geo-alt-fill"></i>
+                        </div>
+                        <h6 class="fw-bold mb-1 text-dark">ĐỊA CHỈ</h6>
+                        <p class="text-secondary small mb-0">Tầng 5 - Nhà A<br>Bệnh viện Đa khoa Hải Dương</p>
+                    </div>
+                </div>
+                <div class="col-md-4 border-start-md">
+                    <div class="contact-item">
+                        <div class="icon-circle-lg bg-green-light text-success mx-auto mb-3">
+                            <i class="bi bi-telephone-fill"></i>
+                        </div>
+                        <h6 class="fw-bold mb-1 text-dark">ĐIỆN THOẠI</h6>
+                        <a href="tel:02203891816" class="contact-link-dark">0220.3891.816</a>
+                    </div>
+                </div>
+                <div class="col-md-4 border-start-md">
+                    <div class="contact-item">
+                        <div class="icon-circle-lg bg-blue-light text-primary mx-auto mb-3">
+                            <i class="bi bi-envelope-fill"></i>
+                        </div>
+                        <h6 class="fw-bold mb-1 text-dark">EMAIL</h6>
+                        <a href="mailto:dungithd@gmail.com" class="contact-link-dark">dungithd@gmail.com</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @* --- FOOTER (CHÂN TRANG) --- *@
+    <div class="dashboard-footer text-center mt-5 pt-4 pb-4 border-top">
+        <div class="mb-2">
+            <span class="fw-bold text-primary">HỆ THỐNG QUẢN LÝ TÀI SẢN CNTT</span>
+            <span class="mx-2 text-muted">|</span>
+            <span class="text-secondary">Version 1.0.0</span>
+        </div>
+        <div class="small text-muted">
+            &copy; 2026 Phát triển bởi <span class="fw-bold text-dark">Phòng CNTT - Bệnh viện Đa khoa Hải Dương</span>.
+        </div>
+        <div class="small text-muted fst-italic mt-1">
+            Hỗ trợ kỹ thuật: <b>0220.3891.816</b> (Giờ hành chính)
+        </div>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    // Biến bộ lọc
+    private DateTime startDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+    private DateTime endDate = DateTime.Now;
+
+    // Biến lưu số liệu (DTO)
+    private DashboardStatsResponse stats = new DashboardStatsResponse();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Kiểm tra quyền: Chỉ Admin mới gọi API lấy số liệu
+        var authState = await authenticationStateTask;
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated && user.IsInRole("Admin"))
+        {
+            await LoadStats();
+        }
+    }
+
+    private async Task LoadStats()
+    {
+        try
+        {
+            // Format ngày tháng chuẩn yyyy-MM-dd để gửi lên API
+            string from = startDate.ToString("yyyy-MM-dd");
+            string to = endDate.ToString("yyyy-MM-dd");
+
+            var result = await Http.GetFromJsonAsync<DashboardStatsResponse>($"api/dashboard/stats?fromDate={from}&toDate={to}");
+
+            if (result != null)
+            {
+                stats = result;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Lỗi load Dashboard: {ex.Message}");
+        }
+    }
+}
+
+<style>
+    /* --- STYLE GIỮ NGUYÊN NHƯ CŨ --- */
+    .dashboard-container {
+        font-family: 'Segoe UI', system-ui, sans-serif;
+        padding-bottom: 3rem;
+    }
+
+    /* Stats Cards */
+    .stat-card {
+        position: relative;
+        padding: 1.5rem;
+        border-radius: 12px;
+        color: white;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+        min-height: 110px;
+        display: flex;
+        align-items: center;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card.blue {
+            background: linear-gradient(45deg, #3b82f6, #2563eb);
+        }
+
+        .stat-card.orange {
+            background: linear-gradient(45deg, #f59e0b, #d97706);
+        }
+
+        .stat-card.green {
+            background: linear-gradient(45deg, #10b981, #059669);
+        }
+
+        .stat-card.red {
+            background: linear-gradient(45deg, #ef4444, #dc2626);
+        }
+
+    .stat-body {
+        position: relative;
+        z-index: 2;
+    }
+
+    .stat-label {
+        font-size: 0.85rem;
+        font-weight: 500;
+        opacity: 0.9;
+        text-transform: uppercase;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 800;
+        margin: 0;
+    }
+
+    .stat-icon-bg {
+        position: absolute;
+        right: -10px;
+        bottom: -10px;
+        font-size: 4rem;
+        opacity: 0.2;
+        transform: rotate(-15deg);
+    }
+
+    /* Hero */
+    .hero-section {
+        position: relative;
+        height: 200px;
+        border-radius: 16px;
+        overflow: hidden;
+        margin-bottom: 2rem;
+        background: linear-gradient( 135deg, #f8fafc 0%, #bae6fd 40%, #0369a1 100% );
+        box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        padding-left: 3rem;
+        color: #1e293b;
+        width: 70%;
+    }
+
+    .hero-title {
+        font-weight: 800;
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .hero-subtitle {
+        font-weight: 500;
+        font-size: 1rem;
+        opacity: 0.8;
+        margin-bottom: 1rem;
+    }
+
+    .hero-quote {
+        font-style: italic;
+        border-left: 3px solid #38bdf8;
+        padding: 5px 12px;
+        font-size: 0.9rem;
+        background: rgba(255,255,255,0.3);
+        border-radius: 0 8px 8px 0;
+        display: inline-block;
+    }
+
+    .hero-decoration {
+        position: absolute;
+        right: 2rem;
+        bottom: -1rem;
+        font-size: 5rem;
+        font-weight: 900;
+        color: rgba(255,255,255,0.05);
+        z-index: 1;
+        pointer-events: none;
+    }
+
+    /* Modern Card & Common */
+    .modern-card {
+        background: white;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        overflow: hidden;
+    }
+
+    .card-header-clean {
+        padding: 1.2rem 1.5rem;
+        border-bottom: 1px solid #f1f5f9;
+        display: flex;
+        align-items: center;
+    }
+
+    .card-header-green {
+        background-color: #10b981;
+        color: white;
+        padding: 1rem 1.5rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    .sub-info-box {
+        background-color: #f8fafc;
+        border-radius: 8px;
+        padding: 1.5rem;
+    }
+
+    .bullet {
+        color: #3b82f6;
+        font-weight: bold;
+        margin-right: 5px;
+    }
+
+    .icon-circle-sm {
+        width: 35px;
+        height: 35px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .filter-group input {
+        border: 1px solid #e2e8f0;
+    }
+
+    /* Leaders & Contacts */
+    .leader-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .leader-avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+    }
+
+    .leader-name {
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 2px;
+        font-size: 0.9rem;
+    }
+
+    .leader-pos {
+        font-size: 0.7rem;
+        color: #64748b;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .contact-card-white {
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        border: 1px solid #e2e8f0;
+    }
+
+    .icon-circle-lg {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .contact-link-dark {
+        color: #3b82f6;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+
+    .title-underline {
+        width: 60px;
+        height: 3px;
+        background: #38bdf8;
+        border-radius: 2px;
+        margin-top: 5px;
+    }
+
+    .border-start-md {
+        border-left: 1px solid #e2e8f0;
+    }
+
+    /* Colors & Animations */
+    .bg-blue-light {
+        background-color: #eff6ff;
+        color: #3b82f6;
+    }
+
+    .bg-green-light {
+        background-color: #ecfdf5;
+        color: #10b981;
+    }
+
+    .bg-orange-light {
+        background-color: #fff7ed;
+        color: #f97316;
+    }
+
+    .bg-red-light {
+        background-color: #fef2f2;
+        color: #ef4444;
+    }
+
+    .fade-in {
+        animation: fadeIn 0.5s ease-in-out;
+    }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .border-start-md {
+            border-left: none;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 1rem;
+            margin-top: 1rem;
+        }
+
+        .hero-section {
+            height: auto;
+            padding: 2rem 0;
+        }
+
+        .hero-content {
+            width: 100%;
+            padding: 0 1.5rem;
+        }
+    }
+    /* Footer Style */
+    .dashboard-footer {
+        background-color: #e9ecef; /* Màu xám này đậm hơn, dễ nhìn hơn */
+        color: #64748b;
+        font-size: 0.9rem;
+        border-top: 1px solid #dee2e6; /* Thêm cái đường kẻ mỏng bên trên cho tách biệt hẳn */
+        width: 100%; /* Đảm bảo nó rộng hết màn hình */
+    }
+</style>

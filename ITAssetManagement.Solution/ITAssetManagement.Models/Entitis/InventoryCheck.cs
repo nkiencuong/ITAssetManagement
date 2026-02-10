@@ -1,12 +1,15 @@
-﻿using System;
+﻿using ITAssetManagement.Models.Entitis;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema; // Cần thêm thư viện này để dùng [ForeignKey] và [Table]
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ITAssetManagement.Models.Entitis
+namespace ITAssetManagement.Models.Entities // Đã sửa lỗi chính tả: Entitis -> Entities
 {
+    [Table("InventoryCheck")] // Đảm bảo map đúng tên bảng trong SQL Server
     public class InventoryCheck
     {
         [Key]
@@ -14,20 +17,19 @@ namespace ITAssetManagement.Models.Entitis
 
         public DateTime CheckDate { get; set; } = DateTime.Now;
 
-        public int UserID { get; set; } 
+        public int UserID { get; set; } // Người đi kiểm kê
 
-        public int AssetID { get; set; }
+        public int AssetID { get; set; } // Tài sản được kiểm kê
 
-        public int? ActualStatus { get; set; }
+        [StringLength(50)]
+        public string ActualStatus { get; set; } = string.Empty; // Tốt, Hỏng, Mất...
 
-        [StringLength(200)]
-        public string? Discrepancy { get; set; }
+        public bool Discrepancy { get; set; } // Có sai lệch so với hồ sơ không? (True/False)
 
-        [StringLength(500)]
         public string? Note { get; set; }
 
-        // Navigation
-        public virtual User User { get; set; } = null!;
-        public virtual Asset Asset { get; set; } = null!;
+        // Navigation properties
+        public virtual User? User { get; set; }
+        public virtual Asset? Asset { get; set; }
     }
 }

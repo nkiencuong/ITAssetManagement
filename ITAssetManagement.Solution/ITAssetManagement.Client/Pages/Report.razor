@@ -1,0 +1,204 @@
+﻿@page "/report"
+@using System.Net.Http.Json
+@inject HttpClient Http
+@inject IJSRuntime JS
+
+<div class="container-fluid mt-4">
+    <div class="card shadow mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-bar-chart-line-fill me-2"></i>Báo Cáo Xuất Vật Tư</h5>
+        </div>
+        <div class="card-body">
+            @* 👇 CHỈNH LẠI BỐ CỤC ĐỂ CHỨA THÊM DROPDOWN 👇 *@
+            <div class="row g-2 align-items-end">
+                <div class="col-md-2">
+                    <label class="form-label fw-bold small">Từ ngày:</label>
+                    <input type="date" @bind="reportRequest.FromDate" class="form-control form-control-sm" />
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-bold small">Đến ngày:</label>
+                    <input type="date" @bind="reportRequest.ToDate" class="form-control form-control-sm" />
+                </div>
+
+                @* 👇 THÊM DROPDOWN LOẠI TÀI SẢN 👇 *@
+                <div class="col-md-2">
+                    <label class="form-label fw-bold small">Loại tài sản:</label>
+                    <select class="form-select form-select-sm" @bind="reportRequest.AssetType">
+                        <option value="">-- Tất cả --</option>
+                        <option value="PART">🔧 Linh kiện & Vật tư</option>
+                        <option value="Máy in">🖨️ Máy in</option>
+                        <option value="Máy Scan">📠 Máy Scan</option>
+                        <option value="Máy tính">💻 Máy tính / Laptop</option>
+                        <option value="Thiết bị mạng">🌐 Thiết bị mạng</option>
+                        <option value="Thiết bị âm thanh">🔊 Thiết bị âm thanh</option>
+                        <option value="Camera">📷 Camera</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label fw-bold small">Mã thiết bị (ID):</label>
+                    <input type="number" @bind="reportRequest.AssetId" class="form-control form-control-sm" placeholder="Nhập ID..." />
+                </div>
+
+                <div class="col-md-4 d-flex gap-2">
+                    <button class="btn btn-sm btn-primary flex-grow-1" @onclick="ViewReport" disabled="@isLoading">
+                        @if (isLoading)
+                        {
+                            <span class="spinner-border spinner-border-sm me-1"></span>
+                        }
+                        else
+                        {
+
+                            <i class="bi bi-eye me-1"></i>
+                        }
+                        Xem trước
+                    </button>
+
+                    <button class="btn btn-sm btn-success flex-grow-1" @onclick="DownloadExcel" disabled="@isLoading">
+                        <i class="bi bi-file-earmark-excel me-1"></i> Xuất Excel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @* 👇 BẢNG HIỂN THỊ DỮ LIỆU (GIỮ NGUYÊN) 👇 *@
+    @if (reportData != null && reportData.Count > 0)
+    {
+        <div class="card shadow">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h6 class="mb-0 fw-bold text-primary">Kết quả báo cáo (@reportData.Count dòng)</h6>
+                <span class="badge bg-success fs-6">
+                    Tổng tiền: @reportData.Sum(x => x.TotalAmount).ToString("#,##0") đ
+                </span>
+            </div>
+            <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
+                <table class="table table-hover table-bordered mb-0 align-middle table-sm">
+                    <thead class="table-light text-center sticky-top">
+                        <tr>
+                            <th>STT</th>
+                            <th>Ngày xuất</th>
+                            <th>Tên Vật Tư</th>
+                            <th>Phòng Ban Nhận</th>
+                            <th>SL</th>
+                            <th>Đơn giá</th>
+                            <th class="bg-warning bg-opacity-10">Thành tiền</th>
+                            <th>Người xuất</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in reportData)
+                        {
+                            <tr>
+                                <td class="text-center">@item.STT</td>
+                                <td class="text-center">@item.Date.ToString("dd/MM/yyyy")</td>
+                                <td>
+                                    <span class="fw-bold text-primary">@item.AssetName</span>
+                                    <div class="small text-muted">ID: @item.AssetId | @item.Model</div>
+                                </td>
+                                <td>@item.DepartmentName</td>
+                                <td class="text-center fw-bold">@item.Quantity</td>
+                                <td class="text-end">@item.Price.ToString("#,##0")</td>
+                                <td class="text-end fw-bold text-danger bg-warning bg-opacity-10">
+                                    @item.TotalAmount.ToString("#,##0")
+                                </td>
+                                <td>@item.UserFullName</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else if (isSearched)
+    {
+        <div class="alert alert-warning text-center mt-3">
+            <i class="bi bi-exclamation-circle me-2"></i> Không có dữ liệu nào phù hợp.
+        </div>
+    }
+</div>
+
+@code {
+    public class ReportRequest
+    {
+        public DateTime FromDate { get; set; } = DateTime.Now.AddMonths(-1);
+        public DateTime ToDate { get; set; } = DateTime.Now;
+        public int? AssetId { get; set; }
+
+        // 👇 THÊM TRƯỜNG NÀY ĐỂ LỌC LOẠI
+        public string? AssetType { get; set; }
+    }
+
+    public class ReportResponse
+    {
+        public int STT { get; set; }
+        public DateTime Date { get; set; }
+        public int AssetId { get; set; }
+        public string AssetName { get; set; } = string.Empty;
+        public string Model { get; set; } = string.Empty;
+        public string DepartmentName { get; set; } = string.Empty;
+        public int Quantity { get; set; }
+        public string UserFullName { get; set; } = string.Empty;
+        public decimal Price { get; set; }
+        public decimal TotalAmount { get; set; }
+    }
+
+    private ReportRequest reportRequest = new ReportRequest();
+    private List<ReportResponse> reportData = new();
+    private bool isLoading = false;
+    private bool isSearched = false;
+
+    private async Task ViewReport()
+    {
+        try
+        {
+            isLoading = true;
+            isSearched = true;
+            reportData.Clear();
+            var response = await Http.PostAsJsonAsync("api/report/get-data", reportRequest);
+            if (response.IsSuccessStatusCode)
+            {
+                reportData = await response.Content.ReadFromJsonAsync<List<ReportResponse>>();
+            }
+            else
+            {
+                await JS.InvokeVoidAsync("alert", "Không lấy được dữ liệu!");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task DownloadExcel()
+    {
+        try
+        {
+            isLoading = true;
+            var response = await Http.PostAsJsonAsync("api/report/export-excel", reportRequest);
+            if (response.IsSuccessStatusCode)
+            {
+                var fileContent = await response.Content.ReadAsByteArrayAsync();
+                await JS.InvokeVoidAsync("saveAsFile", $"BaoCao_{DateTime.Now:ddMMyyyy}.xlsx", Convert.ToBase64String(fileContent));
+            }
+            else
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                await JS.InvokeVoidAsync("alert", "Lỗi: " + error);
+            }
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("alert", "Lỗi: " + ex.Message);
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}

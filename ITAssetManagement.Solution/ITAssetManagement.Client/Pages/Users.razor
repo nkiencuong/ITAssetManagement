@@ -1,0 +1,257 @@
+﻿@page "/users"
+@using Microsoft.AspNetCore.Authorization
+@using System.Net.Http.Json
+@using ITAssetManagement.Client.Models
+@attribute [Authorize(Roles = "Admin")]
+@inject HttpClient Http
+@inject IJSRuntime JS
+
+<PageTitle>Quản lý người dùng - Phòng CNTT</PageTitle>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <div class="icon-box bg-purple-light"><span class="material-icons-outlined">manage_accounts</span></div>
+        <div>
+            <h3 class="fw-bold text-dark m-0">Danh Sách Người Dùng</h3>
+            <small class="text-secondary">Quản lý tài khoản đăng nhập hệ thống</small>
+        </div>
+    </div>
+
+    <button class="btn btn-primary fw-bold shadow-sm" @onclick="() => showForm = !showForm">
+        @if (showForm)
+        {
+            <span><i class="bi bi-x-circle me-2"></i>Đóng Form</span>
+        }
+        else
+        {
+
+            <span><i class="bi bi-person-plus-fill me-2"></i>Thêm Mới</span>
+        }
+    </button>
+</div>
+
+@* --- FORM THÊM MỚI GIỮ NGUYÊN (Để gọn code tôi ẩn bớt, bạn giữ nguyên code cũ của bạn ở đây) --- *@
+@if (showForm)
+{
+    @* Copy y nguyên đoạn Form thêm mới của bạn vào đây *@
+    <div class="info-card mb-4" style="border-left: 4px solid var(--primary-color);">
+        <h5 class="text-primary fw-bold mb-3">Thông Tin Nhân Viên Mới</h5>
+        <div class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label small fw-bold text-secondary">Tên đăng nhập <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" @bind="newUser.Username" placeholder="VD: bacsi_hung" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small fw-bold text-secondary">Mật khẩu <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" @bind="newUser.PasswordHash" placeholder="VD: 123456" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small fw-bold text-secondary">Họ và tên <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" @bind="newUser.FullName" placeholder="VD: Nguyễn Văn Hùng" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small fw-bold text-secondary">Khoa / Phòng <span class="text-danger">*</span></label>
+                <select class="form-select" @bind="newUser.DepartmentID">
+                    <option value="0">-- Chọn Khoa --</option>
+                    @if (departments != null)
+                    {
+                        foreach (var d in departments)
+                        {
+                            <option value="@d.DepartmentID">@d.DeptName</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small fw-bold text-secondary">Phân quyền</label>
+                <select class="form-select" @bind="newUser.Role">
+                    <option value="User">User (Nhân viên)</option>
+                    <option value="Admin">Admin (Quản trị)</option>
+                </select>
+            </div>
+            <div class="col-md-1 d-flex align-items-end">
+                <button class="btn btn-success w-100 fw-bold" @onclick="CreateUser"><i class="bi bi-save"></i> Lưu</button>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="info-card">
+    <div class="table-responsive">
+        <table class="table align-middle table-hover">
+            <thead class="bg-light">
+                <tr>
+                    <th class="text-center" style="width: 60px;">Avatar</th>
+                    <th>Tên đăng nhập</th>
+                    <th>Họ và tên</th>
+                    <th>Khoa/Phòng</th>
+                    <th>Quyền hạn (Role)</th>
+                    <th>Ngày tạo</th>
+                    <th class="text-end">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (users == null)
+                {
+                    <tr><td colspan="7" class="text-center py-4">Đang tải dữ liệu...</td></tr>
+                }
+                else if (users.Count == 0)
+                {
+                    <tr><td colspan="7" class="text-center py-4 text-muted">Chưa có nhân viên nào.</td></tr>
+                }
+                else
+                {
+                    @foreach (var u in users)
+                    {
+                        <tr>
+                            <td class="text-center">
+                                <div style="width: 35px; height: 35px; background: #e2e8f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #64748b; margin: 0 auto;">
+                                    <i class="bi bi-person-fill"></i>
+                                </div>
+                            </td>
+                            <td class="fw-bold text-primary">@u.Username</td>
+                            <td class="fw-bold text-dark">@u.FullName</td>
+                            <td>@u.DepartmentName</td>
+                            <td>
+                                @if (u.Role == "Admin")
+                                {
+                                    <span class="badge bg-danger rounded-pill px-3">Admin</span>
+                                }
+                                else
+                                {
+
+                                    <span class="badge bg-info text-dark rounded-pill px-3">User</span>
+                                }
+                            </td>
+                            <td class="text-secondary small"><i class="bi bi-calendar3 me-1"></i> @(u.CreatedDate?.ToString("dd/MM/yyyy") ?? "N/A")</td>
+                            <td class="text-end">
+                                @* 👇 NÚT ĐỔI MẬT KHẨU MỚI *@
+                                <button class="btn btn-sm btn-warning me-2" title="Đổi mật khẩu" @onclick="() => OpenChangePassModal(u)">
+                                    <i class="bi bi-key-fill text-white"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" title="Xóa nhân viên" @onclick="() => DeleteUser(u.UserID)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@* 👇 MODAL ĐỔI MẬT KHẨU (ADMIN) *@
+@if (showPassModal)
+{
+    <div class="modal-backdrop fade show"></div>
+    <div class="modal fade show d-block" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-key-fill me-2"></i>Đổi mật khẩu</h5>
+                    <button type="button" class="btn-close" @onclick="() => showPassModal = false"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Đặt mật khẩu mới cho tài khoản: <strong class="text-primary fs-5">@selectedUserName</strong></p>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Mật khẩu mới:</label>
+                        <input type="text" class="form-control fw-bold text-center text-primary" @bind="newPasswordInput" placeholder="Nhập mật khẩu mới..." style="font-size: 1.2rem;" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="() => showPassModal = false">Hủy</button>
+                    <button class="btn btn-warning fw-bold" @onclick="SubmitChangePass">Lưu Mật Khẩu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<UserDTO>? users;
+    private UserCreateDTO newUser = new UserCreateDTO { Role = "User" };
+    private bool showForm = false;
+    private Department[] departments = Array.Empty<Department>();
+
+    // 👇 BIẾN CHO MODAL ĐỔI PASS
+    private bool showPassModal = false;
+    private int selectedUserId = 0;
+    private string selectedUserName = "";
+    private string newPasswordInput = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDepartments();
+        await LoadUsers();
+    }
+
+    private async Task LoadDepartments() 
+    { 
+        try { 
+            var res = await Http.GetFromJsonAsync<Department[]>("api/admin/departments");
+            if (res != null) departments = res; 
+        } catch { }
+    }
+    private async Task LoadUsers() 
+    { try 
+        { users = await Http.GetFromJsonAsync<List<UserDTO>>("api/admin/auth/users"); 
+        } catch { } 
+    }
+
+    private async Task CreateUser()
+    {
+        if (string.IsNullOrWhiteSpace(newUser.Username) || string.IsNullOrWhiteSpace(newUser.PasswordHash)) { await JS.InvokeVoidAsync("alert", "Vui lòng nhập đủ thông tin!"); return; }
+        if (newUser.DepartmentID == 0) { await JS.InvokeVoidAsync("alert", "Vui lòng chọn Khoa/Phòng!"); return; }
+        if (string.IsNullOrWhiteSpace(newUser.Email)) newUser.Email = null;
+
+        try
+        {
+            var response = await Http.PostAsJsonAsync("api/admin/users", newUser);
+            if (response.IsSuccessStatusCode) { await JS.InvokeVoidAsync("alert", "✅ Thêm thành công!"); showForm = false; newUser = new UserCreateDTO { Role = "User" }; await LoadUsers(); }
+            else { var msg = await response.Content.ReadAsStringAsync(); await JS.InvokeVoidAsync("alert", $"❌ Lỗi: {msg}"); }
+        }
+        catch { await JS.InvokeVoidAsync("alert", "Lỗi kết nối!"); }
+    }
+
+    private async Task DeleteUser(int id)
+    {
+        if (await JS.InvokeAsync<bool>("confirm", "⚠️ Chắc chắn xóa?"))
+        {
+            var res = await Http.DeleteAsync($"api/admin/users/{id}");
+            if (res.IsSuccessStatusCode) await LoadUsers(); else await JS.InvokeVoidAsync("alert", "❌ Không thể xóa.");
+        }
+    }
+
+    // 👇 HÀM MỞ MODAL ĐỔI PASS
+    private void OpenChangePassModal(UserDTO user)
+    {
+        selectedUserId = user.UserID;
+        selectedUserName = user.FullName;
+        newPasswordInput = "";
+        showPassModal = true;
+    }
+
+    // 👇 HÀM GỌI API ĐỔI PASS
+    private async Task SubmitChangePass()
+    {
+        if (string.IsNullOrWhiteSpace(newPasswordInput)) { await JS.InvokeVoidAsync("alert", "Chưa nhập mật khẩu mới!"); return; }
+
+        var payload = new { UserID = selectedUserId, NewPassword = newPasswordInput };
+        var res = await Http.PostAsJsonAsync("api/admin/users/reset-password", payload);
+
+        if (res.IsSuccessStatusCode)
+        {
+            await JS.InvokeVoidAsync("alert", "✅ Đổi mật khẩu thành công!");
+            showPassModal = false;
+        }
+        else
+        {
+            await JS.InvokeVoidAsync("alert", "❌ Lỗi khi đổi mật khẩu!");
+        }
+    }
+
+    public class UserDTO { public int UserID { get; set; } public string Username { get; set; } public string FullName { get; set; } public string Role { get; set; } public string Email { get; set; } public DateTime? CreatedDate { get; set; } public string DepartmentName { get; set; } }
+    public class UserCreateDTO { public string Username { get; set; } = ""; public string PasswordHash { get; set; } = ""; public string FullName { get; set; } = ""; public string Role { get; set; } = "User"; public string? Email { get; set; } public int DepartmentID { get; set; } }
+    public class Department { public int DepartmentID { get; set; } public string DeptName { get; set; } }
+}

@@ -1,12 +1,34 @@
-﻿<Router AppAssembly="@typeof(App).Assembly">
-    <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
-    </Found>
-    <NotFound>
-        <PageTitle>Not found</PageTitle>
-        <LayoutView Layout="@typeof(MainLayout)">
-            <p role="alert">Sorry, there's nothing at this address.</p>
-        </LayoutView>
-    </NotFound>
-</Router>
+﻿<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(App).Assembly">
+        <Found Context="routeData">
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+                <NotAuthorized>
+                    <div class="d-flex justify-content-center align-items-center vh-100">
+                        <div class="alert alert-danger shadow-sm text-center">
+                            <h4 class="alert-heading"><i class="bi bi-shield-lock-fill"></i> Vui Lòng Đăng Nhập Tài Khoản</h4>
+                            
+                            <hr>
+                            <a href="" class="btn btn-outline-danger btn-sm">Quay về Trang chủ</a>
+                        </div>
+                    </div>
+                </NotAuthorized>
+                <Authorizing>
+                    <div class="text-center mt-5">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <div class="mt-2">Đang xác thực...</div>
+                    </div>
+                </Authorizing>
+            </AuthorizeRouteView>
+        </Found>
+        <NotFound>
+            <PageTitle>Không tìm thấy trang</PageTitle>
+            <LayoutView Layout="@typeof(MainLayout)">
+                <div class="text-center mt-5">
+                    <h1 class="display-1 fw-bold text-muted">404</h1>
+                    <p class="lead">Xin lỗi, không tìm thấy địa chỉ này.</p>
+                    <a href="" class="btn btn-primary">Về Trang chủ</a>
+                </div>
+            </LayoutView>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState>

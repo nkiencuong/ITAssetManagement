@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ITAssetManagement.Models.Entitis
 {
@@ -24,7 +20,8 @@ namespace ITAssetManagement.Models.Entitis
 
         public int? DepartmentID { get; set; }
 
-        public int UserID { get; set; }   // string nếu Identity
+        // --- ĐÃ SỬA: Thêm dấu ? để cho phép Null ---
+        public int? UserID { get; set; }
 
         [StringLength(500)]
         public string? Note { get; set; }
@@ -35,6 +32,8 @@ namespace ITAssetManagement.Models.Entitis
         // Navigation
         public virtual Asset Asset { get; set; } = null!;
         public virtual Department? Department { get; set; }
-        public virtual User User { get; set; } = null!;
+
+        // --- ĐÃ SỬA: Thêm dấu ? để Navigation cũng cho phép Null ---
+        public virtual User? User { get; set; }
     }
 }

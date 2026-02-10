@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ITAssetManagement.Models.Entitis
 {
@@ -17,6 +14,10 @@ namespace ITAssetManagement.Models.Entitis
         public int DepartmentID { get; set; }
 
         public int? UserID { get; set; }
+
+        // --- MỚI: Thêm dòng này ---
+        public int Quantity { get; set; } = 1; // Số lượng cấp phát (Mặc định là 1)
+        // --------------------------
 
         public DateTime AllocatedDate { get; set; } = DateTime.Now;
 

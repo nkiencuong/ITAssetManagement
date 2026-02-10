@@ -28,8 +28,10 @@ namespace ITAssetManagement.Models.Entitis
         public string? NewValue { get; set; }
 
         public DateTime Timestamp { get; set; } = DateTime.Now;
+        public DateTime ActionDate { get; set; } = DateTime.Now;
+        public string? Details { get; set; }
 
         // Navigation
-        public virtual User User { get; set; } = null!;
+        public virtual User? User { get; set; } = null!;
     }
 }

@@ -1,55 +1,91 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand d-flex align-items-center" href="">
-            <img src="images/logo_bv.png" alt="Logo Bệnh viện" class="brand-logo me-2" />
-            <span class="brand-text fw-bold">Phòng CNTT</span>
-        </a>
-        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+﻿<div class="top-row">
+    <div class="brand-title">
+        <div class="brand-icon">
+            <img src="images/logo_bv.png" class="custom-icon" alt="Logo" />
+        </div>
+        <span>PHÒNG CNTT</span>
     </div>
 </div>
 
-<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
-    <nav class="nav flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
+<nav>
+    <div class="nav-item">
+        <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+            <span class="material-icons-outlined">dashboard</span> Trang Chủ
+        </NavLink>
+    </div>
 
-        <div class="nav-item px-3">
+    <AuthorizeView Roles="Admin">
+        <div class="nav-item">
             <NavLink class="nav-link" href="assets">
-                <span class="bi bi-box-seam-fill" aria-hidden="true"></span> Quản lý Tài sản
+                <span class="material-icons-outlined">computer</span> Quản lý Tài Sản
             </NavLink>
         </div>
-
-        <div class="nav-item px-3">
+        <div class="nav-item">
             <NavLink class="nav-link" href="allocations">
-                <span class="bi bi-table" aria-hidden="true"></span> Lịch sử Phân bổ
+                <span class="material-icons-outlined">cached</span> Cấp Phát
+            </NavLink>
+        </div>
+    </AuthorizeView>
+
+    <div class="nav-item">
+        <NavLink class="nav-link" href="repairs">
+            <span class="material-icons-outlined">build</span> Sửa Chữa
+        </NavLink>
+    </div>
+
+    <AuthorizeView Roles="Admin">
+        <div class="nav-item">
+            <NavLink class="nav-link" href="history">
+                <span class="material-icons-outlined">history</span> Lịch Sử Kho
+            </NavLink>
+        </div>
+        <div class="nav-item">
+            <NavLink class="nav-link" href="inventory">
+                <span class="material-icons-outlined">inventory_2</span> Kiểm Kê
             </NavLink>
         </div>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
+        <div class="nav-item">
+            <NavLink class="nav-link" href="users">
+                <span class="material-icons-outlined">manage_accounts</span> Quản lý User
             </NavLink>
         </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
+
+        <div class="nav-item">
+            <NavLink class="nav-link" href="audit-logs">
+                <span class="material-icons-outlined">receipt_long</span> Nhật ký Hệ thống
             </NavLink>
         </div>
-    </nav>
-</div>
+
+        @* 👇 ĐÃ SỬA: Bỏ "px-3" và dùng icon "assessment" cho đồng bộ *@
+        <div class="nav-item">
+            <NavLink class="nav-link" href="report">
+                <span class="material-icons-outlined">assessment</span> Báo Cáo Xuất Kho
+            </NavLink>
+        </div>
+
+    </AuthorizeView>
+</nav>
+
+<AuthorizeView>
+    <Authorized>
+        <div class="user-profile-bottom">
+            <div class="avatar" style="display: flex; align-items: center; justify-content: center; color: white; background-color: #64748b;">
+                <span class="material-icons-outlined" style="font-size: 20px;">person</span>
+            </div>
+            <div style="font-size: 0.85rem; line-height: 1.2;">
+                <div style="font-weight: 600;">@context.User.Identity?.Name</div>
+                <div style="color: var(--text-gray); font-size: 0.75rem;">
+                    <span style="display: inline-block; width: 8px; height: 8px; background-color: #10b981; border-radius: 50%; margin-right: 4px;"></span>
+                    Đang trực tuyến
+                </div>
+            </div>
+        </div>
+    </Authorized>
+</AuthorizeView>
 
 @code {
     private bool collapseNavMenu = true;
-
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
-    }
+    private void ToggleNavMenu() { collapseNavMenu = !collapseNavMenu; }
 }

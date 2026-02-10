@@ -1,10 +1,13 @@
 ﻿using ITAssetManagement.Request.Allocations;
 using ITAssetManagement.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Security.Claims; // Cần thiết để lấy UserID
+using System.Threading.Tasks;
 
 namespace ITAssetManagement.Controllers.Api
 {
-    [Route("api/allocations")] // Đường dẫn API
+    [Route("api/allocations")]
     [ApiController]
     public class ApiAllocationsController : ControllerBase
     {
@@ -16,18 +19,26 @@ namespace ITAssetManagement.Controllers.Api
         }
 
         // POST: api/allocations
-        // Input: Danh sách ID tài sản + ID phòng ban
+        // Chức năng: Cấp phát tài sản (Đã cập nhật logic lấy UserID chuẩn)
         [HttpPost]
         public async Task<IActionResult> AllocateAssets([FromBody] AllocateAssetsRequest request)
         {
-            // 1. Validate Model (Các trường required, type...)
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             try
             {
-                // 2. Gọi Service xử lý
-                var result = await _allocationService.AllocateAssetsAsync(request);
+                // 1. Lấy UserID chuẩn từ Token (Ưu tiên claim "UserID" chúng ta đã thêm ở AuthController)
+                int actionUserId = 1; // Mặc định Admin
+                var userIdClaim = User.FindFirst("UserID") ?? User.FindFirst(ClaimTypes.NameIdentifier);
+
+                if (userIdClaim != null)
+                {
+                    int.TryParse(userIdClaim.Value, out actionUserId);
+                }
+
+                // 2. Gọi Service (Service sẽ tự xử lý logic Số lượng dựa vào request)
+                var result = await _allocationService.AllocateAssetsAsync(request, actionUserId);
 
                 if (result)
                 {
@@ -35,15 +46,45 @@ namespace ITAssetManagement.Controllers.Api
                 }
                 else
                 {
-                    return BadRequest(new { message = "Phân bổ thất bại (Lỗi không xác định)." });
+                    return BadRequest(new { message = "Phân bổ thất bại." });
                 }
             }
             catch (Exception ex)
             {
-                // 3. Bắt lỗi logic từ Service ném ra (Ví dụ: Máy không trong kho...)
-                // Trả về lỗi 400 kèm thông báo chi tiết để hiện lên Web/Postman
                 return BadRequest(new { message = ex.Message });
             }
         }
+
+        // POST: api/allocations/return/{id}
+        // Chức năng: Thu hồi tài sản
+        [HttpPost("return/{id}")]
+        public async Task<IActionResult> ReturnAsset(int id, [FromBody] ReturnRequest request)
+        {
+            try
+            {
+                // Gọi Service thu hồi
+                var result = await _allocationService.ReturnAssetAsync(id, request.Note, request.ReturnDate);
+
+                if (result)
+                {
+                    return Ok(new { message = "Thu hồi tài sản thành công!" });
+                }
+                else
+                {
+                    return BadRequest(new { message = "Thu hồi thất bại." });
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+    }
+
+    // Class DTO nhận dữ liệu JSON khi thu hồi
+    public class ReturnRequest
+    {
+        public string Note { get; set; } = string.Empty;
+        public DateTime ReturnDate { get; set; } = DateTime.Now;
     }
 }

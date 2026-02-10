@@ -1,0 +1,86 @@
+﻿@page "/first-login-update"
+@using System.Net.Http.Json
+@inject HttpClient Http
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+
+<div class="d-flex justify-content-center align-items-center vh-100 bg-light">
+    <div class="card shadow-lg p-4" style="width: 500px; border-radius: 15px;">
+        <div class="text-center mb-4">
+            <h3 class="text-danger fw-bold">🚀 Kích hoạt tài khoản</h3>
+            <p class="text-muted small">
+                Xin chào! Đây là lần đăng nhập đầu tiên.<br>
+                Vui lòng đổi mật khẩu và cập nhật số điện thoại để tiếp tục.
+            </p>
+        </div>
+
+        <EditForm Model="request" OnValidSubmit="HandleSubmit">
+            <DataAnnotationsValidator />
+
+            @* 1. MẬT KHẨU CŨ *@
+            <div class="mb-3">
+                <label class="form-label fw-bold">Mật khẩu hiện tại (Cũ):</label>
+                <input type="password" class="form-control" @bind="request.OldPassword" placeholder="Nhập mật khẩu cũ (VD: 123)" required />
+            </div>
+
+            @* 2. MẬT KHẨU MỚI *@
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Mật khẩu mới:</label>
+                    <input type="password" class="form-control" @bind="request.NewPassword" placeholder="Mật khẩu mới..." required />
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Nhập lại mật khẩu mới:</label>
+                    <input type="password" class="form-control" @bind="request.ConfirmPassword" placeholder="Xác nhận..." required />
+                </div>
+            </div>
+
+            @* 3. SỐ ĐIỆN THOẠI *@
+            <div class="mb-4">
+                <label class="form-label fw-bold text-primary">📞 Số điện thoại liên hệ:</label>
+                <input type="text" class="form-control border-primary" @bind="request.PhoneNumber" placeholder="Nhập SĐT của bạn..." required />
+                <small class="text-muted fst-italic">* Bắt buộc nhập để bộ phận IT hỗ trợ nhanh nhất.</small>
+            </div>
+
+            <button type="submit" class="btn btn-danger w-100 py-2 fw-bold text-uppercase">
+                <i class="bi bi-save me-2"></i> Lưu & Truy cập Hệ thống
+            </button>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private FirstLoginRequestDto request = new FirstLoginRequestDto();
+
+    private async Task HandleSubmit()
+    {
+        if (request.NewPassword != request.ConfirmPassword)
+        {
+            await JS.InvokeVoidAsync("alert", "Mật khẩu xác nhận không khớp!");
+            return;
+        }
+
+        // Gọi API cập nhật
+        var res = await Http.PostAsJsonAsync("api/auth/first-login-update", request);
+
+        if (res.IsSuccessStatusCode)
+        {
+            await JS.InvokeVoidAsync("alert", "Cập nhật thành công! Chào mừng bạn.");
+            Nav.NavigateTo("/", true); // Chuyển về trang chủ
+        }
+        else
+        {
+            var msg = await res.Content.ReadAsStringAsync();
+            await JS.InvokeVoidAsync("alert", "Lỗi: " + msg);
+        }
+    }
+
+    // Class DTO nội bộ cho Client
+    public class FirstLoginRequestDto
+    {
+        public string OldPassword { get; set; } = "";
+        public string NewPassword { get; set; } = "";
+        public string ConfirmPassword { get; set; } = "";
+        public string PhoneNumber { get; set; } = "";
+    }
+}

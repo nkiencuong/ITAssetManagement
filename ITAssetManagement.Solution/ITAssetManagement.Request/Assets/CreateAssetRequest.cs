@@ -1,38 +1,40 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ITAssetManagement.Request.Assets
 {
     public class CreateAssetRequest
     {
         [Required(ErrorMessage = "Tên tài sản không được để trống")]
-        public string AssetName { get; set; }
+        public string AssetName { get; set; } = string.Empty;
 
-        // Serial có thể null nếu là linh kiện số lượng nhiều (Chuột, Phím...)
-        public string? Serial { get; set; }
+        [Range(1, int.MaxValue, ErrorMessage = "Số lượng phải lớn hơn 0")]
+        public int Quantity { get; set; } = 1;
+
+        public string Unit { get; set; } = "Cái";
 
         public string? Model { get; set; }
 
-        [Required(ErrorMessage = "Phải chọn loại tài sản")]
-        public int AssetTypeID { get; set; }
+        // --- KHU VỰC ĐÃ BỔ SUNG THÊM ID (QUAN TRỌNG) ---
 
-        public int? SupplierID { get; set; } // Có thể null nếu là hàng được tặng/điều chuyển
+        // 1. Loại tài sản: Vừa hứng ID (Dropdown), vừa hứng Tên (Nhập tay)
+        public int AssetTypeID { get; set; }
+        public string AssetTypeName { get; set; } = "Thiết bị chung";
+
+        // 2. Nhà cung cấp: Vừa hứng ID (Dropdown), vừa hứng Tên (Nhập tay)
+        public int SupplierID { get; set; }
+        public string SupplierName { get; set; } = "Kho Tổng";
+
+        // 3. Phòng ban (Có thể null)
+        public int? DepartmentID { get; set; }
+
+        // ----------------------------------------------------
 
         public decimal Price { get; set; }
-
-        public string? Config { get; set; } // Cấu hình (Core i5, Ram 8GB...)
-
-        public string? Location { get; set; } // Vị trí lưu kho ban đầu
-
-        // --- Các trường phục vụ "Phiếu kiểm nhập" (WarehouseTransaction) ---
-
-        // Ghi chú nhập kho (VD: Nhập mới theo dự án A, Nhập linh kiện lẻ...)
+        public string? Config { get; set; }
+        public string? Location { get; set; }
         public string? ImportNote { get; set; }
-
         public DateTime? WarrantyExpr { get; set; }
+        public DateTime ImportDate { get; set; } = DateTime.Now; // Mặc định là hôm nay
     }
 }

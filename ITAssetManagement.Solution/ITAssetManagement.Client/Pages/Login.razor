@@ -1,0 +1,110 @@
+﻿@page "/login"
+@using System.Net.Http.Json
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager Navigation
+@inject HttpClient Http
+
+<div class="d-flex justify-content-center align-items-center vh-100 bg-light">
+    <div class="card shadow-lg p-4" style="width: 400px; border-radius: 15px;">
+        <div class="text-center mb-4">
+            <h2 class="text-primary fw-bold">🔐 Đăng Nhập</h2>
+            <p class="text-muted">Hệ thống Quản lý Tài sản CNTT</p>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Tên đăng nhập</label>
+            <input type="text" class="form-control" @bind="loginRequest.Username" placeholder="Nhập tài khoản..." />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-bold">Mật khẩu</label>
+            <input type="password" class="form-control" @bind="loginRequest.Password" placeholder="Nhập mật khẩu..." />
+        </div>
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert alert-danger text-center p-2">
+                <small>@errorMessage</small>
+            </div>
+        }
+
+        <button class="btn btn-primary w-100 py-2 fw-bold" @onclick="HandleLogin" disabled="@isLoading">
+            @if (isLoading)
+            {
+                <span class="spinner-border spinner-border-sm me-2"></span> <span>Đang xử lý...</span>
+            }
+            else
+            {
+                <span>🚀 Đăng nhập</span>
+            }
+        </button>
+    </div>
+</div>
+
+@code {
+    private LoginRequest loginRequest = new LoginRequest();
+    private string errorMessage = "";
+    private bool isLoading = false;
+
+    private async Task HandleLogin()
+    {
+        isLoading = true;
+        errorMessage = "";
+
+        try
+        {
+            var response = await Http.PostAsJsonAsync("api/auth/login", loginRequest);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<LoginResponse>();
+
+                if (result != null)
+                {
+                    var customAuthStateProvider = (CustomAuthStateProvider)AuthStateProvider;
+                    await customAuthStateProvider.Login(result.Token);
+
+                    // 👇 [SỬA ĐOẠN NÀY] LOGIC KIỂM TRA ĐỔI MẬT KHẨU
+                    if (result.MustChangePassword)
+                    {
+                        // Nếu bắt buộc đổi -> Đá sang trang cập nhật
+                        Navigation.NavigateTo("/first-login-update");
+                    }
+                    else
+                    {
+                        // Nếu không -> Vào trang chủ bình thường
+                        Navigation.NavigateTo("/");
+                    }
+                }
+            }
+            else
+            {
+                errorMessage = await response.Content.ReadAsStringAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "Lỗi kết nối Server: " + ex.Message;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    public class LoginRequest
+    {
+        public string Username { get; set; } = "";
+        public string Password { get; set; } = "";
+    }
+
+    public class LoginResponse
+    {
+        public string Token { get; set; }
+        public string FullName { get; set; }
+        public string Role { get; set; }
+        
+        // 👇 [THÊM DÒNG NÀY] Để nhận biết có cần đổi pass không
+        public bool MustChangePassword { get; set; } 
+    }
+}

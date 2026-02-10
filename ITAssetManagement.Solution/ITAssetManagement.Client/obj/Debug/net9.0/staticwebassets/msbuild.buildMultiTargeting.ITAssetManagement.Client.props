@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\build\ITAssetManagement.Client.props" />
-</Project>
