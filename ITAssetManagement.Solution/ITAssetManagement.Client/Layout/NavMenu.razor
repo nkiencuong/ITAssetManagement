@@ -1,9 +1,16 @@
 ﻿<div class="top-row">
-    <div class="brand-title">
+    <div class="brand-title d-flex align-items-center gap-2">
         <div class="brand-icon">
-            <img src="images/logo_bv.png" class="custom-icon" alt="Logo" />
+            <img src="images/logo_bv.png" class="custom-icon" alt="Logo" style="width: 42px; height: 42px; object-fit: contain;" />
         </div>
-        <span>PHÒNG CNTT</span>
+        <div class="d-flex flex-column justify-content-center text-start">
+            <span style="font-size: 0.95rem; color: #0284c7; font-weight: 800; text-transform: uppercase; line-height: 1.2; margin-bottom: 2px;">
+                BVĐK HẢI DƯƠNG
+            </span>
+            <span style="font-size: 0.75rem; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1;">
+                Phòng CNTT
+            </span>
+        </div>
     </div>
 </div>
 
@@ -14,7 +21,7 @@
         </NavLink>
     </div>
 
-    <AuthorizeView Roles="Admin">
+    <AuthorizeView Roles="Admin, SuperAdmin">
         <div class="nav-item">
             <NavLink class="nav-link" href="assets">
                 <span class="material-icons-outlined">computer</span> Quản lý Tài Sản
@@ -27,13 +34,14 @@
         </div>
     </AuthorizeView>
 
+    @* 🚀 ĐÃ GẮN id="menu-sua-chua" VÀO ĐÂY *@
     <div class="nav-item">
-        <NavLink class="nav-link" href="repairs">
+        <NavLink class="nav-link" href="repairs" id="menu-sua-chua">
             <span class="material-icons-outlined">build</span> Sửa Chữa
         </NavLink>
     </div>
 
-    <AuthorizeView Roles="Admin">
+    <AuthorizeView Roles="Admin, SuperAdmin">
         <div class="nav-item">
             <NavLink class="nav-link" href="history">
                 <span class="material-icons-outlined">history</span> Lịch Sử Kho
@@ -44,10 +52,17 @@
                 <span class="material-icons-outlined">inventory_2</span> Kiểm Kê
             </NavLink>
         </div>
+        <div class="nav-item">
+            <NavLink class="nav-link" href="report">
+                <span class="material-icons-outlined">assessment</span> Báo Cáo Xuất Kho
+            </NavLink>
+        </div>
+    </AuthorizeView>
 
+    <AuthorizeView Roles="SuperAdmin">
         <div class="nav-item">
             <NavLink class="nav-link" href="users">
-                <span class="material-icons-outlined">manage_accounts</span> Quản lý User
+                <span class="material-icons-outlined">manage_accounts</span> Quản lý Tài khoản
             </NavLink>
         </div>
 
@@ -56,14 +71,6 @@
                 <span class="material-icons-outlined">receipt_long</span> Nhật ký Hệ thống
             </NavLink>
         </div>
-
-        @* 👇 ĐÃ SỬA: Bỏ "px-3" và dùng icon "assessment" cho đồng bộ *@
-        <div class="nav-item">
-            <NavLink class="nav-link" href="report">
-                <span class="material-icons-outlined">assessment</span> Báo Cáo Xuất Kho
-            </NavLink>
-        </div>
-
     </AuthorizeView>
 </nav>
 

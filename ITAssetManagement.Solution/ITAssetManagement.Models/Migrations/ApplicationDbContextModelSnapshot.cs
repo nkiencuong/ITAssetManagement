@@ -100,6 +100,10 @@ namespace ITAssetManagement.Models.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("ModelSeries")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<decimal>("Price")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18, 2)");
@@ -196,6 +200,9 @@ namespace ITAssetManagement.Models.Migrations
                     b.Property<string>("Description")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
+
+                    b.Property<int>("GroupType")
+                        .HasColumnType("int");
 
                     b.Property<string>("TypeName")
                         .IsRequired()

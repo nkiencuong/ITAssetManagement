@@ -11,6 +11,7 @@ using System.IO;
 using System;
 using System.Threading.Tasks;
 using System.Security.Claims;
+using System.Linq;
 
 namespace ITAssetManagement.Controllers.Api
 {
@@ -33,24 +34,15 @@ namespace ITAssetManagement.Controllers.Api
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateRepairTicketRequest request)
         {
-            if (request.AssetID == 0) return BadRequest("Vui lòng chọn tài sản bị hỏng!");
+            if (request.AssetID == 0 && request.AssetID == null) return BadRequest("Vui lòng chọn tài sản bị hỏng!");
 
             try
             {
-                // 👇 LẤY ID NGƯỜI DÙNG TỪ TOKEN
                 int currentUserId = 0;
-
-                // Tìm UserID trong các Claim chuẩn
                 var claimId = User.FindFirst("UserID")?.Value
-                           ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-                           ?? User.FindFirst("sub")?.Value;
+                           ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (!string.IsNullOrEmpty(claimId)) int.TryParse(claimId, out currentUserId);
 
-                if (!string.IsNullOrEmpty(claimId))
-                {
-                    int.TryParse(claimId, out currentUserId);
-                }
-
-                // Tạo phiếu mới
                 var ticket = new RepairTicket
                 {
                     AssetID = request.AssetID,
@@ -61,9 +53,9 @@ namespace ITAssetManagement.Controllers.Api
                     ReporterPosition = request.ReporterPosition,
                     DinhKemUrl = request.DinhKemUrl,
                     LoaiFile = request.LoaiFile,
-                    Status = 0,
+                    Status = 0, // Mới báo
                     Cost = 0,
-                    UserID = currentUserId // 👈 QUAN TRỌNG: Lưu ID người tạo
+                    UserID = currentUserId
                 };
 
                 var result = await _repairService.CreateTicketAsync(ticket, currentUserId);
@@ -71,12 +63,31 @@ namespace ITAssetManagement.Controllers.Api
             }
             catch (Exception ex)
             {
-                var realError = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-                return BadRequest("Lỗi khi tạo phiếu: " + realError);
+                return BadRequest("Lỗi khi tạo phiếu: " + ex.Message);
             }
         }
 
-        // --- 2. POST: HOÀN THÀNH (Dành cho Admin) ---
+        // --- 2. PUT: CẬP NHẬT TRẠNG THÁI (FIX LỖI NÚT "ĐÃ NHẬN") ---
+        // Hàm này nhận vào Status (int) thay vì cả Object để tránh lỗi
+        [HttpPut("{id}/status")]
+        public async Task<IActionResult> UpdateStatus(int id, [FromBody] int status)
+        {
+            try
+            {
+                var repo = _unitOfWork.GetRepository<RepairTicket>();
+                var ticket = await repo.GetByIdAsync(id);
+                if (ticket == null) return NotFound("Phiếu không tồn tại.");
+
+                ticket.Status = status; // Cập nhật trạng thái
+                repo.Update(ticket);
+                await _unitOfWork.CommitAsync();
+
+                return Ok(ticket);
+            }
+            catch (Exception ex) { return BadRequest(ex.Message); }
+        }
+
+        // --- 3. POST: HOÀN THÀNH & TRỪ KHO (Nút "XỬ LÝ") ---
         [HttpPost("{id}/complete")]
         public async Task<IActionResult> Complete(int id, [FromBody] CompleteRepairTicketRequest request)
         {
@@ -95,31 +106,6 @@ namespace ITAssetManagement.Controllers.Api
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
-            }
-        }
-
-        // --- 3. PUT: CẬP NHẬT NỘI DUNG ---
-        [HttpPut("{id}/update-content")]
-        public async Task<IActionResult> UpdateContent(int id, [FromBody] RepairTicket request)
-        {
-            try
-            {
-                var repo = _unitOfWork.GetRepository<RepairTicket>();
-                var ticket = await repo.GetByIdAsync(id);
-                if (ticket == null) return NotFound("Không tìm thấy phiếu.");
-
-                ticket.Description = request.Description;
-                ticket.Solution = request.Solution;
-                ticket.Note = request.Note;
-
-                repo.Update(ticket);
-                await _unitOfWork.CommitAsync();
-
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest("Lỗi update: " + ex.Message);
             }
         }
 

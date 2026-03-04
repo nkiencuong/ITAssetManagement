@@ -2,6 +2,8 @@
 using ITAssetManagement.Request.Assets;
 using ITAssetManagement.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using ITAssetManagement.Repo.Interfaces; // 🚀 MỚI THÊM 1: Để gọi Database
+using Microsoft.EntityFrameworkCore; // 🚀 MỚI THÊM 2: Để dùng lệnh tìm kiếm FirstOrDefaultAsync
 
 namespace ITAssetManagement.Controllers.Api
 {
@@ -10,10 +12,13 @@ namespace ITAssetManagement.Controllers.Api
     public class ApiAssetsController : ControllerBase
     {
         private readonly IAssetService _assetService;
+        private readonly IUnitOfWork _unitOfWork; // 🚀 MỚI THÊM 3: Khai báo UnitOfWork
 
-        public ApiAssetsController(IAssetService assetService)
+        // 🚀 MỚI THÊM 4: Bơm (Inject) UnitOfWork vào hàm khởi tạo
+        public ApiAssetsController(IAssetService assetService, IUnitOfWork unitOfWork)
         {
             _assetService = assetService;
+            _unitOfWork = unitOfWork;
         }
 
         // POST: api/assets
@@ -25,6 +30,61 @@ namespace ITAssetManagement.Controllers.Api
 
             try
             {
+                // 🚀🚀🚀 BƯỚC 2: MỚI BỔ SUNG LẤY ID NGƯỜI ĐĂNG NHẬP 🚀🚀🚀
+                var userIdString = User.FindFirst("UserID")?.Value
+                                ?? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+                if (int.TryParse(userIdString, out int loggedInUserId))
+                {
+                    request.UserID = loggedInUserId; // Bắt được ID thì nhét vào giỏ
+                }
+                else
+                {
+                    request.UserID = 1; // Fallback an toàn (tránh lỗi nếu lỡ chưa đăng nhập)
+                }
+                // 🚀🚀🚀 KẾT THÚC LẤY ID 🚀🚀🚀
+
+
+                // 🚀🚀🚀 BẮT ĐẦU ĐOẠN CODE CỘNG DỒN MỚI THÊM 🚀🚀🚀
+                if (!string.IsNullOrEmpty(request.AssetName))
+                {
+                    var assetRepo = _unitOfWork.GetRepository<Asset>();
+                    var reqName = request.AssetName.Trim().ToLower();
+
+                    // 🛠️ ĐÃ FIX LỖI Ở ĐÂY: Dùng GetAllAsync() có sẵn của bác
+                    var allAssets = await assetRepo.GetAllAsync();
+                    var existingAsset = allAssets.FirstOrDefault(a => a.AssetName.Trim().ToLower() == reqName);
+
+                    if (existingAsset != null)
+                    {
+                        // 🎯 TÌNH HUỐNG 1: TÊN ĐÃ TỒN TẠI -> CHỈ CỘNG DỒN SỐ LƯỢNG (Không tạo mới)
+                        existingAsset.Quantity += request.Quantity;
+
+                        assetRepo.Update(existingAsset);
+
+                        // 🚀 LƯU Ý: NẾU CỘNG DỒN, MÌNH CŨNG PHẢI GHI LỊCH SỬ KHO (DÙNG ID VỪA LẤY)
+                        var addTicket = new WarehouseTransaction
+                        {
+                            AssetID = existingAsset.AssetID,
+                            Type = "IN",
+                            Quantity = request.Quantity,
+                            Date = request.ImportDate,
+                            UserID = request.UserID > 0 ? request.UserID : 1, // Dùng ID người đăng nhập
+                            DepartmentID = null,
+                            Note = "Nhập thêm số lượng (Cộng dồn)",
+                            ReferenceNo = "PN-ADD-" + DateTime.Now.ToString("yyyyMMddHHmmss")
+                        };
+                        await _unitOfWork.GetRepository<WarehouseTransaction>().AddAsync(addTicket);
+
+                        await _unitOfWork.CommitAsync();
+
+                        // Trả về luôn, kết thúc chu trình
+                        return Ok(new { message = $"Đã cộng dồn thêm {request.Quantity} vào '{existingAsset.AssetName}' có sẵn!" });
+                    }
+                }
+                // 🚀🚀🚀 KẾT THÚC ĐOẠN CODE CỘNG DỒN 🚀🚀🚀
+
+                // 🎯 TÌNH HUỐNG 2: TÊN CHƯA CÓ TRONG KHO -> GIỮ NGUYÊN CODE CŨ CỦA BÁC
                 var result = await _assetService.CreateAssetAsync(request);
                 return Ok(result);
             }
@@ -33,7 +93,6 @@ namespace ITAssetManagement.Controllers.Api
                 return StatusCode(500, new { message = ex.Message });
             }
         }
-
         // --- MỚI THÊM: SỬA (UPDATE) ---
         // PUT: api/assets/{id}
         [HttpPut("{id}")]

@@ -3,48 +3,44 @@
   "WorkspaceRootPath": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{BB0207A9-8A87-43E4-9D51-3FED8662D3D4}|ITAssetManagement\\ITAssetManagement.csproj|f:\\itassetmanagement\\itassetmanagement.solution\\itassetmanagement\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{BB0207A9-8A87-43E4-9D51-3FED8662D3D4}|ITAssetManagement\\ITAssetManagement.csproj|solutionrelative:itassetmanagement\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+      "AbsoluteMoniker": "D:0:0:{3D4E36AB-27D7-493E-8450-FEFF346416DD}|ITAssetManagement.Client\\ITAssetManagement.Client.csproj|f:\\itassetmanagement\\itassetmanagement.solution\\itassetmanagement.client\\layout\\navmenu.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{3D4E36AB-27D7-493E-8450-FEFF346416DD}|ITAssetManagement.Client\\ITAssetManagement.Client.csproj|solutionrelative:itassetmanagement.client\\layout\\navmenu.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{BB0207A9-8A87-43E4-9D51-3FED8662D3D4}|ITAssetManagement\\ITAssetManagement.csproj|f:\\itassetmanagement\\itassetmanagement.solution\\itassetmanagement\\itassetmanagement.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
-      "RelativeMoniker": "D:0:0:{BB0207A9-8A87-43E4-9D51-3FED8662D3D4}|ITAssetManagement\\ITAssetManagement.csproj|solutionrelative:itassetmanagement\\itassetmanagement.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+      "AbsoluteMoniker": "D:0:0:{BB0207A9-8A87-43E4-9D51-3FED8662D3D4}|ITAssetManagement\\ITAssetManagement.csproj|f:\\itassetmanagement\\itassetmanagement.solution\\itassetmanagement\\controllers\\api\\apiassetscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{BB0207A9-8A87-43E4-9D51-3FED8662D3D4}|ITAssetManagement\\ITAssetManagement.csproj|solutionrelative:itassetmanagement\\controllers\\api\\apiassetscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{3D4E36AB-27D7-493E-8450-FEFF346416DD}|ITAssetManagement.Client\\ITAssetManagement.Client.csproj|f:\\itassetmanagement\\itassetmanagement.solution\\itassetmanagement.client\\pages\\home.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{3D4E36AB-27D7-493E-8450-FEFF346416DD}|ITAssetManagement.Client\\ITAssetManagement.Client.csproj|solutionrelative:itassetmanagement.client\\pages\\home.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{FFA90CA6-BBCD-48E9-B058-11BF1A65BD78}|ITAssetManagement.Service\\ITAssetManagement.Service.csproj|f:\\itassetmanagement\\itassetmanagement.solution\\itassetmanagement.service\\services\\assetservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FFA90CA6-BBCD-48E9-B058-11BF1A65BD78}|ITAssetManagement.Service\\ITAssetManagement.Service.csproj|solutionrelative:itassetmanagement.service\\services\\assetservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{F19C1ADF-9767-47E6-8278-642DB2F3838C}|ITAssetManagement.Request\\ITAssetManagement.Request.csproj|f:\\itassetmanagement\\itassetmanagement.solution\\itassetmanagement.request\\reports\\dashboardstatsresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F19C1ADF-9767-47E6-8278-642DB2F3838C}|ITAssetManagement.Request\\ITAssetManagement.Request.csproj|solutionrelative:itassetmanagement.request\\reports\\dashboardstatsresponse.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{F19C1ADF-9767-47E6-8278-642DB2F3838C}|ITAssetManagement.Request\\ITAssetManagement.Request.csproj|f:\\itassetmanagement\\itassetmanagement.solution\\itassetmanagement.request\\assets\\createassetrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F19C1ADF-9767-47E6-8278-642DB2F3838C}|ITAssetManagement.Request\\ITAssetManagement.Request.csproj|solutionrelative:itassetmanagement.request\\assets\\createassetrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{BB0207A9-8A87-43E4-9D51-3FED8662D3D4}|ITAssetManagement\\ITAssetManagement.csproj|f:\\itassetmanagement\\itassetmanagement.solution\\itassetmanagement\\controllers\\admin\\dashboardcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{BB0207A9-8A87-43E4-9D51-3FED8662D3D4}|ITAssetManagement\\ITAssetManagement.csproj|solutionrelative:itassetmanagement\\controllers\\admin\\dashboardcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{99F3F221-A03B-4406-903F-3556C527BB34}|ITAssetManagement.Models\\ITAssetManagement.Models.csproj|f:\\itassetmanagement\\itassetmanagement.solution\\itassetmanagement.models\\entitis\\asset.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{99F3F221-A03B-4406-903F-3556C527BB34}|ITAssetManagement.Models\\ITAssetManagement.Models.csproj|solutionrelative:itassetmanagement.models\\entitis\\asset.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{3D4E36AB-27D7-493E-8450-FEFF346416DD}|ITAssetManagement.Client\\ITAssetManagement.Client.csproj|f:\\itassetmanagement\\itassetmanagement.solution\\itassetmanagement.client\\pages\\login.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{3D4E36AB-27D7-493E-8450-FEFF346416DD}|ITAssetManagement.Client\\ITAssetManagement.Client.csproj|solutionrelative:itassetmanagement.client\\pages\\login.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{BB0207A9-8A87-43E4-9D51-3FED8662D3D4}|ITAssetManagement\\ITAssetManagement.csproj|f:\\itassetmanagement\\itassetmanagement.solution\\itassetmanagement\\controllers\\admin\\assetscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{BB0207A9-8A87-43E4-9D51-3FED8662D3D4}|ITAssetManagement\\ITAssetManagement.csproj|solutionrelative:itassetmanagement\\controllers\\admin\\assetscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{3D4E36AB-27D7-493E-8450-FEFF346416DD}|ITAssetManagement.Client\\ITAssetManagement.Client.csproj|f:\\itassetmanagement\\itassetmanagement.solution\\itassetmanagement.client\\pages\\firstloginupdate.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{3D4E36AB-27D7-493E-8450-FEFF346416DD}|ITAssetManagement.Client\\ITAssetManagement.Client.csproj|solutionrelative:itassetmanagement.client\\pages\\firstloginupdate.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{3D4E36AB-27D7-493E-8450-FEFF346416DD}|ITAssetManagement.Client\\ITAssetManagement.Client.csproj|f:\\itassetmanagement\\itassetmanagement.solution\\itassetmanagement.client\\pages\\assetlist.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{3D4E36AB-27D7-493E-8450-FEFF346416DD}|ITAssetManagement.Client\\ITAssetManagement.Client.csproj|solutionrelative:itassetmanagement.client\\pages\\assetlist.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{FFA90CA6-BBCD-48E9-B058-11BF1A65BD78}|ITAssetManagement.Service\\ITAssetManagement.Service.csproj|f:\\itassetmanagement\\itassetmanagement.solution\\itassetmanagement.service\\services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{FFA90CA6-BBCD-48E9-B058-11BF1A65BD78}|ITAssetManagement.Service\\ITAssetManagement.Service.csproj|solutionrelative:itassetmanagement.service\\services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{3D4E36AB-27D7-493E-8450-FEFF346416DD}|ITAssetManagement.Client\\ITAssetManagement.Client.csproj|f:\\itassetmanagement\\itassetmanagement.solution\\itassetmanagement.client\\pages\\users.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{3D4E36AB-27D7-493E-8450-FEFF346416DD}|ITAssetManagement.Client\\ITAssetManagement.Client.csproj|solutionrelative:itassetmanagement.client\\pages\\users.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{FFA90CA6-BBCD-48E9-B058-11BF1A65BD78}|ITAssetManagement.Service\\ITAssetManagement.Service.csproj|f:\\itassetmanagement\\itassetmanagement.solution\\itassetmanagement.service\\interface\\iauthservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{FFA90CA6-BBCD-48E9-B058-11BF1A65BD78}|ITAssetManagement.Service\\ITAssetManagement.Service.csproj|solutionrelative:itassetmanagement.service\\interface\\iauthservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{BB0207A9-8A87-43E4-9D51-3FED8662D3D4}|ITAssetManagement\\ITAssetManagement.csproj|f:\\itassetmanagement\\itassetmanagement.solution\\itassetmanagement\\controllers\\admin\\userscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{BB0207A9-8A87-43E4-9D51-3FED8662D3D4}|ITAssetManagement\\ITAssetManagement.csproj|solutionrelative:itassetmanagement\\controllers\\admin\\userscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{F19C1ADF-9767-47E6-8278-642DB2F3838C}|ITAssetManagement.Request\\ITAssetManagement.Request.csproj|f:\\itassetmanagement\\itassetmanagement.solution\\itassetmanagement.request\\user\\loginrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F19C1ADF-9767-47E6-8278-642DB2F3838C}|ITAssetManagement.Request\\ITAssetManagement.Request.csproj|solutionrelative:itassetmanagement.request\\user\\loginrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{BB0207A9-8A87-43E4-9D51-3FED8662D3D4}|ITAssetManagement\\ITAssetManagement.csproj|f:\\itassetmanagement\\itassetmanagement.solution\\itassetmanagement\\controllers\\api\\apiauthcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{BB0207A9-8A87-43E4-9D51-3FED8662D3D4}|ITAssetManagement\\ITAssetManagement.csproj|solutionrelative:itassetmanagement\\controllers\\api\\apiauthcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{BB0207A9-8A87-43E4-9D51-3FED8662D3D4}|ITAssetManagement\\ITAssetManagement.csproj|f:\\itassetmanagement\\itassetmanagement.solution\\itassetmanagement\\controllers\\api\\apiuserscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{BB0207A9-8A87-43E4-9D51-3FED8662D3D4}|ITAssetManagement\\ITAssetManagement.csproj|solutionrelative:itassetmanagement\\controllers\\api\\apiuserscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -54,8 +50,73 @@
       "DocumentGroups": [
         {
           "DockedHeight": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 0,
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "NavMenu.razor",
+              "DocumentMoniker": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Client\\Layout\\NavMenu.razor",
+              "RelativeDocumentMoniker": "ITAssetManagement.Client\\Layout\\NavMenu.razor",
+              "ToolTip": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Client\\Layout\\NavMenu.razor",
+              "RelativeToolTip": "ITAssetManagement.Client\\Layout\\NavMenu.razor",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAASAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-03-04T03:02:19.558Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "CreateAssetRequest.cs",
+              "DocumentMoniker": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Request\\Assets\\CreateAssetRequest.cs",
+              "RelativeDocumentMoniker": "ITAssetManagement.Request\\Assets\\CreateAssetRequest.cs",
+              "ToolTip": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Request\\Assets\\CreateAssetRequest.cs",
+              "RelativeToolTip": "ITAssetManagement.Request\\Assets\\CreateAssetRequest.cs",
+              "ViewState": "AgIAABAAAAAAAAAAAAAywCkAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-04T02:17:41.684Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "Asset.cs",
+              "DocumentMoniker": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Models\\Entitis\\Asset.cs",
+              "RelativeDocumentMoniker": "ITAssetManagement.Models\\Entitis\\Asset.cs",
+              "ToolTip": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Models\\Entitis\\Asset.cs",
+              "RelativeToolTip": "ITAssetManagement.Models\\Entitis\\Asset.cs",
+              "ViewState": "AgIAABkAAAAAAAAAAAA0wCgAAAAxAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-04T02:03:33.684Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "AssetService.cs",
+              "DocumentMoniker": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Service\\Services\\AssetService.cs",
+              "RelativeDocumentMoniker": "ITAssetManagement.Service\\Services\\AssetService.cs",
+              "ToolTip": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Service\\Services\\AssetService.cs",
+              "RelativeToolTip": "ITAssetManagement.Service\\Services\\AssetService.cs",
+              "ViewState": "AgIAAHoAAAAAAAAAAAAUwGUAAABFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-04T01:53:54.878Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "AssetList.razor",
+              "DocumentMoniker": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Client\\Pages\\AssetList.razor",
+              "RelativeDocumentMoniker": "ITAssetManagement.Client\\Pages\\AssetList.razor",
+              "ToolTip": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Client\\Pages\\AssetList.razor",
+              "RelativeToolTip": "ITAssetManagement.Client\\Pages\\AssetList.razor",
+              "ViewState": "AgIAAHMAAAAAAAAAAAAYwIoAAABWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-03-04T01:36:32.638Z",
+              "EditorCaption": ""
+            },
             {
               "$type": "Bookmark",
               "Name": "ST:1:0:{e8b06f52-6d01-11d2-aa7d-00c04f990343}"
@@ -70,136 +131,68 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement\\appsettings.json",
-              "RelativeDocumentMoniker": "ITAssetManagement\\appsettings.json",
-              "ToolTip": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement\\appsettings.json",
-              "RelativeToolTip": "ITAssetManagement\\appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-02-09T08:58:10.659Z",
+              "DocumentIndex": 1,
+              "Title": "ApiAssetsController.cs",
+              "DocumentMoniker": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement\\Controllers\\API\\ApiAssetsController.cs",
+              "RelativeDocumentMoniker": "ITAssetManagement\\Controllers\\API\\ApiAssetsController.cs",
+              "ToolTip": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement\\Controllers\\API\\ApiAssetsController.cs",
+              "RelativeToolTip": "ITAssetManagement\\Controllers\\API\\ApiAssetsController.cs",
+              "ViewState": "AgIAAE4AAAAAAAAAAAAAwFcAAABLAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-03-04T01:28:19.232Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "ITAssetManagement.csproj",
-              "DocumentMoniker": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement\\ITAssetManagement.csproj",
-              "RelativeDocumentMoniker": "ITAssetManagement\\ITAssetManagement.csproj",
-              "ToolTip": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement\\ITAssetManagement.csproj",
-              "RelativeToolTip": "ITAssetManagement\\ITAssetManagement.csproj",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAA+AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2026-02-09T08:20:17.448Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "Home.razor",
-              "DocumentMoniker": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Client\\Pages\\Home.razor",
-              "RelativeDocumentMoniker": "ITAssetManagement.Client\\Pages\\Home.razor",
-              "ToolTip": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Client\\Pages\\Home.razor",
-              "RelativeToolTip": "ITAssetManagement.Client\\Pages\\Home.razor",
-              "ViewState": "AgIAAAYCAAAAAAAAAAAAAEICAAAFAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-02-09T07:39:19.385Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "DashboardController.cs",
-              "DocumentMoniker": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement\\Controllers\\admin\\DashboardController.cs",
-              "RelativeDocumentMoniker": "ITAssetManagement\\Controllers\\admin\\DashboardController.cs",
-              "ToolTip": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement\\Controllers\\admin\\DashboardController.cs",
-              "RelativeToolTip": "ITAssetManagement\\Controllers\\admin\\DashboardController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAD8AAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-09T07:38:50.454Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "DashboardStatsResponse.cs",
-              "DocumentMoniker": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Request\\Reports\\DashboardStatsResponse.cs",
-              "RelativeDocumentMoniker": "ITAssetManagement.Request\\Reports\\DashboardStatsResponse.cs",
-              "ToolTip": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Request\\Reports\\DashboardStatsResponse.cs",
-              "RelativeToolTip": "ITAssetManagement.Request\\Reports\\DashboardStatsResponse.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-09T07:38:12.164Z"
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 5,
-              "Title": "Login.razor",
-              "DocumentMoniker": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Client\\Pages\\Login.razor",
-              "RelativeDocumentMoniker": "ITAssetManagement.Client\\Pages\\Login.razor",
-              "ToolTip": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Client\\Pages\\Login.razor",
-              "RelativeToolTip": "ITAssetManagement.Client\\Pages\\Login.razor",
-              "ViewState": "AgIAAEIAAAAAAAAAAAAAABoAAAAsAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-02-09T07:21:15.435Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "FirstLoginUpdate.razor",
-              "DocumentMoniker": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Client\\Pages\\FirstLoginUpdate.razor",
-              "RelativeDocumentMoniker": "ITAssetManagement.Client\\Pages\\FirstLoginUpdate.razor",
-              "ToolTip": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Client\\Pages\\FirstLoginUpdate.razor",
-              "RelativeToolTip": "ITAssetManagement.Client\\Pages\\FirstLoginUpdate.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAFUAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2026-02-09T07:21:03.241Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "AuthService.cs",
-              "DocumentMoniker": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Service\\Services\\AuthService.cs",
-              "RelativeDocumentMoniker": "ITAssetManagement.Service\\Services\\AuthService.cs",
-              "ToolTip": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Service\\Services\\AuthService.cs",
-              "RelativeToolTip": "ITAssetManagement.Service\\Services\\AuthService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAE0AAAABAAAAAAAAAA==",
+              "Title": "AssetsController.cs",
+              "DocumentMoniker": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement\\Controllers\\admin\\AssetsController.cs",
+              "RelativeDocumentMoniker": "ITAssetManagement\\Controllers\\admin\\AssetsController.cs",
+              "ToolTip": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement\\Controllers\\admin\\AssetsController.cs",
+              "RelativeToolTip": "ITAssetManagement\\Controllers\\admin\\AssetsController.cs",
+              "ViewState": "AgIAAAgAAAAAAAAAAAA0wCgAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-09T07:15:35.995Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "IAuthService.cs",
-              "DocumentMoniker": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Service\\interface\\IAuthService.cs",
-              "RelativeDocumentMoniker": "ITAssetManagement.Service\\interface\\IAuthService.cs",
-              "ToolTip": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Service\\interface\\IAuthService.cs",
-              "RelativeToolTip": "ITAssetManagement.Service\\interface\\IAuthService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-09T07:15:31.894Z"
+              "WhenOpened": "2026-03-04T01:28:09.95Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 9,
-              "Title": "LoginRequest.cs",
-              "DocumentMoniker": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Request\\User\\LoginRequest.cs",
-              "RelativeDocumentMoniker": "ITAssetManagement.Request\\User\\LoginRequest.cs",
-              "ToolTip": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Request\\User\\LoginRequest.cs",
-              "RelativeToolTip": "ITAssetManagement.Request\\User\\LoginRequest.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAABAAAAAAAAAA==",
+              "Title": "ApiUsersController.cs",
+              "DocumentMoniker": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement\\Controllers\\API\\ApiUsersController.cs",
+              "RelativeDocumentMoniker": "ITAssetManagement\\Controllers\\API\\ApiUsersController.cs",
+              "ToolTip": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement\\Controllers\\API\\ApiUsersController.cs",
+              "RelativeToolTip": "ITAssetManagement\\Controllers\\API\\ApiUsersController.cs",
+              "ViewState": "AgIAACcAAAAAAAAAAAAowAwAAAA0AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-09T07:14:59.322Z"
+              "WhenOpened": "2026-03-04T00:51:54.53Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "ApiAuthController.cs",
-              "DocumentMoniker": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement\\Controllers\\API\\ApiAuthController.cs",
-              "RelativeDocumentMoniker": "ITAssetManagement\\Controllers\\API\\ApiAuthController.cs",
-              "ToolTip": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement\\Controllers\\API\\ApiAuthController.cs",
-              "RelativeToolTip": "ITAssetManagement\\Controllers\\API\\ApiAuthController.cs",
-              "ViewState": "AgIAACMAAAAAAAAAAAAwwFEAAAAuAAAAAAAAAA==",
+              "DocumentIndex": 8,
+              "Title": "UsersController.cs",
+              "DocumentMoniker": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement\\Controllers\\admin\\UsersController.cs",
+              "RelativeDocumentMoniker": "ITAssetManagement\\Controllers\\admin\\UsersController.cs",
+              "ToolTip": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement\\Controllers\\admin\\UsersController.cs",
+              "RelativeToolTip": "ITAssetManagement\\Controllers\\admin\\UsersController.cs",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAywJgAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-02-09T07:06:21.836Z"
+              "WhenOpened": "2026-03-04T00:51:44.01Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "Users.razor",
+              "DocumentMoniker": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Client\\Pages\\Users.razor",
+              "RelativeDocumentMoniker": "ITAssetManagement.Client\\Pages\\Users.razor",
+              "ToolTip": "F:\\ITAssetManagement\\ITAssetManagement.Solution\\ITAssetManagement.Client\\Pages\\Users.razor",
+              "RelativeToolTip": "ITAssetManagement.Client\\Pages\\Users.razor",
+              "ViewState": "AgIAAHMBAAAAAAAAAAAowIkBAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2026-03-04T00:49:53.495Z",
+              "EditorCaption": ""
             }
           ]
         },

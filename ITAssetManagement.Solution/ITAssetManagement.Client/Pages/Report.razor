@@ -1,204 +1,274 @@
 ﻿@page "/report"
+@using ITAssetManagement.Client.Models
 @using System.Net.Http.Json
 @inject HttpClient Http
 @inject IJSRuntime JS
+@inject NavigationManager NavManager
 
-<div class="container-fluid mt-4">
-    <div class="card shadow mb-4">
-        <div class="card-header bg-primary text-white">
-            <h5 class="mb-0"><i class="bi bi-bar-chart-line-fill me-2"></i>Báo Cáo Xuất Vật Tư</h5>
-        </div>
-        <div class="card-body">
-            @* 👇 CHỈNH LẠI BỐ CỤC ĐỂ CHỨA THÊM DROPDOWN 👇 *@
-            <div class="row g-2 align-items-end">
-                <div class="col-md-2">
-                    <label class="form-label fw-bold small">Từ ngày:</label>
-                    <input type="date" @bind="reportRequest.FromDate" class="form-control form-control-sm" />
+<PageTitle>Báo cáo Kho IT</PageTitle>
+
+<div class="container-fluid p-0">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="text-primary fw-bold mb-0"><i class="bi bi-bar-chart-line-fill me-2"></i>Báo cáo Kho Vật Tư IT</h3>
+
+        @* 🚀 CHỈ CÒN ĐÚNG 1 NÚT DUY NHẤT THEO YÊU CẦU *@
+        <button class="btn btn-success fw-bold shadow-sm" @onclick="ExportToExcel">
+            <i class="bi bi-file-earmark-excel-fill me-1"></i> Xuất Báo Cáo Excel
+        </button>
+    </div>
+
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body bg-light rounded-3 p-4">
+
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label fw-bold small text-muted">Từ ngày:</label>
+                    <input type="date" class="form-control" @bind="fromDate" />
                 </div>
-                <div class="col-md-2">
-                    <label class="form-label fw-bold small">Đến ngày:</label>
-                    <input type="date" @bind="reportRequest.ToDate" class="form-control form-control-sm" />
+                <div class="col-md-3">
+                    <label class="form-label fw-bold small text-muted">Đến ngày:</label>
+                    <input type="date" class="form-control" @bind="toDate" />
                 </div>
 
-                @* 👇 THÊM DROPDOWN LOẠI TÀI SẢN 👇 *@
+                @* 🚀 BỘ LỌC LOẠI GIAO DỊCH (NHẬP HAY XUẤT) *@
                 <div class="col-md-2">
-                    <label class="form-label fw-bold small">Loại tài sản:</label>
-                    <select class="form-select form-select-sm" @bind="reportRequest.AssetType">
-                        <option value="">-- Tất cả --</option>
-                        <option value="PART">🔧 Linh kiện & Vật tư</option>
-                        <option value="Máy in">🖨️ Máy in</option>
-                        <option value="Máy Scan">📠 Máy Scan</option>
-                        <option value="Máy tính">💻 Máy tính / Laptop</option>
-                        <option value="Thiết bị mạng">🌐 Thiết bị mạng</option>
-                        <option value="Thiết bị âm thanh">🔊 Thiết bị âm thanh</option>
-                        <option value="Camera">📷 Camera</option>
+                    <label class="form-label fw-bold small text-muted">Loại Giao dịch:</label>
+                    <select class="form-select border-primary fw-bold" @bind="selectedTransType">
+                        <option value="">-- Tất cả Nhập & Xuất --</option>
+                        <option value="Nhập">Chỉ xem Nhập kho</option>
+                        <option value="Xuất">Chỉ xem Xuất kho</option>
                     </select>
                 </div>
 
                 <div class="col-md-2">
-                    <label class="form-label fw-bold small">Mã thiết bị (ID):</label>
-                    <input type="number" @bind="reportRequest.AssetId" class="form-control form-control-sm" placeholder="Nhập ID..." />
+                    <label class="form-label fw-bold small text-muted">Khoa / Phòng ban:</label>
+                    <select class="form-select" @bind="selectedDeptId" disabled="@(selectedTransType == "Nhập")">
+                        <option value="0">-- Tất cả phòng ban --</option>
+                        @if (departments != null)
+                        {
+                            foreach (var d in departments)
+                            {
+                                <option value="@d.DepartmentID">@d.DeptName</option>
+                            }
+                        }
+                    </select>
                 </div>
 
-                <div class="col-md-4 d-flex gap-2">
-                    <button class="btn btn-sm btn-primary flex-grow-1" @onclick="ViewReport" disabled="@isLoading">
-                        @if (isLoading)
-                        {
-                            <span class="spinner-border spinner-border-sm me-1"></span>
-                        }
-                        else
-                        {
+                <div class="col-md-2">
+                    <label class="form-label fw-bold small text-muted">Nhóm Tài sản:</label>
+                    <div class="dropdown">
+                        <button class="btn btn-white border dropdown-toggle w-100 text-start d-flex justify-content-between align-items-center bg-white"
+                                type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span class="text-truncate">@GetSelectedTypesLabel()</span>
+                        </button>
+                        <div class="dropdown-menu w-100 p-2 shadow" style="max-height: 300px; overflow-y: auto;">
+                            <div class="form-check mb-2 border-bottom pb-2">
+                                <input class="form-check-input" type="checkbox" id="chkAll"
+                                       checked="@(selectedTypes.Count == allTypes.Count)"
+                                       @onchange="ToggleSelectAllTypes" />
+                                <label class="form-check-label fw-bold text-primary" for="chkAll">-- Chọn tất cả --</label>
+                            </div>
 
-                            <i class="bi bi-eye me-1"></i>
-                        }
-                        Xem trước
-                    </button>
+                            <h6 class="dropdown-header text-uppercase small fw-bold text-secondary mt-2">1. Máy móc</h6>
+                            @foreach (var t in group1)
+                            {
+                                <div class="form-check ms-2">
+                                    <input class="form-check-input" type="checkbox" id="type_@t"
+                                           checked="@selectedTypes.Contains(t)"
+                                           @onchange="@(e => ToggleType(t, e.Value))">
+                                    <label class="form-check-label" for="type_@t">@t</label>
+                                </div>
+                            }
 
-                    <button class="btn btn-sm btn-success flex-grow-1" @onclick="DownloadExcel" disabled="@isLoading">
-                        <i class="bi bi-file-earmark-excel me-1"></i> Xuất Excel
+                            <h6 class="dropdown-header text-uppercase small fw-bold text-secondary mt-2 border-top pt-2">2. Linh kiện & Vật tư</h6>
+                            @foreach (var t in group2)
+                            {
+                                <div class="form-check ms-2">
+                                    <input class="form-check-input" type="checkbox" id="type_@t"
+                                           checked="@selectedTypes.Contains(t)"
+                                           @onchange="@(e => ToggleType(t, e.Value))">
+                                    <label class="form-check-label" for="type_@t">@t</label>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-3 mt-1">
+                <div class="col-md-9">
+                    <input type="text" class="form-control" placeholder="Tìm theo tên tài sản, mã phiếu, người nhận..." @bind="keyword" @bind:event="oninput" />
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-primary w-100 fw-bold" @onclick="LoadReport">
+                        <i class="bi bi-search me-2"></i>Tải Dữ Liệu
                     </button>
                 </div>
             </div>
+
         </div>
     </div>
 
-    @* 👇 BẢNG HIỂN THỊ DỮ LIỆU (GIỮ NGUYÊN) 👇 *@
-    @if (reportData != null && reportData.Count > 0)
-    {
-        <div class="card shadow">
-            <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                <h6 class="mb-0 fw-bold text-primary">Kết quả báo cáo (@reportData.Count dòng)</h6>
-                <span class="badge bg-success fs-6">
-                    Tổng tiền: @reportData.Sum(x => x.TotalAmount).ToString("#,##0") đ
-                </span>
-            </div>
-            <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
-                <table class="table table-hover table-bordered mb-0 align-middle table-sm">
-                    <thead class="table-light text-center sticky-top">
-                        <tr>
-                            <th>STT</th>
-                            <th>Ngày xuất</th>
-                            <th>Tên Vật Tư</th>
-                            <th>Phòng Ban Nhận</th>
-                            <th>SL</th>
-                            <th>Đơn giá</th>
-                            <th class="bg-warning bg-opacity-10">Thành tiền</th>
-                            <th>Người xuất</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in reportData)
-                        {
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            @if (isLoading)
+            {
+                <div class="text-center py-5"><div class="spinner-border text-primary"></div></div>
+            }
+            else if (reportData == null || reportData.Count == 0)
+            {
+                <div class="text-center py-5 text-muted">
+                    <i class="bi bi-clipboard-x display-1 opacity-25"></i>
+                    <p class="mt-3">Không có giao dịch nào phù hợp.</p>
+                </div>
+            }
+            else
+            {
+                var displayData = reportData.Where(x => string.IsNullOrEmpty(keyword) ||
+                x.AssetName.ToLower().Contains(keyword.ToLower()) ||
+                x.ReferenceNo.ToLower().Contains(keyword.ToLower())).ToList();
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0 table-striped">
+                        <thead class="bg-primary text-white">
                             <tr>
-                                <td class="text-center">@item.STT</td>
-                                <td class="text-center">@item.Date.ToString("dd/MM/yyyy")</td>
-                                <td>
-                                    <span class="fw-bold text-primary">@item.AssetName</span>
-                                    <div class="small text-muted">ID: @item.AssetId | @item.Model</div>
-                                </td>
-                                <td>@item.DepartmentName</td>
-                                <td class="text-center fw-bold">@item.Quantity</td>
-                                <td class="text-end">@item.Price.ToString("#,##0")</td>
-                                <td class="text-end fw-bold text-danger bg-warning bg-opacity-10">
-                                    @item.TotalAmount.ToString("#,##0")
-                                </td>
-                                <td>@item.UserFullName</td>
+                                <th class="py-3 ps-3">Ngày</th>
+                                <th class="py-3">Mã phiếu</th>
+                                <th class="py-3">Giao Dịch</th>
+                                <th class="py-3">Tên tài sản / Linh kiện</th>
+                                <th class="py-3">Đối Tác / Nơi nhận</th>
+                                <th class="py-3 text-center">SL</th>
+                                <th class="py-3 text-end">Đơn giá</th>
+                                <th class="py-3 text-end">Thành tiền</th>
+                                <th class="py-3">Ghi chú</th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in displayData)
+                            {
+                                var rowClass = item.Type == "Nhập kho" ? "table-success" : (item.Type.Contains("Sửa chữa") ? "table-warning" : "");
+                                <tr class="@rowClass">
+                                    <td class="ps-3 small">@item.Date.ToString("dd/MM/yyyy")</td>
+                                    <td><span class="badge bg-light text-dark border">@item.ReferenceNo</span></td>
+                                    <td>
+                                        @if (item.Type == "Nhập kho")
+                                        {
+                                            <span class="badge bg-primary"><i class="bi bi-box-arrow-in-down me-1"></i>Nhập kho</span>
+                                        }
+                                        else if (item.Type.Contains("Cấp phát"))
+                                        {
+
+                                            <span class="badge bg-success"><i class="bi bi-box-arrow-up me-1"></i>Cấp phát</span>
+                                        }
+                                        else
+                                        {
+
+                                            <span class="badge bg-warning text-dark"><i class="bi bi-tools me-1"></i>Sửa chữa</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold text-dark">@item.AssetName</div>
+                                        <small class="text-muted">@item.AssetTypeName</small>
+                                    </td>
+                                    <td class="small fw-bold">@item.DepartmentName</td>
+                                    <td class="text-center fw-bold text-danger fs-6">@item.Quantity</td>
+                                    <td class="text-end text-muted">@item.Price.ToString("N0")</td>
+                                    <td class="text-end fw-bold">@item.TotalAmount.ToString("N0")</td>
+                                    <td class="small text-muted">@item.Note</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot class="bg-light fw-bold">
+                            <tr>
+                                <td colspan="5" class="text-end py-3">TỔNG CỘNG LƯỚI:</td>
+                                <td class="text-center py-3 fs-5 text-danger">@displayData.Sum(x => x.Quantity)</td>
+                                <td></td>
+                                <td class="text-end py-3 text-danger fs-6">@displayData.Sum(x => x.TotalAmount).ToString("N0")</td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            }
         </div>
-    }
-    else if (isSearched)
-    {
-        <div class="alert alert-warning text-center mt-3">
-            <i class="bi bi-exclamation-circle me-2"></i> Không có dữ liệu nào phù hợp.
-        </div>
-    }
+    </div>
 </div>
 
 @code {
-    public class ReportRequest
-    {
-        public DateTime FromDate { get; set; } = DateTime.Now.AddMonths(-1);
-        public DateTime ToDate { get; set; } = DateTime.Now;
-        public int? AssetId { get; set; }
+    private DateTime fromDate = DateTime.Now.AddDays(-30);
+    private DateTime toDate = DateTime.Now;
+    private int selectedDeptId = 0;
+    private string selectedTransType = ""; // "" = Tất cả, "Nhập" = Nhập, "Xuất" = Xuất
+    private string keyword = "";
 
-        // 👇 THÊM TRƯỜNG NÀY ĐỂ LỌC LOẠI
-        public string? AssetType { get; set; }
-    }
+    private List<string> group1 = new() { "Máy tính", "Máy in", "Máy Scan", "Các loại khác" };
+    private List<string> group2 = new() { "LK Máy in", "LK Máy tính", "Thiết bị mạng", "Thiết bị âm thanh", "Camera", "Thiết bị khác" };
+    private List<string> allTypes => group1.Concat(group2).ToList();
+    private HashSet<string> selectedTypes = new();
 
-    public class ReportResponse
+    private List<ReportItem> reportData = new();
+    private bool isLoading = false;
+    private List<DepartmentDTO>? departments;
+
+    public class ReportItem
     {
-        public int STT { get; set; }
         public DateTime Date { get; set; }
-        public int AssetId { get; set; }
-        public string AssetName { get; set; } = string.Empty;
-        public string Model { get; set; } = string.Empty;
-        public string DepartmentName { get; set; } = string.Empty;
+        public string ReferenceNo { get; set; } = "";
+        public string Type { get; set; } = "";
+        public string AssetName { get; set; } = "";
+        public string AssetTypeName { get; set; } = "";
+        public string DepartmentName { get; set; } = "";
+        public string UserName { get; set; } = "";
         public int Quantity { get; set; }
-        public string UserFullName { get; set; } = string.Empty;
+        public string Note { get; set; } = "";
         public decimal Price { get; set; }
         public decimal TotalAmount { get; set; }
     }
+    public class DepartmentDTO { public int DepartmentID { get; set; } public string DeptName { get; set; } }
 
-    private ReportRequest reportRequest = new ReportRequest();
-    private List<ReportResponse> reportData = new();
-    private bool isLoading = false;
-    private bool isSearched = false;
-
-    private async Task ViewReport()
+    protected override async Task OnInitializedAsync()
     {
-        try
-        {
-            isLoading = true;
-            isSearched = true;
-            reportData.Clear();
-            var response = await Http.PostAsJsonAsync("api/report/get-data", reportRequest);
-            if (response.IsSuccessStatusCode)
-            {
-                reportData = await response.Content.ReadFromJsonAsync<List<ReportResponse>>();
-            }
-            else
-            {
-                await JS.InvokeVoidAsync("alert", "Không lấy được dữ liệu!");
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-        }
-        finally
-        {
-            isLoading = false;
-        }
+        try { departments = await Http.GetFromJsonAsync<List<DepartmentDTO>>("api/admin/departments"); } catch { }
+        foreach (var t in allTypes) selectedTypes.Add(t);
+        await LoadReport();
     }
 
-    private async Task DownloadExcel()
+    private async Task LoadReport()
     {
+        isLoading = true;
         try
         {
-            isLoading = true;
-            var response = await Http.PostAsJsonAsync("api/report/export-excel", reportRequest);
-            if (response.IsSuccessStatusCode)
-            {
-                var fileContent = await response.Content.ReadAsByteArrayAsync();
-                await JS.InvokeVoidAsync("saveAsFile", $"BaoCao_{DateTime.Now:ddMMyyyy}.xlsx", Convert.ToBase64String(fileContent));
-            }
-            else
-            {
-                var error = await response.Content.ReadAsStringAsync();
-                await JS.InvokeVoidAsync("alert", "Lỗi: " + error);
-            }
+            string types = System.Net.WebUtility.UrlEncode(string.Join(",", selectedTypes));
+            // Truyền tham số transType lên API
+            string url = $"api/report/warehouse-export?from={fromDate:yyyy-MM-dd}&to={toDate:yyyy-MM-dd}&types={types}&deptId={selectedDeptId}&transType={selectedTransType}";
+
+            reportData = await Http.GetFromJsonAsync<List<ReportItem>>(url) ?? new List<ReportItem>();
         }
-        catch (Exception ex)
-        {
-            await JS.InvokeVoidAsync("alert", "Lỗi: " + ex.Message);
-        }
-        finally
-        {
-            isLoading = false;
-        }
+        catch (Exception ex) { await JS.InvokeVoidAsync("alert", "Lỗi: " + ex.Message); }
+        finally { isLoading = false; }
+    }
+
+    private void ExportToExcel()
+    {
+        // Chỉ gọi duy nhất API xuất Ma trận thông minh
+        string types = System.Net.WebUtility.UrlEncode(string.Join(",", selectedTypes));
+        string url = $"api/report/download-monthly-report?from={fromDate:yyyy-MM-dd}&to={toDate:yyyy-MM-dd}&types={types}&deptId={selectedDeptId}&transType={selectedTransType}";
+        NavManager.NavigateTo(url, true);
+    }
+
+    private void ToggleType(string name, object? isChecked)
+    {
+        if (isChecked is bool check && check) selectedTypes.Add(name); else selectedTypes.Remove(name);
+    }
+    private void ToggleSelectAllTypes(ChangeEventArgs e)
+    {
+        if (e.Value is bool check && check) foreach (var t in allTypes) selectedTypes.Add(t);
+        else selectedTypes.Clear();
+    }
+    private string GetSelectedTypesLabel()
+    {
+        if (selectedTypes.Count == 0) return "-- Chưa chọn loại --";
+        if (selectedTypes.Count == allTypes.Count) return "Tất cả";
+        return $"{selectedTypes.Count} loại";
     }
 }

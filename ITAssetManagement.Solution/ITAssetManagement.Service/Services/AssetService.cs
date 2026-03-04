@@ -4,7 +4,7 @@ using ITAssetManagement.Repo.Interfaces;
 using ITAssetManagement.Request.Assets;
 using ITAssetManagement.Response.Assets;
 using ITAssetManagement.Service.Interfaces;
-using Microsoft.EntityFrameworkCore; // 👈 Quan trọng: Thêm dòng này để dùng .Include
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +24,6 @@ namespace ITAssetManagement.Service.Services
         }
 
         // 1. TẠO MỚI TÀI SẢN
-
         public async Task<AssetResponse> CreateAssetAsync(CreateAssetRequest request)
         {
             try
@@ -83,6 +82,10 @@ namespace ITAssetManagement.Service.Services
                 asset.SupplierID = finalSupplierId;
                 asset.ImportDate = request.ImportDate;
 
+                // 👇👇 QUAN TRỌNG: Gán ModelSeries (Model Cha) vào đây 👇👇
+                asset.ModelSeries = request.ModelSeries;
+                // 👆👆 ----------------------------------------------- 👆👆
+
                 if (asset.Quantity <= 0) asset.Quantity = 1;
                 if (string.IsNullOrEmpty(asset.Unit)) asset.Unit = "Cái";
                 asset.Status = 0; // Mới nhập
@@ -96,7 +99,7 @@ namespace ITAssetManagement.Service.Services
                     Type = "IN",
                     Quantity = asset.Quantity,
                     Date = request.ImportDate,
-                    UserID = 1,
+                    UserID = request.UserID > 0 ? request.UserID : 1,
                     DepartmentID = null,
                     Note = request.ImportNote ?? "Nhập mới tài sản lần đầu",
                     ReferenceNo = "PN-" + DateTime.Now.ToString("yyyyMMddHHmmss")
@@ -105,28 +108,27 @@ namespace ITAssetManagement.Service.Services
                 await _unitOfWork.GetRepository<WarehouseTransaction>().AddAsync(importTicket);
                 await _unitOfWork.CompleteAsync();
 
-                // Load lại đầy đủ thông tin để trả về (để hiển thị đúng tên Loại ngay sau khi thêm)
+                // Load lại đầy đủ thông tin để trả về
                 var createdAsset = await GetAssetByIdAsync(asset.AssetID);
                 return _mapper.Map<AssetResponse>(createdAsset);
             }
             catch (Exception ex)
             {
-                throw new Exception("Lỗi khi nhập kho: " + ex.Message);
+                // In chi tiết lỗi Inner Exception nếu có để dễ debug
+                var msg = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                throw new Exception("Lỗi khi nhập kho: " + msg);
             }
         }
 
-  
-        // 2. LẤY DANH SÁCH (ĐÃ SỬA: Dùng .Include để lấy Tên Loại & NCC)
-     
+        // 2. LẤY DANH SÁCH
         public async Task<IEnumerable<AssetResponse>> GetAllAssetsAsync()
         {
             var repo = _unitOfWork.GetRepository<Asset>();
 
-            // 👇 SỬA QUAN TRỌNG TẠI ĐÂY 👇
             var assets = await repo.GetAll()
-                                   .Include(a => a.AssetType)   // Lấy bảng Loại
-                                   .Include(a => a.Supplier)    // Lấy bảng NCC
-                                   .Include(a => a.Department)  // Lấy bảng Phòng ban
+                                   .Include(a => a.AssetType)
+                                   .Include(a => a.Supplier)
+                                   .Include(a => a.Department)
                                    .OrderByDescending(a => a.CreatedDate)
                                    .ToListAsync();
 
@@ -134,11 +136,9 @@ namespace ITAssetManagement.Service.Services
         }
 
         // 3. LẤY CHI TIẾT
-
         public async Task<Asset> GetAssetByIdAsync(int id)
         {
             var repo = _unitOfWork.GetRepository<Asset>();
-            // Cũng cần Include ở đây nếu muốn xem chi tiết đầy đủ
             return await repo.GetAll()
                              .Include(a => a.AssetType)
                              .Include(a => a.Supplier)
@@ -146,24 +146,60 @@ namespace ITAssetManagement.Service.Services
                              .FirstOrDefaultAsync(a => a.AssetID == id);
         }
 
-
         // 4. CẬP NHẬT
-
         public async Task<bool> UpdateAssetAsync(int id, Asset request)
         {
             var repo = _unitOfWork.GetRepository<Asset>();
             var asset = await repo.GetByIdAsync(id);
             if (asset == null) throw new Exception("Không tìm thấy tài sản!");
 
+            // 🚀🚀🚀 XỬ LÝ LƯU HÃNG / NHÀ CUNG CẤP TỪ TEXT NHẬP VÀO 🚀🚀🚀
+            if (!string.IsNullOrWhiteSpace(request.SupplierName))
+            {
+                var supplierRepo = _unitOfWork.GetRepository<Supplier>();
+                var allSuppliers = await supplierRepo.GetAllAsync();
+                var inputName = request.SupplierName.Trim();
+
+                // Tìm xem chữ "Canon" bác gõ đã có trong bảng Supplier chưa
+                var existingSupplier = allSuppliers.FirstOrDefault(s => s.SupplierName.Equals(inputName, StringComparison.OrdinalIgnoreCase));
+
+                if (existingSupplier != null)
+                {
+                    // Có rồi thì lấy ID của nó gán vào
+                    asset.SupplierID = existingSupplier.SupplierID;
+                }
+                else
+                {
+                    // Chưa có thì tạo mới một Hãng/Công ty luôn
+                    var newSupplier = new Supplier { SupplierName = inputName };
+                    await supplierRepo.AddAsync(newSupplier);
+                    await _unitOfWork.CompleteAsync(); // Lưu nháp để lấy ID mới
+                    asset.SupplierID = newSupplier.SupplierID;
+                }
+            }
+            else
+            {
+                asset.SupplierID = request.SupplierID; // Fallback giữ nguyên nếu không nhập gì
+            }
+            // 🚀🚀🚀 KẾT THÚC XỬ LÝ HÃNG 🚀🚀🚀
+
             asset.AssetName = request.AssetName;
             asset.Model = request.Model;
+
+            // 👇👇 QUAN TRỌNG: Cập nhật ModelSeries khi sửa 👇👇
+            asset.ModelSeries = request.ModelSeries;
+            // 👆👆 ------------------------------------------ 👆👆
+
             asset.Unit = request.Unit;
             asset.Quantity = request.Quantity;
             asset.Price = request.Price;
             asset.Location = request.Location;
             asset.Config = request.Config;
             asset.AssetTypeID = request.AssetTypeID;
-            asset.SupplierID = request.SupplierID;
+
+            // Đã ẩn dòng này vì mình vừa xử lý SupplierID xịn xò ở trên rồi
+            // asset.SupplierID = request.SupplierID; 
+
             asset.DepartmentID = request.DepartmentID;
             asset.Status = request.Status;
 
@@ -183,8 +219,8 @@ namespace ITAssetManagement.Service.Services
             await _unitOfWork.CompleteAsync();
             return true;
         }
-        // 6. XỬ LÝ SỬA CHỮA
 
+        // 6. XỬ LÝ SỬA CHỮA
         public async Task<bool> ProcessMaintenanceAsync(int assetId, string reason, int userId)
         {
             var repo = _unitOfWork.GetRepository<Asset>();

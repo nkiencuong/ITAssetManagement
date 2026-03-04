@@ -4,13 +4,14 @@
 @using ITAssetManagement.Request.Reports
 @using System.Net.Http.Json
 @inject HttpClient Http
-@attribute [Authorize]
+@inject NavigationManager Nav
+@* @attribute [Authorize] *@
 
 <PageTitle>Trang Chủ - Dashboard</PageTitle>
 
 <div class="dashboard-container fade-in">
 
-    @* --- 1. HERO SECTION (BANNER) - AI CŨNG THẤY --- *@
+    @* --- 1. HERO SECTION --- *@
     <div class="hero-section">
         <div class="hero-content">
             <h1 class="hero-title">PHÒNG CÔNG NGHỆ THÔNG TIN</h1>
@@ -22,8 +23,8 @@
         <div class="hero-decoration">NKC</div>
     </div>
 
-    @* --- 2. PHẦN THỐNG KÊ (CHỈ DÀNH CHO ADMIN) --- *@
-    <AuthorizeView Roles="Admin">
+    @* --- 2. THỐNG KÊ (CLICK ĐỂ CHUYỂN TRANG) --- *@
+    <AuthorizeView Roles="Admin,SuperAdmin">
         <Authorized>
             <div class="modern-card mb-4 p-4">
                 <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
@@ -34,7 +35,6 @@
                         <h5 class="mb-0 fw-bold text-dark text-uppercase">Tổng hợp số liệu sửa chữa</h5>
                     </div>
 
-                    @* Bộ lọc ngày tháng *@
                     <div class="d-flex gap-2 align-items-center mt-3 mt-md-0 filter-group">
                         <div class="input-group input-group-sm">
                             <span class="input-group-text bg-white">Từ</span>
@@ -50,19 +50,21 @@
                     </div>
                 </div>
 
-                @* Các thẻ Card số liệu *@
                 <div class="row g-4">
+                    @* TỔNG ĐƠN -> Tab Tất cả (-1) *@
                     <div class="col-12 col-sm-6 col-xl-3">
-                        <div class="stat-card blue">
+                        <div class="stat-card blue" style="cursor: pointer;" @onclick='() => Nav.NavigateTo("/repairs?tab=-1")'>
                             <div class="stat-body">
-                                <span class="stat-label">Tổng đơn nhận</span>
+                                <span class="stat-label">Tổng tiếp nhận</span>
                                 <h2 class="stat-value">@stats.TotalReceived</h2>
                             </div>
                             <div class="stat-icon-bg"><i class="bi bi-journal-plus"></i></div>
                         </div>
                     </div>
+
+                    @* ĐANG SỬA -> Tab Chờ xử lý (1) *@
                     <div class="col-12 col-sm-6 col-xl-3">
-                        <div class="stat-card orange">
+                        <div class="stat-card orange" style="cursor: pointer;" @onclick='() => Nav.NavigateTo("/repairs?tab=1")'>
                             <div class="stat-body">
                                 <span class="stat-label">Đang sửa chữa</span>
                                 <h2 class="stat-value">@stats.Processing</h2>
@@ -70,8 +72,10 @@
                             <div class="stat-icon-bg"><i class="bi bi-gear-wide-connected"></i></div>
                         </div>
                     </div>
+
+                    @* ĐÃ HOÀN THÀNH -> Tab Đã xong (2) *@
                     <div class="col-12 col-sm-6 col-xl-3">
-                        <div class="stat-card green">
+                        <div class="stat-card green" style="cursor: pointer;" @onclick='() => Nav.NavigateTo("/repairs?tab=2")'>
                             <div class="stat-body">
                                 <span class="stat-label">Đã hoàn thành</span>
                                 <h2 class="stat-value">@stats.Completed</h2>
@@ -79,6 +83,8 @@
                             <div class="stat-icon-bg"><i class="bi bi-check2-all"></i></div>
                         </div>
                     </div>
+
+                    @* TỶ LỆ XONG *@
                     <div class="col-12 col-sm-6 col-xl-3">
                         <div class="stat-card red">
                             <div class="stat-body">
@@ -93,7 +99,7 @@
         </Authorized>
     </AuthorizeView>
 
-    @* --- 3. PHẦN CHÀO MỪNG (CHỈ DÀNH CHO USER THƯỜNG) --- *@
+    @* --- 3. CHÀO MỪNG USER --- *@
     <AuthorizeView Roles="User">
         <Authorized>
             <div class="alert alert-light border-start border-primary border-4 shadow-sm mb-4 p-4">
@@ -108,7 +114,7 @@
         </Authorized>
     </AuthorizeView>
 
-    @* --- 4. GIỚI THIỆU VÀ LÃNH ĐẠO (AI CŨNG THẤY) --- *@
+    @* --- 4. GIỚI THIỆU & LÃNH ĐẠO --- *@
     <div class="row g-4 mb-5">
         <div class="col-lg-8">
             <div class="modern-card h-100">
@@ -122,7 +128,6 @@
                         Với đội ngũ nhân sự trẻ, năng động và có trình độ chuyên môn cao, phòng luôn hoàn thành xuất sắc nhiệm vụ
                         đảm bảo hệ thống CNTT bệnh viện vận hành thông suốt.
                     </p>
-
                     <div class="sub-info-box">
                         <h6 class="text-primary fw-bold mb-3 text-uppercase small">CƠ CẤU NHÂN SỰ</h6>
                         <ul class="list-unstyled mb-0 text-dark">
@@ -169,38 +174,31 @@
         </div>
     </div>
 
-    @* --- 5. CONTACT SECTION --- *@
+    @* --- 5. LIÊN HỆ --- *@
     <div class="contact-section mt-5">
         <div class="text-center mb-4">
             <h5 class="fw-bold text-uppercase text-primary">Thông Tin Liên Hệ</h5>
             <div class="title-underline mx-auto"></div>
         </div>
-
         <div class="contact-card-white">
             <div class="row text-center gy-4">
                 <div class="col-md-4">
                     <div class="contact-item">
-                        <div class="icon-circle-lg bg-red-light text-danger mx-auto mb-3">
-                            <i class="bi bi-geo-alt-fill"></i>
-                        </div>
+                        <div class="icon-circle-lg bg-red-light text-danger mx-auto mb-3"><i class="bi bi-geo-alt-fill"></i></div>
                         <h6 class="fw-bold mb-1 text-dark">ĐỊA CHỈ</h6>
                         <p class="text-secondary small mb-0">Tầng 5 - Nhà A<br>Bệnh viện Đa khoa Hải Dương</p>
                     </div>
                 </div>
                 <div class="col-md-4 border-start-md">
                     <div class="contact-item">
-                        <div class="icon-circle-lg bg-green-light text-success mx-auto mb-3">
-                            <i class="bi bi-telephone-fill"></i>
-                        </div>
+                        <div class="icon-circle-lg bg-green-light text-success mx-auto mb-3"><i class="bi bi-telephone-fill"></i></div>
                         <h6 class="fw-bold mb-1 text-dark">ĐIỆN THOẠI</h6>
                         <a href="tel:02203891816" class="contact-link-dark">0220.3891.816</a>
                     </div>
                 </div>
                 <div class="col-md-4 border-start-md">
                     <div class="contact-item">
-                        <div class="icon-circle-lg bg-blue-light text-primary mx-auto mb-3">
-                            <i class="bi bi-envelope-fill"></i>
-                        </div>
+                        <div class="icon-circle-lg bg-blue-light text-primary mx-auto mb-3"><i class="bi bi-envelope-fill"></i></div>
                         <h6 class="fw-bold mb-1 text-dark">EMAIL</h6>
                         <a href="mailto:dungithd@gmail.com" class="contact-link-dark">dungithd@gmail.com</a>
                     </div>
@@ -208,18 +206,19 @@
             </div>
         </div>
     </div>
-    @* --- FOOTER (CHÂN TRANG) --- *@
+
+    @* --- FOOTER --- *@
     <div class="dashboard-footer text-center mt-5 pt-4 pb-4 border-top">
         <div class="mb-2">
             <span class="fw-bold text-primary">HỆ THỐNG QUẢN LÝ TÀI SẢN CNTT</span>
             <span class="mx-2 text-muted">|</span>
-            <span class="text-secondary">Version 1.0.0</span>
+            <span class="text-secondary">Version 1.0.1</span>
         </div>
         <div class="small text-muted">
             &copy; 2026 Phát triển bởi <span class="fw-bold text-dark">Phòng CNTT - Bệnh viện Đa khoa Hải Dương</span>.
         </div>
         <div class="small text-muted fst-italic mt-1">
-            Hỗ trợ kỹ thuật: <b>0220.3891.816</b> (Giờ hành chính)
+            Hỗ trợ kỹ thuật: <b>0220.3891.816</b> (24/7)
         </div>
     </div>
 </div>
@@ -228,20 +227,15 @@
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
 
-    // Biến bộ lọc
     private DateTime startDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
     private DateTime endDate = DateTime.Now;
-
-    // Biến lưu số liệu (DTO)
     private DashboardStatsResponse stats = new DashboardStatsResponse();
 
     protected override async Task OnInitializedAsync()
     {
-        // Kiểm tra quyền: Chỉ Admin mới gọi API lấy số liệu
         var authState = await authenticationStateTask;
         var user = authState.User;
-
-        if (user.Identity.IsAuthenticated && user.IsInRole("Admin"))
+        if (user.Identity.IsAuthenticated && (user.IsInRole("Admin") || user.IsInRole("SuperAdmin")))
         {
             await LoadStats();
         }
@@ -251,16 +245,10 @@
     {
         try
         {
-            // Format ngày tháng chuẩn yyyy-MM-dd để gửi lên API
             string from = startDate.ToString("yyyy-MM-dd");
             string to = endDate.ToString("yyyy-MM-dd");
-
             var result = await Http.GetFromJsonAsync<DashboardStatsResponse>($"api/dashboard/stats?fromDate={from}&toDate={to}");
-
-            if (result != null)
-            {
-                stats = result;
-            }
+            if (result != null) stats = result;
         }
         catch (Exception ex)
         {
@@ -270,13 +258,13 @@
 }
 
 <style>
-    /* --- STYLE GIỮ NGUYÊN NHƯ CŨ --- */
+    /* CSS ĐÃ ĐƯỢC FORMAT GỌN GÀNG */
     .dashboard-container {
         font-family: 'Segoe UI', system-ui, sans-serif;
         padding-bottom: 3rem;
     }
 
-    /* Stats Cards */
+    /* Stats Card */
     .stat-card {
         position: relative;
         padding: 1.5rem;
@@ -337,14 +325,14 @@
         transform: rotate(-15deg);
     }
 
-    /* Hero */
+    /* Hero Section */
     .hero-section {
         position: relative;
         height: 200px;
         border-radius: 16px;
         overflow: hidden;
         margin-bottom: 2rem;
-        background: linear-gradient( 135deg, #f8fafc 0%, #bae6fd 40%, #0369a1 100% );
+        background: linear-gradient(135deg, #f8fafc 0%, #bae6fd 40%, #0369a1 100%);
         box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.1);
         display: flex;
         align-items: center;
@@ -392,7 +380,7 @@
         pointer-events: none;
     }
 
-    /* Modern Card & Common */
+    /* Card Common */
     .modern-card {
         background: white;
         border-radius: 12px;
@@ -445,7 +433,7 @@
         border: 1px solid #e2e8f0;
     }
 
-    /* Leaders & Contacts */
+    /* Leaders */
     .leader-item {
         display: flex;
         align-items: center;
@@ -477,6 +465,7 @@
         text-transform: uppercase;
     }
 
+    /* Contact */
     .contact-card-white {
         background: white;
         border-radius: 16px;
@@ -514,7 +503,7 @@
         border-left: 1px solid #e2e8f0;
     }
 
-    /* Colors & Animations */
+    /* Utilities */
     .bg-blue-light {
         background-color: #eff6ff;
         color: #3b82f6;
@@ -551,6 +540,14 @@
         }
     }
 
+    .dashboard-footer {
+        background-color: #e9ecef;
+        color: #64748b;
+        font-size: 0.9rem;
+        border-top: 1px solid #dee2e6;
+        width: 100%;
+    }
+
     @@media (max-width: 768px) {
         .border-start-md {
             border-left: none;
@@ -568,13 +565,5 @@
             width: 100%;
             padding: 0 1.5rem;
         }
-    }
-    /* Footer Style */
-    .dashboard-footer {
-        background-color: #e9ecef; /* Màu xám này đậm hơn, dễ nhìn hơn */
-        color: #64748b;
-        font-size: 0.9rem;
-        border-top: 1px solid #dee2e6; /* Thêm cái đường kẻ mỏng bên trên cho tách biệt hẳn */
-        width: 100%; /* Đảm bảo nó rộng hết màn hình */
     }
 </style>

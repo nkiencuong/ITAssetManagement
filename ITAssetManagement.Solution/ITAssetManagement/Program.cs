@@ -78,16 +78,25 @@ builder.Services.AddAuthentication(options =>
 });
 
 // Cấu hình CORS
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowBlazorClient", policy =>
+//    {
+//        policy.WithOrigins("https://localhost:7085", "https://localhost:7239", "http://localhost:5137")
+//              .AllowAnyHeader()
+//              .AllowAnyMethod();
+//    });
+//});
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowBlazorClient", policy =>
     {
-        policy.WithOrigins("https://localhost:7085", "https://localhost:7239", "http://localhost:5137")
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+        policy
+            .AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod();
     });
 });
-
 var app = builder.Build();
 
 // ==========================================

@@ -217,3 +217,4 @@ F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement\obj\Release\ne
 F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement\obj\Release\net9.0\ITAssetManagement.pdb
 F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement\obj\Release\net9.0\ITAssetManagement.genruntimeconfig.cache
 F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement\obj\Release\net9.0\ref\ITAssetManagement.dll
+F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement\bin\Release\net9.0\dotnet-tools.json

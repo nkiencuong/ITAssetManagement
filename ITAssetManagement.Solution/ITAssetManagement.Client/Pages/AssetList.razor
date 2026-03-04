@@ -1,52 +1,99 @@
 ﻿@page "/assets"
 @using ITAssetManagement.Client.Models
 @using ITAssetManagement.Client.Pages
-@* 👆 Nhớ dòng này để dùng Pagination *@
+@using System.Net.Http.Json
 @inject HttpClient Http
 @inject IJSRuntime JS
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
 
 <PageTitle>Quản lý Tài sản - Phòng CNTT</PageTitle>
 
-@* --- HEADER --- *@
+@* ==========================================
+   PHẦN 1: HEADER & BỘ LỌC (FILTER)
+   ========================================== *@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
         <h3 class="text-primary fw-bold mb-0"><i class="bi bi-box-seam me-2"></i>Kho Tài sản</h3>
-        <small class="text-muted">Quản lý nhập xuất & tồn kho (Auto-Create)</small>
+        <small class="text-muted">Quản lý nhập xuất & tồn kho</small>
     </div>
 
-    <div class="d-flex gap-2">
-        <div class="input-group">
-            <span class="input-group-text bg-white text-primary"><i class="bi bi-calendar3"></i></span>
-            <input type="date" class="form-control" @onchange="FilterByDate" />
-
-            <select class="form-select border-start-0" style="max-width: 180px;" @onchange="FilterCategory">
-                <option value="">-- Tất cả tài sản --</option>
-                <option value="PART">🔧 Linh kiện & Vật tư</option>
-                <option value="Máy in">🖨️ Máy in</option>
-                <option value="Máy Scan">📠 Máy Scan</option>
-                <option value="Máy tính">💻 Máy tính / Laptop</option>
-                <option value="Thiết bị mạng">🌐 Thiết bị mạng</option>
-                <option value="Thiết bị âm thanh">🔊 Thiết bị âm thanh</option>
-                <option value="Camera">📷 Camera</option>
-            </select>
-            <button class="btn btn-outline-secondary" @onclick="ReloadOriginalData" title="Xem tất cả">
-                <i class="bi bi-arrow-clockwise"></i>
-            </button>
+    <div class="d-flex gap-2 align-items-end">
+        <div>
+            <label class="form-label fw-bold small text-muted mb-0">Từ ngày:</label>
+            <div class="position-relative" style="width: 140px;">
+                <input type="text" class="form-control bg-white pe-4" value="@fromDate.ToString("dd/MM/yyyy")" readonly />
+                <i class="bi bi-calendar3 position-absolute top-50 end-0 translate-middle-y me-2 text-secondary"></i>
+                <input type="date" class="form-control position-absolute top-0 start-0 w-100 h-100"
+                       style="opacity: 0; cursor: pointer;"
+                       @bind="fromDate" @bind:format="yyyy-MM-dd" />
+            </div>
         </div>
 
-        @if (selectedAssetIds.Count > 0)
-        {
-            <button class="btn btn-warning shadow-sm fw-bold" @onclick="OpenAllocateModal">
-                <i class="bi bi-arrow-right-circle-fill me-2"></i>Xuất kho (@selectedAssetIds.Count)
-            </button>
-        }
-        <button class="btn btn-primary shadow-sm fw-bold" @onclick="OpenCreateModal">
-            <i class="bi bi-plus-lg me-2"></i> Nhập kho mới
+        <div>
+            <label class="form-label fw-bold small text-muted mb-0">Đến ngày:</label>
+            <div class="position-relative" style="width: 140px;">
+                <input type="text" class="form-control bg-white pe-4" value="@toDate.ToString("dd/MM/yyyy")" readonly />
+                <i class="bi bi-calendar3 position-absolute top-50 end-0 translate-middle-y me-2 text-secondary"></i>
+                <input type="date" class="form-control position-absolute top-0 start-0 w-100 h-100"
+                       style="opacity: 0; cursor: pointer;"
+                       @bind="toDate" @bind:format="yyyy-MM-dd" />
+            </div>
+        </div>
+
+        <div>
+            <label class="form-label fw-bold small text-muted mb-0">Nhóm TS:</label>
+            <select class="form-select border-start-0" style="max-width: 220px;" value="@selectedCategory" @onchange="FilterCategory">
+                <option value="">-- Tất cả tài sản --</option>
+                <optgroup label="1. MÁY MÓC (CCDC)">
+                    @foreach (var t in assetTypes.Where(x => x.GroupType == 1))
+                    {
+                        <option value="@t.Name">@t.Name</option>
+                    }
+                </optgroup>
+                <optgroup label="2. LINH KIỆN & VẬT TƯ">
+                    @foreach (var t in assetTypes.Where(x => x.GroupType == 2))
+                    {
+                        <option value="@t.Name">@t.Name</option>
+                    }
+                </optgroup>
+            </select>
+        </div>
+
+        <div>
+            <label class="form-label fw-bold small text-muted mb-0">Tìm kiếm:</label>
+            <div class="input-group shadow-sm" style="max-width: 250px;">
+                <input type="text" class="form-control border-primary"
+                       placeholder="Mã, Tên, Model..."
+                       @bind="searchKeyword" @bind:event="oninput" @onkeyup="ApplyFilters" />
+            </div>
+        </div>
+
+        <button class="btn btn-primary shadow-sm" @onclick="LoadData" title="Lọc theo ngày">
+            <i class="bi bi-search"></i>
+        </button>
+
+        <button class="btn btn-outline-secondary shadow-sm" @onclick="ShowAll" title="Xem tất cả">
+            <i class="bi bi-arrow-counterclockwise"></i> Tất cả
         </button>
     </div>
 </div>
 
-@* --- DANH SÁCH TÀI SẢN --- *@
+<div class="mb-3 d-flex justify-content-end gap-2">
+    @if (selectedAssetIds.Count > 0)
+    {
+        <button class="btn btn-warning shadow-sm fw-bold" @onclick="OpenAllocateModal">
+            <i class="bi bi-arrow-right-circle-fill me-2"></i>Xuất kho (@selectedAssetIds.Count)
+        </button>
+    }
+    <button class="btn btn-primary shadow-sm fw-bold" @onclick="OpenCreateModal">
+        <i class="bi bi-plus-lg me-2"></i> Nhập kho mới
+    </button>
+</div>
+
+@* ==========================================
+   PHẦN 2: BẢNG DỮ LIỆU
+   ========================================== *@
 @if (assets == null)
 {
     <div class="text-center my-5 py-5">
@@ -73,7 +120,6 @@ else
                     </tr>
                 </thead>
                 <tbody>
-                    @* 👇 QUAN TRỌNG: Duyệt qua pagedAssets thay vì assets *@
                     @foreach (var item in pagedAssets)
                     {
                         var canSelect = item.Quantity > 0;
@@ -87,30 +133,16 @@ else
                             <td>
                                 <div class="fw-bold text-primary">TS-@item.AssetID</div>
                                 <span class="fw-bold text-dark">@item.AssetName</span>
-                                <div class="small text-muted fst-italic mt-1">
-                                    <i class="bi bi-calendar-check me-1"></i>
-                                    @if (item.ImportDate.Year > 2000)
-                                    {
-                                        <span class="text-success fw-bold">@item.ImportDate.ToString("dd/MM/yyyy")</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="text-secondary">@item.CreatedDate.ToString("dd/MM/yyyy")</span>
-                                    }
-                                </div>
                             </td>
                             <td>
                                 <div class="badge bg-info text-dark bg-opacity-10 border border-info mb-1">@item.AssetTypeName</div>
-                                <div class="small text-muted"><i class="bi bi-building me-1"></i>@item.SupplierName</div>
+                                <div class="small text-muted">@item.SupplierName</div>
                             </td>
                             <td class="text-center">
-                                @if (item.Quantity > 0)
-                                {
+                                @if (item.Quantity > 0) {
                                     <span class="badge bg-success fs-6">@item.Quantity @item.Unit</span>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-danger">Hết hàng</span>
+                                } else {
+                                    <span class="badge bg-danger">Hết</span>
                                 }
                             </td>
                             <td>@item.Model</td>
@@ -125,29 +157,19 @@ else
                 </tbody>
             </table>
         </div>
-
-        @* 👇 THANH PHÂN TRANG 👇 *@
-        @if (assets.Any())
-        {
+        @if (assets.Any()) {
             <div class="card-footer bg-white border-0 py-3">
-                <Pagination CurrentPage="@currentPage"
-                            TotalItems="@assets.Length"
-                            PageSize="@pageSize"
-                            OnPageChanged="ChangePage" />
-            </div>
-        }
-        else
-        {
-            <div class="text-center py-5 text-muted">
-                <i class="bi bi-inbox display-1"></i>
-                <p class="mt-3 mb-0">Không tìm thấy dữ liệu phù hợp.</p>
-                <button class="btn btn-link" @onclick="ReloadOriginalData">Xem tất cả</button>
+                <Pagination CurrentPage="@currentPage" TotalItems="@assets.Length" PageSize="@pageSize" OnPageChanged="ChangePage" />
             </div>
         }
     </div>
 }
 
-@* --- MODAL NHẬP KHO MỚI (CREATE) --- *@
+@* ==========================================
+   PHẦN 3: CÁC MODAL
+   ========================================== *@
+
+@* 1. MODAL NHẬP KHO - NHẬP TỰ DO NHƯ BÌNH THƯỜNG *@
 @if (showCreateModal)
 {
     <div class="modal-backdrop fade show"></div>
@@ -155,43 +177,60 @@ else
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content border-0 shadow-lg">
                 <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title fw-bold">Phiếu Nhập Kho</h5>
+                    <h5 class="modal-title fw-bold">Phiếu Nhập Kho Mới</h5>
                     <button type="button" class="btn-close btn-close-white" @onclick="CloseCreateModal"></button>
                 </div>
                 <div class="modal-body p-4 bg-light">
                     <div class="row g-3">
-                        <div class="col-12">
+                        <div class="col-md-8">
                             <label class="form-label fw-bold small">Tên hàng hóa <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" @bind="newAssetRequest.AssetName" placeholder="VD: Laptop Dell Vostro 3510" />
+                            <input type="text" class="form-control" @bind="newAssetRequest.AssetName" placeholder="Tên thiết bị hoặc linh kiện..." />
                         </div>
-                        <div class="col-md-12">
-                            <label class="form-label fw-bold small text-primary">Ngày nhập (Chứng từ):</label>
-                            <input type="date" class="form-control border-primary" @bind="newAssetRequest.ImportDate" @bind:format="yyyy-MM-dd" />
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold small">Ngày nhập</label>
+                            <input type="date" class="form-control" @bind="newAssetRequest.ImportDate" @bind:format="yyyy-MM-dd" />
                         </div>
-                        <div class="col-md-6"><label class="form-label fw-bold small">Loại tài sản</label><input type="text" class="form-control" @bind="newAssetRequest.AssetTypeName" /></div>
-                        <div class="col-md-6"><label class="form-label fw-bold small">Hãng / Nhà cung cấp</label><input type="text" class="form-control" @bind="newAssetRequest.SupplierName" /></div>
-                        <div class="col-md-6"><label class="form-label fw-bold small">Số lượng</label><input type="number" class="form-control" @bind="newAssetRequest.Quantity" /></div>
                         <div class="col-md-6">
-                            <label class="form-label fw-bold small">Đơn vị</label>
-                            <input type="text" class="form-control" @bind="newAssetRequest.Unit" list="unitList" />
-                            <datalist id="unitList"><option value="Cái" /><option value="Chiếc" /><option value="Bộ" /></datalist>
+                            <label class="form-label fw-bold small text-danger">Loại tài sản <span class="text-danger">*</span></label>
+                            <select class="form-select border-danger" @onchange="OnCreateTypeChanged">
+                                <option value="">-- CHỌN LOẠI TÀI SẢN --</option>
+                                <optgroup label="1. MÁY MÓC (CCDC)">
+                                    @foreach (var t in assetTypes.Where(x => x.GroupType == 1)) {
+                                        <option value="@t.Name">@t.Name</option>
+                                    }
+                                </optgroup>
+                                <optgroup label="2. LINH KIỆN & VẬT TƯ">
+                                    @foreach (var t in assetTypes.Where(x => x.GroupType == 2)) {
+                                        <option value="@t.Name">@t.Name</option>
+                                    }
+                                </optgroup>
+                            </select>
                         </div>
-                        <div class="col-md-6"><label class="form-label fw-bold small">Model</label><input type="text" class="form-control" @bind="newAssetRequest.Model" /></div>
-                        <div class="col-md-6"><label class="form-label fw-bold small">Đơn giá</label><input type="number" class="form-control" @bind="newAssetRequest.Price" /></div>
-                        <div class="col-12"><label class="form-label fw-bold small">Vị trí</label><input type="text" class="form-control" @bind="newAssetRequest.Location" /></div>
-                        <div class="col-12"><label class="form-label fw-bold small">Cấu hình / Ghi chú</label><textarea class="form-control" rows="2" @bind="newAssetRequest.Config"></textarea></div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small">Hãng / Nhà cung cấp</label>
+                            <input type="text" class="form-control" @bind="newAssetRequest.SupplierName" list="supplierSuggestions" placeholder="Chọn hoặc nhập mới..." />
+                            <datalist id="supplierSuggestions">
+                                @foreach (var name in existingSupplierNames) { <option value="@name" /> }
+                            </datalist>
+                        </div>
+                        <div class="col-md-4"><label class="form-label fw-bold small">Số lượng</label><input type="number" class="form-control" @bind="newAssetRequest.Quantity" /></div>
+                        <div class="col-md-4"><label class="form-label fw-bold small">Đơn vị</label><input type="text" class="form-control" @bind="newAssetRequest.Unit" placeholder="Cái, Bộ, Lọ..." /></div>
+                        <div class="col-md-4"><label class="form-label fw-bold small">Đơn giá</label><input type="number" class="form-control" @bind="newAssetRequest.Price" /></div>
+                        <div class="col-12"><label class="form-label fw-bold small">Model / Thông số kỹ thuật</label><input type="text" class="form-control" @bind="newAssetRequest.Model" placeholder="Nhập đời máy hoặc thông số linh kiện..." /></div>
+                        <div class="col-12"><label class="form-label fw-bold small">Vị trí lưu kho</label><input type="text" class="form-control" @bind="newAssetRequest.Location" /></div>
+                        <div class="col-12"><label class="form-label fw-bold small">Ghi chú thêm</label><textarea class="form-control" rows="2" @bind="newAssetRequest.Config"></textarea></div>
                     </div>
                 </div>
                 <div class="modal-footer bg-white">
                     <button class="btn btn-light border" @onclick="CloseCreateModal">Hủy bỏ</button>
-                    <button class="btn btn-primary fw-bold" @onclick="SaveAsset">Lưu phiếu nhập</button>
+                    <button class="btn btn-primary fw-bold px-4" @onclick="SaveAsset">Lưu phiếu nhập</button>
                 </div>
             </div>
         </div>
     </div>
 }
 
-@* --- MODAL XUẤT KHO / CẤP PHÁT (ALLOCATE) --- *@
+@* 2. MODAL XUẤT KHO *@
 @if (showAllocateModal)
 {
     <div class="modal-backdrop fade show"></div>
@@ -203,49 +242,29 @@ else
                     <button type="button" class="btn-close" @onclick="CloseAllocateModal"></button>
                 </div>
                 <div class="modal-body p-4 bg-light">
-                    <div class="alert alert-warning mb-3">
-                        Đang chọn xuất <strong>@selectedAssetIds.Count</strong> mã hàng.
-                    </div>
+                    <div class="alert alert-warning mb-3">Đang chọn <strong>@selectedAssetIds.Count</strong> mã hàng.</div>
                     <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Số lượng (Mỗi mã):</label>
-                            <input type="number" class="form-control border-warning fw-bold text-center"
-                                   @bind="allocationRequest.Quantity" min="1" />
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold text-primary">Ngày xuất kho:</label>
-                            <input type="date" class="form-control border-warning"
-                                   @bind="allocationRequest.AllocatedDate" @bind:format="yyyy-MM-dd" />
-                        </div>
+                        <div class="col-md-6 mb-3"><label class="fw-bold">Số lượng xuất:</label><input type="number" class="form-control" @bind="allocationRequest.Quantity" min="1" /></div>
+                        <div class="col-md-6 mb-3"><label class="fw-bold">Ngày xuất:</label><input type="date" class="form-control" @bind="allocationRequest.AllocatedDate" @bind:format="yyyy-MM-dd" /></div>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Khoa / Phòng nhận:</label>
+                        <label class="fw-bold">Khoa / Phòng nhận:</label>
                         <select class="form-select" @bind="allocationRequest.DepartmentID">
-                            <option value="0">-- Chọn phòng ban --</option>
-                            @if (departments != null)
-                            {
-                                foreach (var dept in departments)
-                                {
-                                    <option value="@dept.DepartmentID">@dept.DeptName</option>
-                                }
+                            <option value="0">-- Chọn phòng --</option>
+                            @if (departments != null) {
+                                foreach (var d in departments) { <option value="@d.DepartmentID">@d.DeptName</option> }
                             }
                         </select>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Ghi chú:</label>
-                        <textarea class="form-control" @bind="allocationRequest.Note" rows="2"></textarea>
-                    </div>
+                    <div class="mb-3"><label class="fw-bold">Ghi chú:</label><textarea class="form-control" @bind="allocationRequest.Note"></textarea></div>
                 </div>
-                <div class="modal-footer bg-white">
-                    <button class="btn btn-light border" @onclick="CloseAllocateModal">Hủy</button>
-                    <button class="btn btn-warning fw-bold" @onclick="SubmitAllocation">Xác nhận Xuất</button>
-                </div>
+                <div class="modal-footer"><button class="btn btn-warning fw-bold" @onclick="SubmitAllocation">Xác nhận xuất</button></div>
             </div>
         </div>
     </div>
 }
 
-@* --- MODAL CHỈNH SỬA (EDIT) --- *@
+@* 3. MODAL SỬA *@
 @if (showEditModal)
 {
     <div class="modal-backdrop fade show"></div>
@@ -256,261 +275,223 @@ else
                     <h5 class="modal-title fw-bold">Cập nhật Tài sản</h5>
                     <button type="button" class="btn-close" @onclick="() => showEditModal = false"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body p-4">
                     <div class="row g-3">
-                        <div class="col-12"><label>Tên tài sản:</label><input class="form-control" @bind="editingAsset.AssetName" /></div>
-                        <div class="col-md-6">
-                            <label class="fw-bold text-primary">Loại tài sản:</label>
-                            <select class="form-select" @bind="editingAsset.AssetTypeID">
-                                <option value="0">-- Chọn loại --</option>
-                                @foreach (var type in listAssetTypes)
-                                {
-                                    <option value="@type.Id">@type.Name</option>
-                                }
-                            </select>
-                        </div>
-                        <div class="col-md-6"><label>Model:</label><input class="form-control" @bind="editingAsset.Model" /></div>
-                        <div class="col-md-6"><label>Số lượng:</label><input type="number" class="form-control" @bind="editingAsset.Quantity" /></div>
-                        <div class="col-md-6"><label>Giá tiền:</label><input type="number" class="form-control" @bind="editingAsset.Price" /></div>
-                        <div class="col-md-6"><label>Vị trí:</label><input class="form-control" @bind="editingAsset.Location" /></div>
-                        <div class="col-12"><label>Cấu hình:</label><textarea class="form-control" @bind="editingAsset.Config"></textarea></div>
+                        <div class="col-12"><label class="fw-bold small">Tên tài sản:</label><input class="form-control" @bind="editingAsset.AssetName" /></div>
+                        <div class="col-md-6"><label class="fw-bold small">Loại:</label><select class="form-select" @bind="editingAsset.AssetTypeID">@foreach (var t in assetTypes) {
+                        <option value="@t.Id">@t.Name</option>
+                    }
+</select></div>
+                    <div class="col-md-6"><label class="fw-bold small">Hãng:</label><input class="form-control" @bind="editingAsset.SupplierName" /></div>
+
+                    @* 🚀 ĐÃ SỬA TỪ col-md-4 THÀNH col-md-3 ĐỂ NHÉT VỪA 4 Ô *@
+                    <div class="col-md-3"><label class="fw-bold small">Model:</label><input class="form-control" @bind="editingAsset.Model" /></div>
+                    <div class="col-md-3"><label class="fw-bold small">Số lượng:</label><input type="number" class="form-control" @bind="editingAsset.Quantity" /></div>
+
+                    @* 🚀🚀🚀 MỚI THÊM: Ô ĐƠN VỊ *@
+                    <div class="col-md-3"><label class="fw-bold small">Đơn vị:</label><input class="form-control" @bind="editingAsset.Unit" placeholder="Chiếc, Hộp..." /></div>
+
+                    <div class="col-md-3"><label class="fw-bold small">Giá:</label><input type="number" class="form-control" @bind="editingAsset.Price" /></div>
+                    @* =========================== *@
+
+                    <div class="col-12"><label class="fw-bold small">Ghi chú:</label><textarea class="form-control" @bind="editingAsset.Config"></textarea></div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" @onclick="() => showEditModal = false">Hủy</button>
-                    <button class="btn btn-primary" @onclick="SubmitUpdate">Lưu thay đổi</button>
-                </div>
+                <div class="modal-footer"><button class="btn btn-primary" @onclick="SubmitUpdate">Lưu thay đổi</button></div>
             </div>
         </div>
     </div>
 }
 
-@* --- MODAL CHI TIẾT (DETAIL) --- *@
+@* 4. MODAL CHI TIẾT ĐẸP *@
 @if (showDetailModal)
 {
     <div class="modal-backdrop fade show"></div>
     <div class="modal fade show d-block" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header bg-success text-white">
-                    <h5 class="modal-title">Chi tiết Tài sản</h5>
-                    <button class="btn-close" @onclick="() => showDetailModal = false"></button>
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg overflow-hidden">
+                <div class="modal-header bg-success text-white py-3">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-info-circle-fill me-2"></i>Chi tiết Tài sản</h5>
+                    <button class="btn-close btn-close-white" @onclick="() => showDetailModal = false"></button>
                 </div>
-                <div class="modal-body">
-                    <table class="table table-striped">
-                        <tr><td class="fw-bold">Tên:</td><td>@editingAsset.AssetName</td></tr>
-                        <tr><td class="fw-bold">Loại:</td><td>@editingAsset.AssetTypeName</td></tr>
-                        <tr><td class="fw-bold">Hãng:</td><td>@editingAsset.SupplierName</td></tr>
-                        <tr><td class="fw-bold">Model:</td><td>@editingAsset.Model</td></tr>
-                        <tr><td class="fw-bold">Số lượng:</td><td>@editingAsset.Quantity @editingAsset.Unit</td></tr>
-                        <tr><td class="fw-bold">Giá:</td><td>@string.Format("{0:N0} VNĐ", editingAsset.Price)</td></tr>
-                        <tr><td class="fw-bold">Vị trí:</td><td>@editingAsset.Location</td></tr>
-                        <tr><td class="fw-bold">Cấu hình:</td><td>@editingAsset.Config</td></tr>
-                        <tr>
-                            <td class="fw-bold">Ngày chứng từ:</td>
-                            <td>
-                                @if (editingAsset.ImportDate.Year > 2000)
-                                {
-                                    <span class="text-success fw-bold">@editingAsset.ImportDate.ToString("dd/MM/yyyy")</span>
-                                }
-                                else
-                                {
-                                    <span class="text-secondary">@editingAsset.CreatedDate.ToString("dd/MM/yyyy")</span>
-                                }
-                            </td>
-                        </tr>
-                    </table>
+                <div class="modal-body p-0">
+                    <div class="p-4 bg-light border-bottom">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h4 class="text-dark fw-bold mb-1">@editingAsset.AssetName</h4>
+                                <div class="d-flex gap-2">
+                                    <span class="badge bg-primary">Mã: TS-@editingAsset.AssetID</span>
+                                    <span class="badge bg-info text-dark">@editingAsset.AssetTypeName</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-md-end">
+                                <div class="text-muted small">Tồn kho:</div>
+                                <h3 class="@(editingAsset.Quantity > 0 ? "text-success" : "text-danger") fw-bold mb-0">@editingAsset.Quantity <small class="fs-6">@editingAsset.Unit</small></h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="mb-3"><label class="text-muted small text-uppercase fw-bold">Hãng / Nhà cung cấp</label><div class="fw-bold"><i class="bi bi-building me-2 text-secondary"></i>@editingAsset.SupplierName</div></div>
+                                <div class="mb-3"><label class="text-muted small text-uppercase fw-bold">Model / Thông số</label><div class="fw-bold"><i class="bi bi-cpu me-2 text-secondary"></i>@editingAsset.Model</div></div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3"><label class="text-muted small text-uppercase fw-bold">Giá trị nhập</label><div class="fw-bold text-primary fs-5">@string.Format("{0:N0} VNĐ", editingAsset.Price)</div></div>
+                                <div class="mb-3"><label class="text-muted small text-uppercase fw-bold">Vị trí & Ngày nhập</label><div class="fw-bold text-dark"><i class="bi bi-geo-alt me-2 text-secondary"></i>@editingAsset.Location | @editingAsset.ImportDate.ToString("dd/MM/yyyy")</div></div>
+                            </div>
+                            <div class="col-12"><label class="text-muted small text-uppercase fw-bold">Cấu hình & Ghi chú</label><div class="p-3 bg-white border rounded shadow-sm" style="min-height: 80px; white-space: pre-wrap;">@editingAsset.Config</div></div>
+                        </div>
+                    </div>
                 </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" @onclick="() => showDetailModal = false">Đóng</button>
-                </div>
+                <div class="modal-footer bg-light py-3"><button class="btn btn-secondary px-4 fw-bold" @onclick="() => showDetailModal = false">Đóng</button></div>
             </div>
         </div>
     </div>
 }
 
 @code {
+    private DateTime fromDate = DateTime.Now.AddDays(-30);
+    private DateTime toDate = DateTime.Now;
+    private string selectedCategory = "";
+    private string searchKeyword = "";
     private Asset[]? allAssets;
     private Asset[]? assets;
     private DepartmentDTO[]? departments;
     private HashSet<int> selectedAssetIds = new HashSet<int>();
-
-    // 👇 KHAI BÁO BIẾN PHÂN TRANG
     private Asset[] pagedAssets = Array.Empty<Asset>();
     private int currentPage = 1;
-    private int pageSize = 15; // Mỗi trang 15 dòng cho gọn
-
+    private int pageSize = 15;
     private bool showCreateModal = false;
     private bool showAllocateModal = false;
     private bool showEditModal = false;
     private bool showDetailModal = false;
-
     private CreateAssetRequest newAssetRequest = new CreateAssetRequest();
     private AllocateRequest allocationRequest = new AllocateRequest();
     private Asset editingAsset = new Asset();
+    private List<string> existingSupplierNames = new();
 
-    private List<AssetTypeOption> listAssetTypes = new()
-    {
-        new AssetTypeOption { Id = 1, Name = "Laptop" },
-        new AssetTypeOption { Id = 2, Name = "Máy in" },
-        new AssetTypeOption { Id = 3, Name = "Máy Scan" },
-        new AssetTypeOption { Id = 4, Name = "Máy tính" },
-        new AssetTypeOption { Id = 5, Name = "Thiết bị chung" },
-        new AssetTypeOption { Id = 6, Name = "Linh kiện" },
-        new AssetTypeOption { Id = 7, Name = "Thiết bị mạng" },
-        new AssetTypeOption { Id = 8, Name = "Camera" }
+    private List<AssetTypeOption> assetTypes = new() {
+        new AssetTypeOption { Id = 1, Name = "Máy tính", GroupType = 1 },
+        new AssetTypeOption { Id = 2, Name = "Máy in", GroupType = 1 },
+        new AssetTypeOption { Id = 3, Name = "Máy Scan", GroupType = 1 },
+        new AssetTypeOption { Id = 4, Name = "Các loại khác", GroupType = 1 },
+        new AssetTypeOption { Id = 5, Name = "LK Máy in", GroupType = 2 },
+        new AssetTypeOption { Id = 6, Name = "LK Máy tính", GroupType = 2 },
+        new AssetTypeOption { Id = 7, Name = "Thiết bị mạng", GroupType = 2 },
+        new AssetTypeOption { Id = 8, Name = "Thiết bị âm thanh", GroupType = 2 },
+        new AssetTypeOption { Id = 9, Name = "Camera", GroupType = 2 },
+        new AssetTypeOption { Id = 10, Name = "Thiết bị khác", GroupType = 2 }
     };
-    public class AssetTypeOption { public int Id { get; set; } public string Name { get; set; } }
 
-    protected override async Task OnInitializedAsync()
-    {
-        await LoadData();
-        await LoadDepartments();
-    }
+    public class AssetTypeOption { public int Id { get; set; } public string Name { get; set; } public int GroupType { get; set; } }
 
-    private async Task LoadData()
-    {
-        allAssets = await Http.GetFromJsonAsync<Asset[]>("https://localhost:7239/api/admin/assets");
-        assets = allAssets;
-        UpdatePagedList(); // 👈 Cập nhật phân trang ngay sau khi tải
-    }
+    protected override async Task OnInitializedAsync() { await LoadData(); await LoadDepartments(); }
 
-    private async Task LoadDepartments() => departments = await Http.GetFromJsonAsync<DepartmentDTO[]>("https://localhost:7239/api/admin/departments");
-
-    private void FilterByDate(ChangeEventArgs e)
-    {
-        if (DateTime.TryParse(e.Value?.ToString(), out DateTime selectedDate))
-        {
-            if (allAssets != null)
-            {
-                assets = allAssets.Where(x => x.ImportDate.Date == selectedDate.Date).ToArray();
+    private async Task LoadData() {
+        try {
+            string fDate = fromDate.ToString("yyyy-MM-dd");
+            string tDate = toDate.ToString("yyyy-MM-dd");
+            allAssets = await Http.GetFromJsonAsync<Asset[]>($"api/admin/assets?from={fDate}&to={tDate}");
+            if (allAssets != null) {
+                existingSupplierNames = allAssets.Where(x => !string.IsNullOrEmpty(x.SupplierName)).Select(x => x.SupplierName!).Distinct().OrderBy(x => x).ToList();
             }
-        }
-        else { assets = allAssets; }
-
-        currentPage = 1; // Reset trang
-        UpdatePagedList();
+            ApplyFilters();
+        } catch { }
     }
 
-    private void FilterCategory(ChangeEventArgs e)
-    {
-        string selectedType = e.Value?.ToString() ?? "";
+    private async Task ShowAll() { fromDate = new DateTime(2020, 1, 1); toDate = DateTime.Now; selectedCategory = ""; searchKeyword = ""; await LoadData(); }
+
+    private async Task LoadDepartments() { try { departments = await Http.GetFromJsonAsync<DepartmentDTO[]>("api/admin/departments"); } catch { } }
+
+    private void FilterCategory(ChangeEventArgs? e) { if (e != null) selectedCategory = e.Value?.ToString() ?? ""; ApplyFilters(); }
+
+    private void ApplyFilters() {
         if (allAssets == null) return;
-
-        if (string.IsNullOrEmpty(selectedType)) assets = allAssets;
-        else if (selectedType == "PART")
-            assets = allAssets.Where(x => (x.AssetTypeName ?? "").ToLower().Contains("linh kiện") || (x.AssetTypeName ?? "").ToLower().Contains("vật tư")).ToArray();
-        else
-            assets = allAssets.Where(x => (x.AssetTypeName ?? "").ToLower().Contains(selectedType.ToLower())).ToArray();
-
-        currentPage = 1; // Reset trang
-        UpdatePagedList();
-    }
-
-    private void ReloadOriginalData()
-    {
-        assets = allAssets;
+        IEnumerable<Asset> query = allAssets;
+        if (!string.IsNullOrEmpty(selectedCategory)) query = query.Where(x => (x.AssetTypeName ?? "").Trim().Equals(selectedCategory.Trim(), StringComparison.OrdinalIgnoreCase));
+        if (!string.IsNullOrWhiteSpace(searchKeyword)) {
+            var kw = searchKeyword.Trim().ToLower();
+            query = query.Where(x => (x.AssetName ?? "").ToLower().Contains(kw) || ($"TS-{x.AssetID}").ToLower().Contains(kw) || (x.Model ?? "").ToLower().Contains(kw));
+        }
+        assets = query.ToArray();
         currentPage = 1;
         UpdatePagedList();
     }
 
-    // 👇 LOGIC PHÂN TRANG
-    private void UpdatePagedList()
-    {
-        if (assets != null)
-        {
-            pagedAssets = assets.Skip((currentPage - 1) * pageSize).Take(pageSize).ToArray();
-        }
-    }
+    private void UpdatePagedList() { if (assets != null) pagedAssets = assets.Skip((currentPage - 1) * pageSize).Take(pageSize).ToArray(); }
 
-    private void ChangePage(int page)
-    {
-        currentPage = page;
-        UpdatePagedList();
-    }
+    private void ChangePage(int page) { currentPage = page; UpdatePagedList(); }
 
     private void ToggleSelection(int id, object check) { if ((bool)check) selectedAssetIds.Add(id); else selectedAssetIds.Remove(id); }
-    private void ToggleSelectAll(ChangeEventArgs e)
-    {
+
+    private void ToggleSelectAll(ChangeEventArgs e) {
         if ((bool)e.Value && assets != null) foreach (var a in assets.Where(x => x.Quantity > 0)) selectedAssetIds.Add(a.AssetID);
         else selectedAssetIds.Clear();
     }
 
-    private void OpenCreateModal()
-    {
-        newAssetRequest = new CreateAssetRequest { Quantity = 1, Unit = "Cái", AssetTypeName = "Thiết bị chung", SupplierName = "Kho Tổng", ImportDate = DateTime.Now };
-        showCreateModal = true;
-    }
+    private void OpenCreateModal() { newAssetRequest = new CreateAssetRequest { Quantity = 1, Unit = "Cái", AssetTypeName = "", SupplierName = "Kho Tổng", ImportDate = DateTime.Now }; showCreateModal = true; }
+
     private void CloseCreateModal() => showCreateModal = false;
-    private async Task SaveAsset()
-    {
-        var res = await Http.PostAsJsonAsync("https://localhost:7239/api/assets", newAssetRequest);
-        if (res.IsSuccessStatusCode) { await JS.InvokeVoidAsync("alert", "Nhập kho thành công!"); showCreateModal = false; await LoadData(); }
-        else { var msg = await res.Content.ReadAsStringAsync(); await JS.InvokeVoidAsync("alert", "Lỗi: " + msg); }
+
+    private void OnCreateTypeChanged(ChangeEventArgs e) { newAssetRequest.AssetTypeName = e.Value?.ToString() ?? ""; }
+
+    private async Task SaveAsset() {
+        if (string.IsNullOrEmpty(newAssetRequest.AssetTypeName)) { await JS.InvokeVoidAsync("alert", "Vui lòng chọn Loại tài sản!"); return; }
+        if (string.IsNullOrEmpty(newAssetRequest.AssetName)) { await JS.InvokeVoidAsync("alert", "Vui lòng nhập Tên hàng hóa!"); return; }
+        var res = await Http.PostAsJsonAsync("api/assets", newAssetRequest);
+        if (res.IsSuccessStatusCode) { showCreateModal = false; await LoadData(); await JS.InvokeVoidAsync("alert", "Nhập kho thành công!"); }
     }
 
-    private void OpenAllocateModal()
-    {
-        allocationRequest = new AllocateRequest();
-        allocationRequest.AllocatedDate = DateTime.Now;
-        allocationRequest.Quantity = 1;
-        showAllocateModal = true;
-    }
+    private void OpenAllocateModal() { allocationRequest = new AllocateRequest { AllocatedDate = DateTime.Now, Quantity = 1 }; showAllocateModal = true; }
     private void CloseAllocateModal() => showAllocateModal = false;
-    private async Task SubmitAllocation()
-    {
-        if (allocationRequest.DepartmentID == 0) { await JS.InvokeVoidAsync("alert", "Vui lòng chọn Phòng ban!"); return; }
-        if (allocationRequest.Quantity <= 0) { await JS.InvokeVoidAsync("alert", "Số lượng phải lớn hơn 0!"); return; }
 
+    private async Task SubmitAllocation() {
+        if (allocationRequest.DepartmentID == 0) { await JS.InvokeVoidAsync("alert", "Chọn Phòng ban!"); return; }
         allocationRequest.AssetIds = selectedAssetIds.ToList();
-        var res = await Http.PostAsJsonAsync("https://localhost:7239/api/allocations", allocationRequest);
-        if (res.IsSuccessStatusCode) { await JS.InvokeVoidAsync("alert", "Xuất kho thành công!"); showAllocateModal = false; selectedAssetIds.Clear(); await LoadData(); }
-        else { await JS.InvokeVoidAsync("alert", "Lỗi cấp phát!"); }
+        var res = await Http.PostAsJsonAsync("api/allocations", allocationRequest);
+        if (res.IsSuccessStatusCode) { showAllocateModal = false; selectedAssetIds.Clear(); await LoadData(); await JS.InvokeVoidAsync("alert", "Xuất thành công!"); }
     }
 
-    private async Task OpenEditModal(int id) { editingAsset = await Http.GetFromJsonAsync<Asset>($"https://localhost:7239/api/admin/assets/{id}"); showEditModal = true; }
-    private async Task SubmitUpdate()
-    {
-        var res = await Http.PutAsJsonAsync($"https://localhost:7239/api/assets/{editingAsset.AssetID}", editingAsset);
-        if (res.IsSuccessStatusCode) { await JS.InvokeVoidAsync("alert", "Cập nhật thành công!"); showEditModal = false; await LoadData(); } else { await JS.InvokeVoidAsync("alert", "Cập nhật thất bại!"); }
-    }
-    private async Task OpenDetailModal(int id) { editingAsset = await Http.GetFromJsonAsync<Asset>($"https://localhost:7239/api/admin/assets/{id}"); showDetailModal = true; }
-    private async Task DeleteAsset(Asset item)
-    {
-        if (await JS.InvokeAsync<bool>("confirm", $"Bạn có chắc muốn xóa '{item.AssetName}' không?")) { var res = await Http.DeleteAsync($"https://localhost:7239/api/assets/{item.AssetID}"); if (res.IsSuccessStatusCode) { await JS.InvokeVoidAsync("alert", "Đã xóa thành công!"); await LoadData(); } else { var msg = await res.Content.ReadAsStringAsync(); await JS.InvokeVoidAsync("alert", "Lỗi: " + msg); } }
+    private async Task OpenEditModal(int id) { editingAsset = await Http.GetFromJsonAsync<Asset>($"api/admin/assets/{id}"); showEditModal = true; }
+    private void OnEditTypeChanged(ChangeEventArgs e) { if (int.TryParse(e.Value?.ToString(), out int id)) editingAsset.AssetTypeID = id; }
+
+    private async Task SubmitUpdate() {
+        var res = await Http.PutAsJsonAsync($"api/assets/{editingAsset.AssetID}", editingAsset);
+        if (res.IsSuccessStatusCode) { showEditModal = false; await LoadData(); await JS.InvokeVoidAsync("alert", "Cập nhật thành công!"); }
     }
 
-    // CLASSES
+  private async Task OpenDetailModal(int id)
+    {
+        // 1. Lấy dữ liệu chi tiết của tài sản từ API
+        var result = await Http.GetFromJsonAsync<Asset>($"api/admin/assets/{id}");
+        
+        if (result != null)
+        {
+            editingAsset = result;
+
+            // 🚀 CÂU CHỐT HẠ ĐỂ HIỆN TÊN HÃNG:
+            // Nếu SupplierName bị trống (thường do API chỉ trả về ID), 
+            // ta lấy tạm tên từ danh sách hiển thị ngoài bảng để gán vào.
+            if (string.IsNullOrEmpty(editingAsset.SupplierName))
+            {
+                var assetInList = assets?.FirstOrDefault(x => x.AssetID == id);
+                editingAsset.SupplierName = assetInList?.SupplierName ?? "Chưa xác định";
+            }
+
+            showDetailModal = true;
+        }
+    }
+
+    private async Task DeleteAsset(Asset item) {
+        if (await JS.InvokeAsync<bool>("confirm", $"Xóa '{item.AssetName}'?")) {
+            var res = await Http.DeleteAsync($"api/assets/{item.AssetID}");
+            if (res.IsSuccessStatusCode) { await LoadData(); await JS.InvokeVoidAsync("alert", "Đã xóa!"); }
+        }
+    }
+
     public class DepartmentDTO { public int DepartmentID { get; set; } public string DeptName { get; set; } }
-    public class AllocateRequest
-    {
-        public List<int> AssetIds { get; set; }
-        public int DepartmentID { get; set; }
-        public int? UserID { get; set; }
-        public DateTime AllocatedDate { get; set; }
-        public string? Note { get; set; }
-        public int Quantity { get; set; } = 1;
-    }
-    public class CreateAssetRequest { public string AssetName { get; set; } = ""; public int Quantity { get; set; } = 1; public string Unit { get; set; } = "Cái"; public string? Model { get; set; } public decimal Price { get; set; } public string? Config { get; set; } public string? Location { get; set; } public string AssetTypeName { get; set; } = ""; public string SupplierName { get; set; } = ""; public DateTime ImportDate { get; set; } = DateTime.Now; }
-
-    public class Asset
-    {
-        public int AssetID { get; set; }
-        public string AssetName { get; set; }
-        public int Quantity { get; set; }
-        public string Unit { get; set; }
-        public string? Model { get; set; }
-        public int AssetTypeID { get; set; }
-        public int? SupplierID { get; set; }
-        public int? DepartmentID { get; set; }
-        public int Status { get; set; }
-        public DateTime CreatedDate { get; set; }
-        public DateTime ImportDate { get; set; }
-        public decimal Price { get; set; }
-        public string? Location { get; set; }
-        public string? Config { get; set; }
-        public string? AssetTypeName { get; set; }
-        public string? SupplierName { get; set; }
-        public string? DepartmentName { get; set; }
-    }
+    public class AllocateRequest { public List<int> AssetIds { get; set; } = new(); public int DepartmentID { get; set; } public int? UserID { get; set; } public DateTime AllocatedDate { get; set; } public string? Note { get; set; } public int Quantity { get; set; } = 1; }
+    public class CreateAssetRequest { public string AssetName { get; set; } = ""; public int Quantity { get; set; } = 1; public string Unit { get; set; } = "Cái"; public string? Model { get; set; } public string? ModelSeries { get; set; } public decimal Price { get; set; } public string? Config { get; set; } public string? Location { get; set; } public string AssetTypeName { get; set; } = ""; public string SupplierName { get; set; } = ""; public DateTime ImportDate { get; set; } = DateTime.Now; }
+    public class Asset { public int AssetID { get; set; } public string AssetName { get; set; } = ""; public int Quantity { get; set; } public string Unit { get; set; } = ""; public string? Model { get; set; } public string? ModelSeries { get; set; } public int AssetTypeID { get; set; } public int? SupplierID { get; set; } public int? DepartmentID { get; set; } public int Status { get; set; } public DateTime CreatedDate { get; set; } public DateTime ImportDate { get; set; } public decimal Price { get; set; } public string? Location { get; set; } public string? Config { get; set; } public string? AssetTypeName { get; set; } public string? SupplierName { get; set; } public string? DepartmentName { get; set; } }
 }

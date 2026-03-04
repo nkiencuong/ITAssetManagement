@@ -19,6 +19,9 @@ namespace ITAssetManagement.Models.Entitis
         [StringLength(500)]
         public string? Description { get; set; }
 
+        // 👇 QUAN TRỌNG NHẤT: PHẢI CÓ DẤU ? VÌ LỖI BAN ĐẦU LÀ DO ÔNG NÀY
+        public int? GroupType { get; set; } = 1;
+
         // Navigation
         public virtual ICollection<Asset> Assets { get; set; } = new List<Asset>();
     }

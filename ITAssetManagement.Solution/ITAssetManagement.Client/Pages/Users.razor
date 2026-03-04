@@ -1,8 +1,8 @@
 ﻿@page "/users"
 @using Microsoft.AspNetCore.Authorization
 @using System.Net.Http.Json
-@using ITAssetManagement.Client.Models
-@attribute [Authorize(Roles = "Admin")]
+@* Chặn không cho Admin vào, chỉ SuperAdmin được vào *@
+@attribute [Authorize(Roles = "SuperAdmin")]
 @inject HttpClient Http
 @inject IJSRuntime JS
 
@@ -24,32 +24,34 @@
         }
         else
         {
-
             <span><i class="bi bi-person-plus-fill me-2"></i>Thêm Mới</span>
         }
     </button>
 </div>
 
-@* --- FORM THÊM MỚI GIỮ NGUYÊN (Để gọn code tôi ẩn bớt, bạn giữ nguyên code cũ của bạn ở đây) --- *@
+@* FORM THÊM MỚI (Đã thêm SĐT) *@
 @if (showForm)
 {
-    @* Copy y nguyên đoạn Form thêm mới của bạn vào đây *@
     <div class="info-card mb-4" style="border-left: 4px solid var(--primary-color);">
         <h5 class="text-primary fw-bold mb-3">Thông Tin Nhân Viên Mới</h5>
         <div class="row g-3">
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <label class="form-label small fw-bold text-secondary">Tên đăng nhập <span class="text-danger">*</span></label>
                 <input type="text" class="form-control" @bind="newUser.Username" placeholder="VD: bacsi_hung" />
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <label class="form-label small fw-bold text-secondary">Mật khẩu <span class="text-danger">*</span></label>
                 <input type="text" class="form-control" @bind="newUser.PasswordHash" placeholder="VD: 123456" />
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <label class="form-label small fw-bold text-secondary">Họ và tên <span class="text-danger">*</span></label>
                 <input type="text" class="form-control" @bind="newUser.FullName" placeholder="VD: Nguyễn Văn Hùng" />
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
+                <label class="form-label small fw-bold text-secondary">Số điện thoại</label>
+                <input type="text" class="form-control" @bind="newUser.PhoneNumber" placeholder="VD: 0987..." />
+            </div>
+            <div class="col-md-2">
                 <label class="form-label small fw-bold text-secondary">Khoa / Phòng <span class="text-danger">*</span></label>
                 <select class="form-select" @bind="newUser.DepartmentID">
                     <option value="0">-- Chọn Khoa --</option>
@@ -62,11 +64,12 @@
                     }
                 </select>
             </div>
-            <div class="col-md-2">
+            <div class="col-md-1">
                 <label class="form-label small fw-bold text-secondary">Phân quyền</label>
                 <select class="form-select" @bind="newUser.Role">
-                    <option value="User">User (Nhân viên)</option>
-                    <option value="Admin">Admin (Quản trị)</option>
+                    <option value="User">User</option>
+                    <option value="Admin">Admin</option>
+                    <option value="SuperAdmin">SuperAdmin</option>
                 </select>
             </div>
             <div class="col-md-1 d-flex align-items-end">
@@ -84,20 +87,21 @@
                     <th class="text-center" style="width: 60px;">Avatar</th>
                     <th>Tên đăng nhập</th>
                     <th>Họ và tên</th>
+                    <th>Số điện thoại</th>
                     <th>Khoa/Phòng</th>
-                    <th>Quyền hạn (Role)</th>
+                    <th>Quyền hạn</th>
                     <th>Ngày tạo</th>
-                    <th class="text-end">Thao tác</th>
+                    <th class="text-end" style="min-width: 150px;">Thao tác</th>
                 </tr>
             </thead>
             <tbody>
                 @if (users == null)
                 {
-                    <tr><td colspan="7" class="text-center py-4">Đang tải dữ liệu...</td></tr>
+                    <tr><td colspan="8" class="text-center py-4">Đang tải dữ liệu...</td></tr>
                 }
                 else if (users.Count == 0)
                 {
-                    <tr><td colspan="7" class="text-center py-4 text-muted">Chưa có nhân viên nào.</td></tr>
+                    <tr><td colspan="8" class="text-center py-4 text-muted">Chưa có nhân viên nào.</td></tr>
                 }
                 else
                 {
@@ -111,24 +115,44 @@
                             </td>
                             <td class="fw-bold text-primary">@u.Username</td>
                             <td class="fw-bold text-dark">@u.FullName</td>
-                            <td>@u.DepartmentName</td>
+                            <td>@(string.IsNullOrEmpty(u.PhoneNumber) ? "-" : u.PhoneNumber)</td>
                             <td>
-                                @if (u.Role == "Admin")
+                                @if (u.DepartmentID.HasValue && u.DepartmentID > 0)
+                                {
+                                    <span class="fw-bold text-dark">@(departments?.FirstOrDefault(d => d.DepartmentID == u.DepartmentID)?.DeptName ?? "Khoa ẩn danh")</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Chưa phân khoa</span>
+                                }
+                            </td>
+                            <td>
+                                @if (u.Role == "SuperAdmin")
+                                {
+                                    <span class="badge bg-dark rounded-pill px-3">SuperAdmin</span>
+                                }
+                                else if (u.Role == "Admin")
                                 {
                                     <span class="badge bg-danger rounded-pill px-3">Admin</span>
                                 }
                                 else
                                 {
-
                                     <span class="badge bg-info text-dark rounded-pill px-3">User</span>
                                 }
                             </td>
                             <td class="text-secondary small"><i class="bi bi-calendar3 me-1"></i> @(u.CreatedDate?.ToString("dd/MM/yyyy") ?? "N/A")</td>
                             <td class="text-end">
-                                @* 👇 NÚT ĐỔI MẬT KHẨU MỚI *@
-                                <button class="btn btn-sm btn-warning me-2" title="Đổi mật khẩu" @onclick="() => OpenChangePassModal(u)">
+                                @* 🚀 NÚT SỬA THÔNG TIN (MỚI) *@
+                                <button class="btn btn-sm btn-info me-1" title="Sửa thông tin" @onclick="() => OpenEditUserModal(u)">
+                                    <i class="bi bi-pencil-square text-white"></i>
+                                </button>
+
+                                @* NÚT ĐỔI PASS *@
+                                <button class="btn btn-sm btn-warning me-1" title="Đổi mật khẩu" @onclick="() => OpenChangePassModal(u)">
                                     <i class="bi bi-key-fill text-white"></i>
                                 </button>
+
+                                @* NÚT XÓA *@
                                 <button class="btn btn-sm btn-outline-danger" title="Xóa nhân viên" @onclick="() => DeleteUser(u.UserID)">
                                     <i class="bi bi-trash"></i>
                                 </button>
@@ -141,7 +165,7 @@
     </div>
 </div>
 
-@* 👇 MODAL ĐỔI MẬT KHẨU (ADMIN) *@
+@* 👇 MODAL ĐỔI MẬT KHẨU *@
 @if (showPassModal)
 {
     <div class="modal-backdrop fade show"></div>
@@ -153,7 +177,7 @@
                     <button type="button" class="btn-close" @onclick="() => showPassModal = false"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Đặt mật khẩu mới cho tài khoản: <strong class="text-primary fs-5">@selectedUserName</strong></p>
+                    <p>Đặt mật khẩu mới cho: <strong class="text-primary fs-5">@selectedUserName</strong></p>
                     <div class="mb-3">
                         <label class="form-label fw-bold">Mật khẩu mới:</label>
                         <input type="text" class="form-control fw-bold text-center text-primary" @bind="newPasswordInput" placeholder="Nhập mật khẩu mới..." style="font-size: 1.2rem;" />
@@ -168,17 +192,71 @@
     </div>
 }
 
+@* 🚀 MODAL SỬA THÔNG TIN NGƯỜI DÙNG (MỚI THÊM) *@
+@if (showEditModal)
+{
+    <div class="modal-backdrop fade show"></div>
+    <div class="modal fade show d-block" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-pencil-square me-2"></i>Sửa thông tin: @editUserDto.Username</h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="() => showEditModal = false"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Họ và tên:</label>
+                            <input type="text" class="form-control" @bind="editUserDto.FullName" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Số điện thoại:</label>
+                            <input type="text" class="form-control" @bind="editUserDto.PhoneNumber" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Khoa / Phòng:</label>
+                            <select class="form-select" @bind="editUserDto.DepartmentID">
+                                <option value="0">-- Chọn Khoa --</option>
+                                @foreach (var d in departments)
+                                {
+                                    <option value="@d.DepartmentID">@d.DeptName</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Quyền truy cập:</label>
+                            <select class="form-select fw-bold text-primary" @bind="editUserDto.Role">
+                                <option value="User">User (Chỉ xem/báo hỏng)</option>
+                                <option value="Admin">Admin (Quản lý)</option>
+                                <option value="SuperAdmin">SuperAdmin (Toàn quyền)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="() => showEditModal = false">Hủy</button>
+                    <button class="btn btn-info fw-bold text-white" @onclick="SubmitEditUser">Cập nhật</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 @code {
     private List<UserDTO>? users;
     private UserCreateDTO newUser = new UserCreateDTO { Role = "User" };
     private bool showForm = false;
     private Department[] departments = Array.Empty<Department>();
 
-    // 👇 BIẾN CHO MODAL ĐỔI PASS
+    // Biến Modal Đổi Mật Khẩu
     private bool showPassModal = false;
     private int selectedUserId = 0;
     private string selectedUserName = "";
     private string newPasswordInput = "";
+
+    // 🚀 Biến Modal Sửa Thông Tin
+    private bool showEditModal = false;
+    private UserUpdateDTO editUserDto = new UserUpdateDTO();
 
     protected override async Task OnInitializedAsync()
     {
@@ -186,24 +264,28 @@
         await LoadUsers();
     }
 
-    private async Task LoadDepartments() 
-    { 
-        try { 
+    private async Task LoadDepartments()
+    {
+        try
+        {
             var res = await Http.GetFromJsonAsync<Department[]>("api/admin/departments");
-            if (res != null) departments = res; 
-        } catch { }
+            if (res != null) departments = res;
+        }
+        catch { }
     }
-    private async Task LoadUsers() 
-    { try 
-        { users = await Http.GetFromJsonAsync<List<UserDTO>>("api/admin/auth/users"); 
-        } catch { } 
+    private async Task LoadUsers()
+    {
+        try
+        {
+            users = await Http.GetFromJsonAsync<List<UserDTO>>("api/admin/users");
+        }
+        catch { }
     }
 
     private async Task CreateUser()
     {
         if (string.IsNullOrWhiteSpace(newUser.Username) || string.IsNullOrWhiteSpace(newUser.PasswordHash)) { await JS.InvokeVoidAsync("alert", "Vui lòng nhập đủ thông tin!"); return; }
         if (newUser.DepartmentID == 0) { await JS.InvokeVoidAsync("alert", "Vui lòng chọn Khoa/Phòng!"); return; }
-        if (string.IsNullOrWhiteSpace(newUser.Email)) newUser.Email = null;
 
         try
         {
@@ -223,7 +305,7 @@
         }
     }
 
-    // 👇 HÀM MỞ MODAL ĐỔI PASS
+    // --- HÀM CHO MODAL ĐỔI PASS ---
     private void OpenChangePassModal(UserDTO user)
     {
         selectedUserId = user.UserID;
@@ -232,26 +314,105 @@
         showPassModal = true;
     }
 
-    // 👇 HÀM GỌI API ĐỔI PASS
     private async Task SubmitChangePass()
     {
         if (string.IsNullOrWhiteSpace(newPasswordInput)) { await JS.InvokeVoidAsync("alert", "Chưa nhập mật khẩu mới!"); return; }
-
         var payload = new { UserID = selectedUserId, NewPassword = newPasswordInput };
         var res = await Http.PostAsJsonAsync("api/admin/users/reset-password", payload);
 
+        if (res.IsSuccessStatusCode) { await JS.InvokeVoidAsync("alert", "✅ Đổi mật khẩu thành công!"); showPassModal = false; }
+        else { await JS.InvokeVoidAsync("alert", "❌ Lỗi khi đổi mật khẩu!"); }
+    }
+
+    // 🚀 --- HÀM CHO MODAL SỬA THÔNG TIN ---
+    private void OpenEditUserModal(UserDTO user)
+    {
+        // Copy dữ liệu từ bảng vào form sửa
+        editUserDto = new UserUpdateDTO
+        {
+            UserID = user.UserID,
+            Username = user.Username, // Chỉ để hiển thị, thường k cho sửa username
+            FullName = user.FullName,
+            PhoneNumber = user.PhoneNumber,
+            Role = user.Role,
+            DepartmentID = user.DepartmentID ?? 0
+        };
+        showEditModal = true;
+    }
+
+    private async Task SubmitEditUser()
+    {
+        if (editUserDto.DepartmentID == 0) { await JS.InvokeVoidAsync("alert", "Vui lòng chọn Khoa/Phòng!"); return; }
+
+        var res = await Http.PutAsJsonAsync($"api/admin/users/{editUserDto.UserID}", editUserDto);
+
         if (res.IsSuccessStatusCode)
         {
-            await JS.InvokeVoidAsync("alert", "✅ Đổi mật khẩu thành công!");
-            showPassModal = false;
+            await JS.InvokeVoidAsync("alert", "✅ Cập nhật thông tin thành công!");
+            showEditModal = false;
+            await LoadUsers();
         }
         else
         {
-            await JS.InvokeVoidAsync("alert", "❌ Lỗi khi đổi mật khẩu!");
+            await JS.InvokeVoidAsync("alert", "❌ Lỗi khi cập nhật!");
         }
     }
 
-    public class UserDTO { public int UserID { get; set; } public string Username { get; set; } public string FullName { get; set; } public string Role { get; set; } public string Email { get; set; } public DateTime? CreatedDate { get; set; } public string DepartmentName { get; set; } }
-    public class UserCreateDTO { public string Username { get; set; } = ""; public string PasswordHash { get; set; } = ""; public string FullName { get; set; } = ""; public string Role { get; set; } = "User"; public string? Email { get; set; } public int DepartmentID { get; set; } }
-    public class Department { public int DepartmentID { get; set; } public string DeptName { get; set; } }
+    // --- DTOs ---
+    public class UserDTO
+    {
+        public int UserID { get; set; }
+
+        public string Username { get; set; }
+
+        public string FullName { get; set; }
+
+        public string Role { get; set; }
+
+        public string Email { get; set; }
+
+        public string PhoneNumber { get; set; }
+
+        public DateTime? CreatedDate { get; set; }
+
+        public int? DepartmentID { get; set; }
+    }
+
+    public class UserCreateDTO
+    {
+        public string Username { get; set; } = "";
+
+        public string PasswordHash { get; set; } = "";
+
+        public string FullName { get; set; } = "";
+
+        public string Role { get; set; } = "User";
+
+        public string? PhoneNumber { get; set; }
+
+        public int DepartmentID { get; set; }
+    }
+
+    // 🚀 DTO ĐỂ SỬA THÔNG TIN
+    public class UserUpdateDTO
+    {
+        public int UserID { get; set; }
+
+        public string Username { get; set; }
+
+        public string FullName { get; set; }
+
+        public string? PhoneNumber { get; set; }
+
+        public string Role { get; set; }
+
+        public int DepartmentID { get; set; }
+    }
+
+    public class Department
+    {
+        public int DepartmentID { get; set; }
+
+        public string DeptName { get; set; } = "";
+    }
 }

@@ -1,6 +1,7 @@
 F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement\obj\Release\net9.0\PubTmp\Out\ITAssetManagement.exe
 F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement\obj\Release\net9.0\PubTmp\Out\appsettings.Development.json
 F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement\obj\Release\net9.0\PubTmp\Out\appsettings.json
+F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement\obj\Release\net9.0\PubTmp\Out\dotnet-tools.json
 F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement\obj\Release\net9.0\PubTmp\Out\BlazorDebugProxy\BrowserDebugHost.dll
 F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement\obj\Release\net9.0\PubTmp\Out\BlazorDebugProxy\BrowserDebugHost.runtimeconfig.json
 F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement\obj\Release\net9.0\PubTmp\Out\BlazorDebugProxy\BrowserDebugProxy.dll

@@ -1,5 +1,10 @@
 wwwroot\templates\Bien_Ban_Hien_Trang.docx
+wwwroot\uploads\195207d5-3ca6-4602-aaee-571eeccc38b1.png
+wwwroot\uploads\39f56d60-5e4b-47da-a4b1-4923cf1a6d9a.jpg
 wwwroot\uploads\3fb91072-a5e9-41ff-8281-89a7279ae0f4.jpg
 wwwroot\uploads\44a5d982-c153-4c72-9e02-466e3e2093f9.png
+wwwroot\uploads\d5e9a9fa-4c45-4fb8-bf5c-bf15014443f5.png
 wwwroot\uploads\e09be107-dc10-4a26-8b2a-2e7043b84f67.jpg
 wwwroot\uploads\f38ad54d-586e-4572-8bab-eeaa8928a9c7.jpg
+wwwroot\templates\Mau_BaoCaoThang.xlsx
+wwwroot\uploads\d46424c4-9009-4e66-bd87-09b47d45a629.jpg

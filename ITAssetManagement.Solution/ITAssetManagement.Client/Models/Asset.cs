@@ -24,6 +24,7 @@ namespace ITAssetManagement.Client.Models
 
         public int AssetTypeID { get; set; }
         public int? SupplierID { get; set; }
+        public string ModelSeries { get; set; } = "";
 
         // Object này thường bị NULL do API trả về dạng phẳng (flat), nên không dùng để lọc được
         public AssetType? AssetType { get; set; }

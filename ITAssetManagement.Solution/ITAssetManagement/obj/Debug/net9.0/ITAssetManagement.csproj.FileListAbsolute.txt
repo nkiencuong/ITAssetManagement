@@ -198,7 +198,6 @@ F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement\obj\Debug\net9
 F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement\obj\Debug\net9.0\ITAssetManagement.AssemblyInfoInputs.cache
 F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement\obj\Debug\net9.0\ITAssetManagement.AssemblyInfo.cs
 F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement\obj\Debug\net9.0\ITAssetManagement.csproj.CoreCompileInputs.cache
-F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement\obj\Debug\net9.0\ITAssetManagement.MvcApplicationPartsAssemblyInfo.cs
 F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement\obj\Debug\net9.0\ITAssetManagement.MvcApplicationPartsAssemblyInfo.cache
 F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement\obj\Debug\net9.0\ITAssetManagement.sourcelink.json
 F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement\obj\Debug\net9.0\rjimswa.dswa.cache.json
@@ -210,10 +209,11 @@ F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement\obj\Debug\net9
 F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement\obj\Debug\net9.0\staticwebassets.development.json
 F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement\obj\Debug\net9.0\staticwebassets.build.endpoints.json
 F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement\obj\Debug\net9.0\swae.build.ex.cache
-F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement\obj\Debug\net9.0\staticwebassets.upToDateCheck.txt
 F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement\obj\Debug\net9.0\ITAssetM.4F5FF135.Up2Date
 F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement\obj\Debug\net9.0\ITAssetManagement.dll
 F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement\obj\Debug\net9.0\refint\ITAssetManagement.dll
 F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement\obj\Debug\net9.0\ITAssetManagement.pdb
 F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement\obj\Debug\net9.0\ITAssetManagement.genruntimeconfig.cache
 F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement\obj\Debug\net9.0\ref\ITAssetManagement.dll
+F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement\bin\Debug\net9.0\dotnet-tools.json
+F:\ITAssetManagement\ITAssetManagement.Solution\ITAssetManagement\obj\Debug\net9.0\staticwebassets.upToDateCheck.txt

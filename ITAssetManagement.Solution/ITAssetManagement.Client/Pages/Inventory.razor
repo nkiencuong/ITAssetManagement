@@ -1,80 +1,98 @@
 ﻿@page "/inventory"
 @inject HttpClient Http
 
-<div class="container mt-4">
-    <h3 class="text-primary">📋 Kiểm Kê Tài Sản</h3>
+@* 🚀 Bọc toàn bộ trang trong position-relative để lấy điểm tựa cho lớp kính mờ *@
+<div class="position-relative" style="min-height: 85vh;">
 
-    <div class="card mb-4 p-3 shadow-sm">
-        <div class="row g-3">
-            <div class="col-md-4">
-                <label>ID Tài sản (Hoặc quét mã):</label>
-                <input type="number" class="form-control" @bind="newCheck.AssetID" placeholder="Nhập Asset ID..." />
-            </div>
-            <div class="col-md-3">
-                <label>Trạng thái thực tế:</label>
-                <select class="form-select" @bind="newCheck.ActualStatus">
-                    <option value="Sẵn sàng">Sẵn sàng</option>
-                    <option value="Đang sử dụng">Đang sử dụng</option>
-                    <option value="Hỏng">Hỏng</option>
-                    <option value="Mất">Mất</option>
-                </select>
-            </div>
-            <div class="col-md-2">
-                <label>Sai lệch hồ sơ?</label>
-                <div class="form-check mt-2">
-                    <input class="form-check-input" type="checkbox" @bind="newCheck.Discrepancy" />
-                    <label class="form-check-label">Có</label>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <label>Ghi chú:</label>
-                <input type="text" class="form-control" @bind="newCheck.Note" />
-            </div>
-            <div class="col-12 text-end">
-                <button class="btn btn-success" @onclick="SubmitCheck">✅ Lưu kết quả</button>
-            </div>
+    @* 🚀 1. LỚP KÍNH MỜ (OVERLAY) HIỆN THÔNG BÁO KHOÁ TRANG *@
+    <div class="position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
+         style="z-index: 999; background-color: rgba(255, 255, 255, 0.4); backdrop-filter: blur(5px); border-radius: 10px;">
+        <div class="text-center bg-white p-5 rounded-4 shadow-lg border border-warning" style="transform: translateY(-50px);">
+            <i class="bi bi-cone-striped text-warning mb-3" style="font-size: 4rem;"></i>
+            <h2 class="fw-bold text-primary">Tính năng đang phát triển</h2>
+            <h5 class="text-muted mt-2">Phần mềm đang hoàn thiện, bác đợi bản cập nhật sau nhé!</h5>
         </div>
     </div>
 
-    <h5 class="text-secondary">Lịch sử kiểm kê gần đây</h5>
-    <table class="table table-bordered table-hover">
-        <thead class="table-light">
-            <tr>
-                <th>Ngày</th>
-                <th>Tài sản</th>
-                <th>Người kiểm</th>
-                <th>Tình trạng</th>
-                <th>Sai lệch</th>
-                <th>Ghi chú</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (checkList == null)
-            {
-                <tr><td colspan="6" class="text-center">Loading...</td></tr>
-            }
-            else if (checkList.Count == 0)
-            {
-                <tr><td colspan="6" class="text-center">Chưa có dữ liệu kiểm kê.</td></tr>
-            }
-            else
-            {
-                @foreach (var item in checkList)
-                {
+    @* 🚀 2. GIAO DIỆN CŨ CỦA BÁC BỊ VÔ HIỆU HOÁ BÊN DƯỚI (Mờ nhẹ và cấm click) *@
+    <div style="pointer-events: none; user-select: none; opacity: 0.6;">
+        <div class="container mt-4">
+            <h3 class="text-primary">📋 Kiểm Kê Tài Sản</h3>
+
+            <div class="card mb-4 p-3 shadow-sm">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label>ID Tài sản (Hoặc quét mã):</label>
+                        <input type="number" class="form-control" @bind="newCheck.AssetID" placeholder="Nhập Asset ID..." />
+                    </div>
+                    <div class="col-md-3">
+                        <label>Trạng thái thực tế:</label>
+                        <select class="form-select" @bind="newCheck.ActualStatus">
+                            <option value="Sẵn sàng">Sẵn sàng</option>
+                            <option value="Đang sử dụng">Đang sử dụng</option>
+                            <option value="Hỏng">Hỏng</option>
+                            <option value="Mất">Mất</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label>Sai lệch hồ sơ?</label>
+                        <div class="form-check mt-2">
+                            <input class="form-check-input" type="checkbox" @bind="newCheck.Discrepancy" />
+                            <label class="form-check-label">Có</label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <label>Ghi chú:</label>
+                        <input type="text" class="form-control" @bind="newCheck.Note" />
+                    </div>
+                    <div class="col-12 text-end">
+                        <button class="btn btn-success" @onclick="SubmitCheck">✅ Lưu kết quả</button>
+                    </div>
+                </div>
+            </div>
+
+            <h5 class="text-secondary">Lịch sử kiểm kê gần đây</h5>
+            <table class="table table-bordered table-hover">
+                <thead class="table-light">
                     <tr>
-                        <td>@item.CheckDate.ToString("dd/MM/yyyy")</td>
-                        <td class="fw-bold">@item.AssetName</td>
-                        <td>@item.UserName</td>
-                        <td>@item.ActualStatus</td>
-                        <td>@(item.Discrepancy ? "⚠️ Có" : "Không")</td>
-                        <td>@item.Note</td>
+                        <th>Ngày</th>
+                        <th>Tài sản</th>
+                        <th>Người kiểm</th>
+                        <th>Tình trạng</th>
+                        <th>Sai lệch</th>
+                        <th>Ghi chú</th>
                     </tr>
-                }
-            }
-        </tbody>
-    </table>
+                </thead>
+                <tbody>
+                    @if (checkList == null)
+                    {
+                        <tr><td colspan="6" class="text-center">Loading...</td></tr>
+                    }
+                    else if (checkList.Count == 0)
+                    {
+                        <tr><td colspan="6" class="text-center">Chưa có dữ liệu kiểm kê.</td></tr>
+                    }
+                    else
+                    {
+                        @foreach (var item in checkList)
+                        {
+                            <tr>
+                                <td>@item.CheckDate.ToString("dd/MM/yyyy")</td>
+                                <td class="fw-bold">@item.AssetName</td>
+                                <td>@item.UserName</td>
+                                <td>@item.ActualStatus</td>
+                                <td>@(item.Discrepancy ? "⚠️ Có" : "Không")</td>
+                                <td>@item.Note</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
+@* 🚀 3. LOGIC CODE ĐƯỢC GIỮ NGUYÊN 100% *@
 @code {
     // List hiển thị
     private List<InventoryCheckResponse> checkList = new();

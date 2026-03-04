@@ -62,17 +62,21 @@
                                 <td><span class="badge bg-secondary">@item.ReferenceNo</span></td>
                                 <td class="fw-bold text-primary">@item.AssetName</td>
                                 <td>
-                                    @if (item.Type.Contains("Nhập") || item.Type.Contains("Thu hồi"))
+                                    @if (item.Type == "IN" || item.Type == "Nhập kho")
                                     {
-                                        <span class="badge bg-success">@item.Type</span>
+                                        <span class="badge bg-success">Nhập kho</span>
                                     }
-                                    else if (item.Type.Contains("Xuất") || item.Type.Contains("Cấp phát"))
+                                    else if (item.Type == "OUT" || item.Type == "Xuất kho")
                                     {
-                                        <span class="badge bg-danger">@item.Type</span>
+                                        <span class="badge bg-danger">Xuất kho</span>
+                                    }
+                                    else if (item.Type == "OUT_REPAIR" || item.Type == "REPAIR" || item.Type == "Sửa chữa")
+                                    {
+                                        <span class="badge bg-info text-dark">Sửa chữa</span>
                                     }
                                     else
                                     {
-                                        <span class="badge bg-info text-dark">@item.Type</span>
+                                        <span class="badge bg-secondary">@item.Type</span>
                                     }
                                 </td>
                                 <td class="fw-bold">@item.Quantity</td>

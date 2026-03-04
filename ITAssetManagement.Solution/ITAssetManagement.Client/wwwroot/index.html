@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -13,6 +14,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.css" />
 </head>
 
 <body>
@@ -43,6 +46,17 @@
         }
     </script>
 
+    <script>
+        function saveAsFile(filename, bytesBase64) {
+            var link = document.createElement('a');
+            link.download = filename;
+            link.href = "data:application/octet-stream;base64," + bytesBase64;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script src="_framework/blazor.webassembly.js" autostart="false"></script>
@@ -50,26 +64,73 @@
     <script>
         Blazor.start({
             loadBootResource: function (type, name, defaultUri, integrity) {
-                // Nếu đang chạy ở localhost, bỏ qua kiểm tra integrity
-                if (window.location.hostname === 'localhost') {
-                    // Trả về URI file luôn mà không cần kiểm tra mã băm
-                    return defaultUri;
-                }
-                // Nếu chạy thật (deploy) thì vẫn giữ nguyên cho an toàn
                 return defaultUri;
             }
         });
     </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
     <script>
-        // Hàm hỗ trợ tải file từ Blazor
-        function saveAsFile(filename, bytesBase64) {
-            var link = document.createElement('a');
-            link.download = filename;
-            link.href = "data:application/octet-stream;base64," + bytesBase64;
-            document.body.appendChild(link); // Cần thiết cho Firefox
-            link.click();
-            document.body.removeChild(link);
+        window.startTour = function () {
+            const driver = window.driver.js.driver;
+            const driverObj = driver({
+                showProgress: true,
+                animate: true,
+                nextBtnText: 'Tiếp tục ➔',
+                prevBtnText: '⬅ Quay lại',
+                doneBtnText: 'Hoàn thành ✔',
+                steps: [
+                    {
+                        element: '#menu-sua-chua',
+                        popover: { title: 'Bước 1: Menu Sửa Chữa', description: 'Đây là nơi bạn có thể theo dõi và quản lý toàn bộ các sự cố báo hỏng.', side: "right", align: 'start' }
+                    },
+                    {
+                        element: '#btn-lap-to-trinh',
+                        popover: { title: 'Bước 2: Lập tờ trình', description: 'Nhấn vào nút này để mở form báo hỏng thiết bị mới.', side: "bottom", align: 'end' },
+                        onNextClick: () => {
+                            // Bấm mở Form bằng lệnh click vật lý
+                            const btn = document.getElementById('btn-lap-to-trinh');
+                            if (btn) btn.click();
+
+                            setTimeout(() => {
+                                driverObj.moveNext();
+                            }, 500);
+                        }
+                    },
+                    {
+                        element: '#modal-lap-to-trinh',
+                        popover: {
+                            title: 'Bước 3: Nhập dữ liệu',
+                            description: 'Hãy điền đầy đủ thông tin báo hỏng vào Form này.<br/><br/><b>💡 Mẹo nhỏ:</b> Nếu không biết tên thiết bị, hãy tích vào ô <i>"Không tìm thấy thiết bị..."</i>, chụp ảnh lỗi gửi vào phần File đính kèm rồi nhấn Gửi nhé!',
+                            side: "left",
+                            align: 'start'
+                        },
+                        onNextClick: () => {
+                            // 🚀 TRUY TÌM NÚT 'X' TRÊN GÓC HOẶC NÚT 'HỦY' ĐỂ BẤM TẮT FORM
+                            const xButton = document.querySelector('.modal-header .btn-close');
+                            const huyButton = Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('Hủy'));
+
+                            if (xButton) {
+                                xButton.click(); // Ép bấm nút X
+                            } else if (huyButton) {
+                                huyButton.click(); // Ép bấm nút Hủy
+                            }
+
+                            // Đợi 500ms cho Form sập xuống hoàn toàn rồi mới nhảy sang Bước 4
+                            setTimeout(() => {
+                                driverObj.moveNext();
+                            }, 500);
+                        }
+                    },
+                    {
+                        element: '#table-trang-thai',
+                        popover: { title: 'Bước 4: Theo dõi trạng thái', description: 'Phiếu mới gửi sẽ báo "Mới báo". Khi tổ IT xử lý xong, nó sẽ chuyển sang "Đã sửa xong".', side: "top", align: 'start' }
+                    }
+                ]
+            });
+            driverObj.drive();
         }
     </script>
 </body>
+
 </html>

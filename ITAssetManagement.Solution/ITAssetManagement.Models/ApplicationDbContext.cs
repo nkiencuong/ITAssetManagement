@@ -94,7 +94,7 @@ namespace ITAssetManagement.Models
                       .HasForeignKey(u => u.DepartmentID) // Khóa ngoại là DepartmentID
                       .OnDelete(DeleteBehavior.Restrict); // QUAN TRỌNG: Chặn xóa cascade
             });
-            // 👆👆👆 HẾT PHẦN FIX 👆👆👆
+          
         }
     }
 }

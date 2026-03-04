@@ -3,35 +3,77 @@
 @using ITAssetManagement.Client.Pages
 @inject HttpClient Http
 @inject IJSRuntime JS
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
 
-<PageTitle>Quản lý Phân bổ</PageTitle>
+<PageTitle>Quản lý Cấp phát</PageTitle>
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-    <h3 class="text-primary fw-bold mb-0">📋 Danh sách Phân bổ & Thu hồi</h3>
+    <div>
+        <h3 class="text-primary fw-bold mb-0"><i class="bi bi-box-arrow-right me-2"></i>Cấp phát & Thu hồi</h3>
+        <small class="text-muted">Quản lý lịch sử bàn giao thiết bị cho nhân viên/phòng ban</small>
+    </div>
 
-    <div class="input-group w-auto">
-        <span class="input-group-text bg-white text-primary"><i class="bi bi-calendar3"></i></span>
-        <input type="date" class="form-control" @onchange="FilterByDate" />
-        <button class="btn btn-outline-secondary" @onclick="ReloadOriginalData" title="Xem tất cả">
-            <i class="bi bi-arrow-clockwise"></i>
+    <div class="d-flex gap-2 align-items-end">
+        @* --- Ô TỪ NGÀY (CÓ ICON LỊCH) --- *@
+        <div>
+            <label class="form-label fw-bold small text-muted mb-0">Từ ngày:</label>
+            <div class="position-relative" style="width: 140px;">
+                @* 1. Ô hiển thị Text (dd/MM/yyyy) *@
+                <input type="text" class="form-control bg-white pe-4" value="@fromDate.ToString("dd/MM/yyyy")" readonly />
+
+                @* 2. Icon Lịch *@
+                <i class="bi bi-calendar3 position-absolute top-50 end-0 translate-middle-y me-2 text-secondary"></i>
+
+                @* 3. Ô Date thật (Ẩn) *@
+                <input type="date" class="form-control position-absolute top-0 start-0 w-100 h-100"
+                       style="opacity: 0; cursor: pointer;"
+                       @bind="fromDate" @bind:format="yyyy-MM-dd" />
+            </div>
+        </div>
+
+        @* --- Ô ĐẾN NGÀY (CÓ ICON LỊCH) --- *@
+        <div>
+            <label class="form-label fw-bold small text-muted mb-0">Đến ngày:</label>
+            <div class="position-relative" style="width: 140px;">
+                <input type="text" class="form-control bg-white pe-4" value="@toDate.ToString("dd/MM/yyyy")" readonly />
+                <i class="bi bi-calendar3 position-absolute top-50 end-0 translate-middle-y me-2 text-secondary"></i>
+                <input type="date" class="form-control position-absolute top-0 start-0 w-100 h-100"
+                       style="opacity: 0; cursor: pointer;"
+                       @bind="toDate" @bind:format="yyyy-MM-dd" />
+            </div>
+        </div>
+
+        @* Nút Lọc *@
+        <button class="btn btn-primary fw-bold shadow-sm" @onclick="LoadData" title="Xem theo ngày">
+            <i class="bi bi-search"></i>
+        </button>
+
+        @* Nút Tất cả *@
+        <button class="btn btn-outline-secondary fw-bold shadow-sm" @onclick="ShowAll" title="Xem tất cả lịch sử">
+            <i class="bi bi-arrow-counterclockwise me-1"></i> Tất cả
         </button>
     </div>
 </div>
 
+@* --- PHẦN DANH SÁCH (GIỮ NGUYÊN) --- *@
 @if (allocations == null)
 {
-    <div class="d-flex justify-content-center">
+    <div class="d-flex justify-content-center py-5">
         <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>
     </div>
 }
 else if (allocations.Count == 0)
 {
-    <div class="alert alert-info">Hiện chưa có dữ liệu cấp phát nào.</div>
+    <div class="text-center my-5 py-5 text-muted">
+        <i class="bi bi-inbox fs-1"></i>
+        <p class="mt-2">Không có dữ liệu cấp phát trong khoảng thời gian này.</p>
+    </div>
 }
 else
 {
     <div class="table-responsive">
-        <table class="table table-bordered table-hover shadow-sm">
+        <table class="table table-bordered table-hover shadow-sm align-middle">
             <thead class="table-light">
                 <tr>
                     <th>Tài sản</th>
@@ -43,12 +85,21 @@ else
                 </tr>
             </thead>
             <tbody>
-                @* 👇 DUYỆT QUA DANH SÁCH ĐÃ PHÂN TRANG (pagedAllocations) *@
                 @foreach (var item in pagedAllocations)
                 {
                     <tr>
                         <td class="fw-bold text-primary">@item.AssetName</td>
-                        <td>@item.Serial</td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(item.Serial))
+                            {
+                                <span>SN: @item.Serial</span>
+                            }
+                            else
+                            {
+
+                                <span class="text-muted">-</span>
+                            }
+                        </td>
                         <td>
                             <div class="fw-bold">@item.DepartmentName</div>
                             <small class="text-muted">👤 @(item.ReceiverName ?? "Chưa xác định")</small>
@@ -67,8 +118,8 @@ else
                         <td class="text-center">
                             @if (item.Status == 1)
                             {
-                                <button class="btn btn-warning btn-sm" @onclick="() => OpenModal(item)">
-                                    🔄 Thu hồi
+                                <button class="btn btn-warning btn-sm fw-bold" @onclick="() => OpenModal(item)">
+                                    <i class="bi bi-arrow-return-left me-1"></i> Thu hồi
                                 </button>
                             }
                             else
@@ -82,18 +133,15 @@ else
         </table>
     </div>
 
-    @* 👇 THANH PHÂN TRANG 👇 *@
     @if (allocations.Count > 0)
     {
         <div class="mt-3">
-            <Pagination CurrentPage="@currentPage"
-                        TotalItems="@allocations.Count"
-                        PageSize="@pageSize"
-                        OnPageChanged="ChangePage" />
+            <Pagination CurrentPage="@currentPage" TotalItems="@allocations.Count" PageSize="@pageSize" OnPageChanged="ChangePage" />
         </div>
     }
 }
 
+@* --- MODAL THU HỒI (GIỮ NGUYÊN) --- *@
 @if (showModal)
 {
     <div class="modal fade show d-block" style="background-color: rgba(0,0,0,0.5);" tabindex="-1">
@@ -111,9 +159,7 @@ else
 
                     <div class="mb-3">
                         <label class="form-label fw-bold text-danger">Ngày thu hồi:</label>
-                        <input type="date" class="form-control"
-                               @bind="returnRequest.ReturnDate"
-                               @bind:format="yyyy-MM-dd" />
+                        <input type="date" class="form-control" @bind="returnRequest.ReturnDate" @bind:format="yyyy-MM-dd" />
                     </div>
 
                     <div class="mb-3">
@@ -131,14 +177,13 @@ else
 }
 
 @code {
-    private List<Allocation>? allAllocations;
-    private List<Allocation>? allocations;
+    private DateTime fromDate = DateTime.Now.AddDays(-30);
+    private DateTime toDate = DateTime.Now;
 
-    // 👇 PHÂN TRANG
+    private List<Allocation>? allocations;
     private List<Allocation> pagedAllocations = new();
     private int currentPage = 1;
     private int pageSize = 15;
-
     private bool showModal = false;
     private Allocation selectedItem = new();
     private ReturnRequest returnRequest = new ReturnRequest();
@@ -152,99 +197,28 @@ else
     {
         try
         {
-            allAllocations = await Http.GetFromJsonAsync<List<Allocation>>("https://localhost:7239/api/warehouse/allocations");
-            allocations = allAllocations;
-            UpdatePagedList(); // 👈 Cắt trang lần đầu
+            string fDate = fromDate.ToString("yyyy-MM-dd");
+            string tDate = toDate.ToString("yyyy-MM-dd");
+            allocations = await Http.GetFromJsonAsync<List<Allocation>>($"api/warehouse/allocations?from={fDate}&to={tDate}");
+            currentPage = 1;
+            UpdatePagedList();
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Lỗi: {ex.Message}");
-        }
+        catch (Exception ex) { Console.WriteLine($"Lỗi: {ex.Message}"); }
     }
 
-    private void FilterByDate(ChangeEventArgs e)
+    private async Task ShowAll()
     {
-        if (DateTime.TryParse(e.Value?.ToString(), out DateTime date))
-        {
-            if (allAllocations != null)
-                allocations = allAllocations.Where(x => x.AllocatedDate.Date == date.Date).ToList();
-        }
-        else
-        {
-            ReloadOriginalData();
-        }
-        currentPage = 1; // Reset trang
-        UpdatePagedList();
+        fromDate = new DateTime(2020, 1, 1);
+        toDate = DateTime.Now;
+        await LoadData();
     }
 
-    private void ReloadOriginalData()
-    {
-        allocations = allAllocations;
-        currentPage = 1;
-        UpdatePagedList();
-    }
-
-    // 👇 LOGIC PHÂN TRANG
-    private void UpdatePagedList()
-    {
-        if (allocations != null)
-        {
-            pagedAllocations = allocations.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
-        }
-    }
-
-    private void ChangePage(int page)
-    {
-        currentPage = page;
-        UpdatePagedList();
-    }
-
-    private void OpenModal(Allocation item)
-    {
-        selectedItem = item;
-        returnRequest = new ReturnRequest { Note = "", ReturnDate = DateTime.Now };
-        showModal = true;
-    }
-
+    private void UpdatePagedList() { if (allocations != null) pagedAllocations = allocations.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList(); }
+    private void ChangePage(int page) { currentPage = page; UpdatePagedList(); }
+    private void OpenModal(Allocation item) { selectedItem = item; returnRequest = new ReturnRequest { Note = "", ReturnDate = DateTime.Now }; showModal = true; }
     private void CloseModal() => showModal = false;
+    private async Task SubmitReturn() { if (string.IsNullOrWhiteSpace(returnRequest.Note)) { await JS.InvokeVoidAsync("alert", "Vui lòng nhập lý do!"); return; } var res = await Http.PostAsJsonAsync($"api/allocations/return/{selectedItem.AllocationID}", returnRequest); if (res.IsSuccessStatusCode) { await JS.InvokeVoidAsync("alert", "Thu hồi thành công!"); showModal = false; await LoadData(); } else { await JS.InvokeVoidAsync("alert", "Lỗi thu hồi!"); } }
 
-    private async Task SubmitReturn()
-    {
-        if (string.IsNullOrWhiteSpace(returnRequest.Note))
-        {
-            await JS.InvokeVoidAsync("alert", "Vui lòng nhập lý do thu hồi!");
-            return;
-        }
-
-        try
-        {
-            var response = await Http.PostAsJsonAsync($"https://localhost:7239/api/allocations/return/{selectedItem.AllocationID}", returnRequest);
-
-            if (response.IsSuccessStatusCode)
-            {
-                await JS.InvokeVoidAsync("alert", "Thu hồi thành công!");
-
-                var item = allAllocations?.FirstOrDefault(x => x.AllocationID == selectedItem.AllocationID);
-                if (item != null) item.Status = 2;
-
-                showModal = false;
-                StateHasChanged();
-            }
-            else
-            {
-                var error = await response.Content.ReadAsStringAsync();
-                await JS.InvokeVoidAsync("alert", "Lỗi: " + error);
-            }
-        }
-        catch (Exception ex)
-        {
-            await JS.InvokeVoidAsync("alert", "Lỗi hệ thống: " + ex.Message);
-        }
-    }
-
-    public class ReturnRequest
-    {
-        public string Note { get; set; } = "";
-        public DateTime ReturnDate { get; set; } = DateTime.Now;
-    }
+    public class ReturnRequest { public string Note { get; set; } = ""; public DateTime ReturnDate { get; set; } = DateTime.Now; }
+    public class Allocation { public int AllocationID { get; set; } public string AssetName { get; set; } public string Serial { get; set; } public string DepartmentName { get; set; } public string ReceiverName { get; set; } public DateTime AllocatedDate { get; set; } public int Status { get; set; } }
 }

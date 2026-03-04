@@ -14,7 +14,7 @@ namespace ITAssetManagement.Request.Assets
         public string Unit { get; set; } = "Cái";
 
         public string? Model { get; set; }
-
+        public string? ModelSeries { get; set; }
         // --- KHU VỰC ĐÃ BỔ SUNG THÊM ID (QUAN TRỌNG) ---
 
         // 1. Loại tài sản: Vừa hứng ID (Dropdown), vừa hứng Tên (Nhập tay)
@@ -29,6 +29,8 @@ namespace ITAssetManagement.Request.Assets
         public int? DepartmentID { get; set; }
 
         // ----------------------------------------------------
+
+        public int UserID { get; set; }
 
         public decimal Price { get; set; }
         public string? Config { get; set; }

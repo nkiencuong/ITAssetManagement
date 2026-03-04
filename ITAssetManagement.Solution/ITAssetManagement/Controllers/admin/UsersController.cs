@@ -1,7 +1,7 @@
 ﻿using ITAssetManagement.Models.Entities;
 using ITAssetManagement.Models.Entitis;
 using ITAssetManagement.Service.Interfaces;
-using ITAssetManagement.Repo.Interfaces; // 👈 Thêm
+using ITAssetManagement.Repo.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,11 +9,11 @@ namespace ITAssetManagement.API.Controllers.Admin
 {
     [Route("api/admin/users")]
     [ApiController]
-    // [Authorize(Roles = "Admin")] 
+    [Authorize(Roles = "SuperAdmin")] // Nếu có bảo mật JWT thì bác mở dòng này ra
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
-        private readonly IUnitOfWork _unitOfWork; // 👈 Thêm UnitOfWork
+        private readonly IUnitOfWork _unitOfWork;
 
         public UsersController(IUserService userService, IUnitOfWork unitOfWork)
         {
@@ -31,11 +31,24 @@ namespace ITAssetManagement.API.Controllers.Admin
 
         // 2. POST: Tạo mới
         [HttpPost]
-        public async Task<IActionResult> CreateUser([FromBody] User newUser)
+        public async Task<IActionResult> CreateUser([FromBody] UserCreateReq req)
         {
+            // Bốc dữ liệu từ giỏ (req) đổ sang thực thể Database (newUser)
+            var newUser = new User
+            {
+                Username = req.Username,
+                PasswordHash = req.PasswordHash,
+                FullName = req.FullName,
+                Role = req.Role,
+                DepartmentID = req.DepartmentID,
+                // Ép cứng 2 thằng này bằng null để Database không kêu ca
+                Email = null,
+                PhoneNumber = null
+            };
+
             var result = await _userService.CreateUserAsync(newUser);
             if (!result) return BadRequest("Tên đăng nhập đã tồn tại.");
-            return Ok("Thêm thành công");
+            return Ok(new { message = "Thêm thành công" });
         }
 
         // 3. DELETE: Xóa
@@ -47,7 +60,7 @@ namespace ITAssetManagement.API.Controllers.Admin
             return Ok("Đã xóa");
         }
 
-        // 👇 4. POST: Admin đổi mật khẩu cho user (Reset Password)
+        // 4. POST: Admin đổi mật khẩu cho user (Reset Password)
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword([FromBody] AdminResetPasswordReq req)
         {
@@ -57,8 +70,7 @@ namespace ITAssetManagement.API.Controllers.Admin
                 var user = await repo.GetByIdAsync(req.UserID);
                 if (user == null) return NotFound("User không tồn tại");
 
-                user.PasswordHash = req.NewPassword; // Reset thẳng, không cần pass cũ
-
+                user.PasswordHash = req.NewPassword;
                 repo.Update(user);
                 await _unitOfWork.CommitAsync();
 
@@ -70,10 +82,72 @@ namespace ITAssetManagement.API.Controllers.Admin
             }
         }
 
+        // 🚀 5. PUT: API CẬP NHẬT FULL THÔNG TIN (Họ tên, SĐT, Khoa, Quyền)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUser(int id, [FromBody] UserUpdateReq req)
+        {
+            try
+            {
+                // 🚀 TẮT CHECK LỖI EMAIL
+                ModelState.Remove("Email");
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var repo = _unitOfWork.GetRepository<User>();
+                var user = await repo.GetByIdAsync(id);
+                if (user == null) return NotFound("User không tồn tại");
+
+                // Cập nhật các trường thông tin mới
+                user.FullName = req.FullName;
+                user.PhoneNumber = req.PhoneNumber;
+                user.DepartmentID = req.DepartmentID;
+
+                // Check quyền hợp lệ rồi mới cho đổi
+                var validRoles = new[] { "User", "Admin", "SuperAdmin" };
+                if (validRoles.Contains(req.Role))
+                {
+                    user.Role = req.Role;
+                }
+
+                repo.Update(user);
+                await _unitOfWork.CommitAsync();
+
+                return Ok(new { message = "Cập nhật thông tin thành công!" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Lỗi: " + ex.Message);
+            }
+        }
+
+        // ================= CÁC LỚP REQUEST (DTO) =================
+
         public class AdminResetPasswordReq
         {
             public int UserID { get; set; }
             public string NewPassword { get; set; }
+        }
+
+        // 🚀 Lớp Request để hứng dữ liệu TẠO MỚI từ Web gửi lên
+        public class UserCreateReq
+        {
+            public string Username { get; set; }
+            public string PasswordHash { get; set; }
+            public string FullName { get; set; }
+            public string Role { get; set; }
+            public int DepartmentID { get; set; }
+        }
+
+        // 🚀 Lớp Request để hứng dữ liệu SỬA THÔNG TIN từ Web gửi lên
+        public class UserUpdateReq
+        {
+            public string FullName { get; set; }
+            public string PhoneNumber { get; set; }
+            public string Role { get; set; }
+            public int DepartmentID { get; set; }
         }
     }
 }
