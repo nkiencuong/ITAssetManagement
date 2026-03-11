@@ -80,12 +80,17 @@
 </div>
 
 <div class="mb-3 d-flex justify-content-end gap-2">
-    @if (selectedAssetIds.Count > 0)
-    {
-        <button class="btn btn-warning shadow-sm fw-bold" @onclick="OpenAllocateModal">
-            <i class="bi bi-arrow-right-circle-fill me-2"></i>Xuất kho (@selectedAssetIds.Count)
-        </button>
-    }
+    @* 🚀 Nút Xuất kho luôn hiển thị, nhưng sẽ bị Mờ (disabled) nếu chưa chọn cái nào *@
+    <button class="btn btn-warning shadow-sm fw-bold"
+            disabled="@(selectedAssetIds.Count == 0)"
+            @onclick="OpenAllocateModal">
+        <i class="bi bi-arrow-right-circle-fill me-2"></i> Xuất kho
+        @if (selectedAssetIds.Count > 0)
+        {
+            <span>(@selectedAssetIds.Count)</span>
+        }
+    </button>
+
     <button class="btn btn-primary shadow-sm fw-bold" @onclick="OpenCreateModal">
         <i class="bi bi-plus-lg me-2"></i> Nhập kho mới
     </button>
@@ -114,6 +119,7 @@ else
                         <th class="py-3">Mã & Tên</th>
                         <th class="py-3">Loại & Hãng</th>
                         <th class="py-3 text-center">Tồn kho</th>
+                        <th class="py-3 text-center text-warning">Đã xuất</th>
                         <th class="py-3">Model</th>
                         <th class="text-end py-3">Đơn giá</th>
                         <th class="text-center py-3">Tác vụ</th>
@@ -132,7 +138,16 @@ else
                             </td>
                             <td>
                                 <div class="fw-bold text-primary">TS-@item.AssetID</div>
-                                <span class="fw-bold text-dark">@item.AssetName</span>
+                                <div class="fw-bold text-dark mb-1">@item.AssetName</div>
+                                @* 🚀 HIỆN THÊM NĂM NHẬP VÀ GIÁ ĐỂ CHỌN LÔ CHO CHUẨN *@
+                                <div class="small">
+                                    <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary me-1">
+                                        Lô: @item.ImportDate.Year
+                                    </span>
+                                    <span class="text-danger fw-bold">
+                                        @string.Format("{0:N0}", item.Price)đ
+                                    </span>
+                                </div>
                             </td>
                             <td>
                                 <div class="badge bg-info text-dark bg-opacity-10 border border-info mb-1">@item.AssetTypeName</div>
@@ -144,6 +159,9 @@ else
                                 } else {
                                     <span class="badge bg-danger">Hết</span>
                                 }
+                            </td>
+                            <td class="text-center fw-bold text-warning fs-6">
+                                @item.AllocatedQuantity
                             </td>
                             <td>@item.Model</td>
                             <td class="text-end fw-bold text-secondary">@string.Format("{0:N0}", item.Price)</td>
@@ -278,11 +296,24 @@ else
                 <div class="modal-body p-4">
                     <div class="row g-3">
                         <div class="col-12"><label class="fw-bold small">Tên tài sản:</label><input class="form-control" @bind="editingAsset.AssetName" /></div>
-                        <div class="col-md-6"><label class="fw-bold small">Loại:</label><select class="form-select" @bind="editingAsset.AssetTypeID">@foreach (var t in assetTypes) {
-                        <option value="@t.Id">@t.Name</option>
-                    }
-</select></div>
-                    <div class="col-md-6"><label class="fw-bold small">Hãng:</label><input class="form-control" @bind="editingAsset.SupplierName" /></div>
+                        @* 🚀 ĐÃ CHIA LẠI THÀNH 3 CỘT (LOẠI - HÃNG - NGÀY NHẬP) *@
+                        <div class="col-md-4">
+                            <label class="fw-bold small">Loại:</label>
+                            <select class="form-select" @bind="editingAsset.AssetTypeID">
+                                @foreach (var t in assetTypes)
+                                {
+                                    <option value="@t.Id">@t.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="fw-bold small">Hãng:</label>
+                            <input class="form-control" @bind="editingAsset.SupplierName" />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="fw-bold small text-danger">Ngày nhập:</label>
+                            <input type="date" class="form-control border-danger" @bind="editingAsset.ImportDate" @bind:format="yyyy-MM-dd" />
+                        </div>
 
                     @* 🚀 ĐÃ SỬA TỪ col-md-4 THÀNH col-md-3 ĐỂ NHÉT VỪA 4 Ô *@
                     <div class="col-md-3"><label class="fw-bold small">Model:</label><input class="form-control" @bind="editingAsset.Model" /></div>
@@ -436,11 +467,28 @@ else
 
     private void OnCreateTypeChanged(ChangeEventArgs e) { newAssetRequest.AssetTypeName = e.Value?.ToString() ?? ""; }
 
-    private async Task SaveAsset() {
+    private async Task SaveAsset()
+    {
         if (string.IsNullOrEmpty(newAssetRequest.AssetTypeName)) { await JS.InvokeVoidAsync("alert", "Vui lòng chọn Loại tài sản!"); return; }
         if (string.IsNullOrEmpty(newAssetRequest.AssetName)) { await JS.InvokeVoidAsync("alert", "Vui lòng nhập Tên hàng hóa!"); return; }
+
         var res = await Http.PostAsJsonAsync("api/assets", newAssetRequest);
-        if (res.IsSuccessStatusCode) { showCreateModal = false; await LoadData(); await JS.InvokeVoidAsync("alert", "Nhập kho thành công!"); }
+        if (res.IsSuccessStatusCode)
+        {
+            showCreateModal = false;   // 1. Tắt popup
+            await LoadData();          // 2. Lấy dữ liệu mới luôn
+            StateHasChanged();         // 3. Ra lệnh vẽ lại màn hình
+
+            // 🚀 PHÉP MÀU NẰM Ở ĐÂY: Cho hệ thống nghỉ 0.1 giây để vẽ xong giao diện
+            await Task.Delay(100);
+
+            // 4. Mọi thứ đã xong xuôi mới hiện thông báo
+            await JS.InvokeVoidAsync("alert", "Nhập kho thành công!");
+        }
+        else
+        {
+            await JS.InvokeVoidAsync("alert", "Lỗi: Không thể lưu vào hệ thống!");
+        }
     }
 
     private void OpenAllocateModal() { allocationRequest = new AllocateRequest { AllocatedDate = DateTime.Now, Quantity = 1 }; showAllocateModal = true; }
@@ -456,9 +504,25 @@ else
     private async Task OpenEditModal(int id) { editingAsset = await Http.GetFromJsonAsync<Asset>($"api/admin/assets/{id}"); showEditModal = true; }
     private void OnEditTypeChanged(ChangeEventArgs e) { if (int.TryParse(e.Value?.ToString(), out int id)) editingAsset.AssetTypeID = id; }
 
-    private async Task SubmitUpdate() {
+    private async Task SubmitUpdate()
+    {
         var res = await Http.PutAsJsonAsync($"api/assets/{editingAsset.AssetID}", editingAsset);
-        if (res.IsSuccessStatusCode) { showEditModal = false; await LoadData(); await JS.InvokeVoidAsync("alert", "Cập nhật thành công!"); }
+        if (res.IsSuccessStatusCode)
+        {
+            showEditModal = false;     // 1. Tắt popup
+            await LoadData();          // 2. Cập nhật bảng dữ liệu
+            StateHasChanged();         // 3. Ra lệnh vẽ lại màn hình
+
+            // 🚀 BẮT BUỘC PHẢI CÓ DÒNG NÀY ĐỂ TRÁNH ĐÓNG BĂNG GIAO DIỆN
+            await Task.Delay(100);
+
+            // 4. Hiện thông báo
+            await JS.InvokeVoidAsync("alert", "Cập nhật thành công!");
+        }
+        else
+        {
+            await JS.InvokeVoidAsync("alert", "Lỗi: Không thể cập nhật!");
+        }
     }
 
   private async Task OpenDetailModal(int id)
@@ -490,8 +554,91 @@ else
         }
     }
 
-    public class DepartmentDTO { public int DepartmentID { get; set; } public string DeptName { get; set; } }
-    public class AllocateRequest { public List<int> AssetIds { get; set; } = new(); public int DepartmentID { get; set; } public int? UserID { get; set; } public DateTime AllocatedDate { get; set; } public string? Note { get; set; } public int Quantity { get; set; } = 1; }
-    public class CreateAssetRequest { public string AssetName { get; set; } = ""; public int Quantity { get; set; } = 1; public string Unit { get; set; } = "Cái"; public string? Model { get; set; } public string? ModelSeries { get; set; } public decimal Price { get; set; } public string? Config { get; set; } public string? Location { get; set; } public string AssetTypeName { get; set; } = ""; public string SupplierName { get; set; } = ""; public DateTime ImportDate { get; set; } = DateTime.Now; }
-    public class Asset { public int AssetID { get; set; } public string AssetName { get; set; } = ""; public int Quantity { get; set; } public string Unit { get; set; } = ""; public string? Model { get; set; } public string? ModelSeries { get; set; } public int AssetTypeID { get; set; } public int? SupplierID { get; set; } public int? DepartmentID { get; set; } public int Status { get; set; } public DateTime CreatedDate { get; set; } public DateTime ImportDate { get; set; } public decimal Price { get; set; } public string? Location { get; set; } public string? Config { get; set; } public string? AssetTypeName { get; set; } public string? SupplierName { get; set; } public string? DepartmentName { get; set; } }
+    public class DepartmentDTO
+    {
+        public int DepartmentID { get; set; }
+
+        public string DeptName { get; set; }
+    }
+
+    public class AllocateRequest
+    {
+        public List<int> AssetIds { get; set; } = new();
+
+        public int DepartmentID { get; set; }
+
+        public int? UserID { get; set; }
+
+        public DateTime AllocatedDate { get; set; }
+
+        public string? Note { get; set; }
+
+        public int Quantity { get; set; } = 1;
+    }
+
+    public class CreateAssetRequest
+    {
+        public string AssetName { get; set; } = "";
+
+        public int Quantity { get; set; } = 1;
+
+        public string Unit { get; set; } = "Cái";
+
+        public string? Model { get; set; }
+
+        public string? ModelSeries { get; set; }
+
+        public decimal Price { get; set; }
+
+        public string? Config { get; set; }
+
+        public string? Location { get; set; }
+
+        public string AssetTypeName { get; set; } = "";
+
+        public string SupplierName { get; set; } = "";
+
+        public DateTime ImportDate { get; set; } = DateTime.Now;
+    }
+
+    public class Asset
+    {
+        public int AssetID { get; set; }
+
+        public string AssetName { get; set; } = "";
+
+        public int Quantity { get; set; }
+
+        public int AllocatedQuantity { get; set; }
+
+        public string Unit { get; set; } = "";
+
+        public string? Model { get; set; }
+
+        public string? ModelSeries { get; set; }
+
+        public int AssetTypeID { get; set; }
+
+        public int? SupplierID { get; set; }
+
+        public int? DepartmentID { get; set; }
+
+        public int Status { get; set; }
+
+        public DateTime CreatedDate { get; set; }
+
+        public DateTime ImportDate { get; set; }
+
+        public decimal Price { get; set; }
+
+        public string? Location { get; set; }
+
+        public string? Config { get; set; }
+
+        public string? AssetTypeName { get; set; }
+
+        public string? SupplierName { get; set; }
+
+        public string? DepartmentName { get; set; }
+    }
 }

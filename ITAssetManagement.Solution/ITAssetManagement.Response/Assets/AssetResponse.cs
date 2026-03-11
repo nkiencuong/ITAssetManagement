@@ -25,6 +25,7 @@ namespace ITAssetManagement.Response.Assets
         public int Status { get; set; } // 0: Kho, 1: Dùng...
         public string Location { get; set; }
         public string Config { get; set; }
+        public int AllocatedQuantity { get; set; } // Số lượng đã xuất (cộng dồn)
         public DateTime ImportDate { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? WarrantyExpr { get; set; }

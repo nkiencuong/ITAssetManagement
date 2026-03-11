@@ -16,5 +16,7 @@ namespace ITAssetManagement.Response.Allocations
         public DateTime AllocatedDate { get; set; } // Ngày cấp
         public string? Note { get; set; } // Cho phép null
         public int Status { get; set; } // <--- Phải có trường này
+        public int Quantity { get; set; }
+        public int DepartmentID { get; set; }
     }
 }

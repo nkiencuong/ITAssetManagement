@@ -18,9 +18,10 @@ namespace ITAssetManagement.Controllers.Admin
         // GET: api/admin/assets
         // Chức năng: Lấy danh sách cho Admin xem
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] DateTime? from, [FromQuery] DateTime? to)
         {
-            var result = await _assetService.GetAllAssetsAsync();
+            // Truyền from, to vào cho thằng culi Service nó tính toán thuật toán cộng dồn
+            var result = await _assetService.GetAllAssetsAsync(from, to);
             return Ok(result);
         }
 

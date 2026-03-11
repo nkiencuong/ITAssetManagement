@@ -21,4 +21,11 @@ namespace ITAssetManagement.Request.Allocations
         public string? Note { get; set; }
         public int Quantity { get; set; } = 1;
     }
+    public class EditAllocationRequest
+    {
+        public int DepartmentID { get; set; }
+        public int Quantity { get; set; }
+        public DateTime AllocatedDate { get; set; }
+        public string ReceiverName { get; set; } = "";
+    }
 }

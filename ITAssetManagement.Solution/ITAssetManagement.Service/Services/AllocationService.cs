@@ -125,7 +125,11 @@ namespace ITAssetManagement.Service.Services
                             ReceiverName = u != null ? u.FullName : "Không xác định",
                             AllocatedDate = h.AllocatedDate,
                             Note = h.Note,
-                            Status = h.Status
+                            Status = h.Status,
+
+                            // 🚀 BÁC THÊM 2 DÒNG NÀY VÀO CHỖ NÀY:
+                            Quantity = h.Quantity,
+                            DepartmentID = h.DepartmentID
                         };
 
             return query.OrderByDescending(x => x.AllocatedDate).ToList();
@@ -190,6 +194,48 @@ namespace ITAssetManagement.Service.Services
             {
                 throw;
             }
+        }
+        // --- 4. SỬA CẤP PHÁT (THUẬT TOÁN BÙ TRỪ KHO) ---
+        public async Task<bool> UpdateAllocationAsync(int allocationId, EditAllocationRequest request, int actionUserId)
+        {
+            var allocationRepo = _unitOfWork.GetRepository<AssetAllocation>();
+            var assetRepo = _unitOfWork.GetRepository<Asset>();
+
+            var allocation = await allocationRepo.GetByIdAsync(allocationId);
+            if (allocation == null) throw new Exception("Không tìm thấy phiếu cấp phát!");
+            if (allocation.Status == 2) throw new Exception("Tài sản này đã thu hồi, không thể sửa!");
+
+            var asset = await assetRepo.GetByIdAsync(allocation.AssetID);
+            if (asset == null) throw new Exception("Tài sản không tồn tại trong kho!");
+
+            // THUẬT TOÁN BÙ TRỪ SỐ LƯỢNG KHO
+            int oldQty = allocation.Quantity;
+            int newQty = request.Quantity;
+            int diff = newQty - oldQty;
+
+            if (diff > 0)
+            {
+                if (asset.Quantity < diff) throw new Exception($"Kho không đủ để cấp thêm! (Chỉ còn tồn {asset.Quantity} cái)");
+                asset.Quantity -= diff;
+            }
+            else if (diff < 0)
+            {
+                asset.Quantity += Math.Abs(diff);
+            }
+
+            // Cập nhật lại thông tin phiếu
+            allocation.Quantity = newQty;
+            allocation.DepartmentID = request.DepartmentID;
+            allocation.AllocatedDate = request.AllocatedDate;
+            allocation.Note = request.ReceiverName;
+
+            asset.Status = asset.Quantity > 0 ? 0 : 1;
+
+            allocationRepo.Update(allocation);
+            assetRepo.Update(asset);
+            await _unitOfWork.CompleteAsync();
+
+            return true;
         }
     }
 }

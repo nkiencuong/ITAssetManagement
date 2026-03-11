@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "ITAssetManagement.Client",
   "resources": {
-    "hash": "sha256-45foR69Dd4/dfEWJpeR292m+wlhR8gts+LTrLMINR3s=",
+    "hash": "sha256-Zq6zau1Wy1AQkVmtVcqSb5MIfKjcKXXxf58To2xCJfc=",
     "fingerprinting": {
       "Azure.Core.92q6rqqhly.wasm": "Azure.Core.wasm",
       "Azure.Identity.b6ekoqlu3w.wasm": "Azure.Identity.wasm",
@@ -233,11 +233,11 @@
       "icudt_EFIGS.tptq2av103.dat": "icudt_EFIGS.dat",
       "icudt_no_CJK.lfu7j35m59.dat": "icudt_no_CJK.dat",
       "ITAssetManagement.Models.ww7lwnpc0g.wasm": "ITAssetManagement.Models.wasm",
-      "ITAssetManagement.Request.0gte3my09x.wasm": "ITAssetManagement.Request.wasm",
-      "ITAssetManagement.Request.diswv5ktvf.pdb": "ITAssetManagement.Request.pdb",
+      "ITAssetManagement.Request.3b8yb0lydl.wasm": "ITAssetManagement.Request.wasm",
+      "ITAssetManagement.Request.zx3ncit9h5.pdb": "ITAssetManagement.Request.pdb",
       "ITAssetManagement.Models.vl9sj3uooq.pdb": "ITAssetManagement.Models.pdb",
-      "ITAssetManagement.Client.l2okpnldjs.wasm": "ITAssetManagement.Client.wasm",
-      "ITAssetManagement.Client.v1a2asc73f.pdb": "ITAssetManagement.Client.pdb"
+      "ITAssetManagement.Client.uddb36cxg2.wasm": "ITAssetManagement.Client.wasm",
+      "ITAssetManagement.Client.445o8khjy9.pdb": "ITAssetManagement.Client.pdb"
     },
     "jsModuleNative": {
       "dotnet.native.xidrk0eo52.js": "sha256-OfGprhDb4vgzxzOBj9RRMcRnAdSZR0hH5g5LHA0MzIE="
@@ -479,13 +479,13 @@
       "mscorlib.560m239brp.wasm": "sha256-XShGzkyhqE1Qwz15C0W5EDSl0wiqbw4NUP1UtzupbE4=",
       "netstandard.yg21u65s4h.wasm": "sha256-PjcsgKDGCmf1+ahJpjBZtaqHugXi6ZJaAVAkX0OzhaI=",
       "ITAssetManagement.Models.ww7lwnpc0g.wasm": "sha256-UIfrO/6llthhTmy1Ks2xxIwLrqwg9yj3nCPbVfCtwuU=",
-      "ITAssetManagement.Request.0gte3my09x.wasm": "sha256-kKf+/qfz99AONA+8owUNopvWBknQMitbfgYsXzNQ0dQ=",
-      "ITAssetManagement.Client.l2okpnldjs.wasm": "sha256-3bv8yEmTPyVZ0wNAoL6aj+5JNYbj3848yU3wui0gRB0="
+      "ITAssetManagement.Request.3b8yb0lydl.wasm": "sha256-jxn01a8gPT8iM2USuN/Uu8+Xx5DVLb0zYrvhaFJQagQ=",
+      "ITAssetManagement.Client.uddb36cxg2.wasm": "sha256-fiyo6eY950bg20E7GS7Vq8y8LiyX5UnCOJ7RjYlOSqY="
     },
     "pdb": {
-      "ITAssetManagement.Request.diswv5ktvf.pdb": "sha256-VYsckk0KouxmTlrbuOksKpnuRiPFGRpBZfhC3jMnxO4=",
+      "ITAssetManagement.Request.zx3ncit9h5.pdb": "sha256-SWiyJC+qLuuRZxvvGT9Y5KJKcdMdYGK5TAglbRwX2PU=",
       "ITAssetManagement.Models.vl9sj3uooq.pdb": "sha256-XSHbY9QOg3CesiAZB6Eicd2b3w/8Yk1GEyZrZWWUGPA=",
-      "ITAssetManagement.Client.v1a2asc73f.pdb": "sha256-Y1nTCVLpsQRFwsxb8ViTOl8RcXZAFZxJel06KImpu9w="
+      "ITAssetManagement.Client.445o8khjy9.pdb": "sha256-HChYFIWPyWWbNLgZk+6Tfo2rfsCTB9sfNBbjk96DZq8="
     }
   },
   "cacheBootResources": true,

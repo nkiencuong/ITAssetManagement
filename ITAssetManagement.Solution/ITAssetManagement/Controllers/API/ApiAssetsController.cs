@@ -53,8 +53,14 @@ namespace ITAssetManagement.Controllers.Api
 
                     // 🛠️ ĐÃ FIX LỖI Ở ĐÂY: Dùng GetAllAsync() có sẵn của bác
                     var allAssets = await assetRepo.GetAllAsync();
-                    var existingAsset = allAssets.FirstOrDefault(a => a.AssetName.Trim().ToLower() == reqName);
-
+                    //  var existingAsset = allAssets.FirstOrDefault(a => a.AssetName.Trim().ToLower() == reqName);
+                    // 🚀 ĐIỀU KIỆN CỘNG DỒN NGHIÊM NGẶT HƠN (Cùng Tên + Cùng Giá + Cùng Nhà Cung Cấp + Cùng Năm Nhập)
+                    var existingAsset = allAssets.FirstOrDefault(a =>
+                        a.AssetName.Trim().ToLower() == reqName &&
+                        a.Price == request.Price &&
+                        a.SupplierID == request.SupplierID &&
+                        a.ImportDate.Year == request.ImportDate.Year // Thêm cái này để soi chuẩn lô theo năm
+                    );
                     if (existingAsset != null)
                     {
                         // 🎯 TÌNH HUỐNG 1: TÊN ĐÃ TỒN TẠI -> CHỈ CỘNG DỒN SỐ LƯỢNG (Không tạo mới)

@@ -79,6 +79,25 @@ namespace ITAssetManagement.Controllers.Api
                 return BadRequest(new { message = ex.Message });
             }
         }
+        // PUT: api/allocations/{id}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateAllocation(int id, [FromBody] EditAllocationRequest request)
+        {
+            try
+            {
+                int actionUserId = 1; // Mặc định Admin
+                var userIdClaim = User.FindFirst("UserID") ?? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+                if (userIdClaim != null) int.TryParse(userIdClaim.Value, out actionUserId);
+
+                var result = await _allocationService.UpdateAllocationAsync(id, request, actionUserId);
+                if (result) return Ok(new { message = "Sửa phiếu cấp phát thành công!" });
+                return BadRequest(new { message = "Sửa thất bại." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
 
     // Class DTO nhận dữ liệu JSON khi thu hồi

@@ -12,7 +12,7 @@ namespace ITAssetManagement.Service.Interfaces
         Task<AssetResponse> CreateAssetAsync(CreateAssetRequest request);
 
         // 2. Lấy danh sách
-        Task<IEnumerable<AssetResponse>> GetAllAssetsAsync();
+        Task<IEnumerable<AssetResponse>> GetAllAssetsAsync(DateTime? fromDate = null, DateTime? toDate = null);
 
         // --- CÁC HÀM MỚI THÊM ---
 
@@ -24,5 +24,6 @@ namespace ITAssetManagement.Service.Interfaces
 
         // 5. Xóa tài sản
         Task<bool> DeleteAssetAsync(int id);
+
     }
 }

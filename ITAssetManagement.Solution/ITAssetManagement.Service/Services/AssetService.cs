@@ -120,11 +120,15 @@ namespace ITAssetManagement.Service.Services
             }
         }
 
-        // 2. LẤY DANH SÁCH
-        public async Task<IEnumerable<AssetResponse>> GetAllAssetsAsync()
+        // 2. LẤY DANH SÁCH (TỐI ƯU: ĐẾM SỐ LƯỢNG ĐÃ XUẤT TỪ BẢNG CẤP PHÁT)
+        public async Task<IEnumerable<AssetResponse>> GetAllAssetsAsync(DateTime? fromDate = null, DateTime? toDate = null)
         {
             var repo = _unitOfWork.GetRepository<Asset>();
 
+            // 🚀 Đổi sang gọi bảng Phiếu Cấp Phát để số liệu chuẩn tuyệt đối khi bị Sửa
+            var allocationRepo = _unitOfWork.GetRepository<AssetAllocation>();
+
+            // 1. Lấy danh sách tài sản (giữ nguyên)
             var assets = await repo.GetAll()
                                    .Include(a => a.AssetType)
                                    .Include(a => a.Supplier)
@@ -132,7 +136,28 @@ namespace ITAssetManagement.Service.Services
                                    .OrderByDescending(a => a.CreatedDate)
                                    .ToListAsync();
 
-            return _mapper.Map<IEnumerable<AssetResponse>>(assets);
+            var responseList = _mapper.Map<List<AssetResponse>>(assets);
+
+            // 2. Lọc danh sách Phiếu Cấp Phát theo ngày tháng
+            var queryAllocations = allocationRepo.GetAll();
+
+            if (fromDate.HasValue)
+                queryAllocations = queryAllocations.Where(a => a.AllocatedDate.Date >= fromDate.Value.Date);
+            if (toDate.HasValue)
+                queryAllocations = queryAllocations.Where(a => a.AllocatedDate.Date <= toDate.Value.Date);
+
+            var allocationsInPeriod = await queryAllocations.ToListAsync();
+
+            // 3. Cộng dồn số lượng đã cấp nhét vào từng tài sản
+            foreach (var item in responseList)
+            {
+                // Tổng số lượng của các phiếu cấp phát trong khoảng thời gian
+                item.AllocatedQuantity = allocationsInPeriod
+                                            .Where(a => a.AssetID == item.AssetID)
+                                            .Sum(a => a.Quantity);
+            }
+
+            return responseList;
         }
 
         // 3. LẤY CHI TIẾT
@@ -193,6 +218,7 @@ namespace ITAssetManagement.Service.Services
             asset.Unit = request.Unit;
             asset.Quantity = request.Quantity;
             asset.Price = request.Price;
+            asset.ImportDate = request.ImportDate;
             asset.Location = request.Location;
             asset.Config = request.Config;
             asset.AssetTypeID = request.AssetTypeID;

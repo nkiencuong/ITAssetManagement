@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ITAssetManagement.Repo")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ec7241978ff5d62094c1a608e6dcfbd349dacaa8")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+adca1a35275e148acbf04a4a7b09f4acc65975c6")]
 [assembly: System.Reflection.AssemblyProductAttribute("ITAssetManagement.Repo")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ITAssetManagement.Repo")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

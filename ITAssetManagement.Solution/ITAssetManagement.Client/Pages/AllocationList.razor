@@ -15,24 +15,19 @@
     </div>
 
     <div class="d-flex gap-2 align-items-end">
-        @* --- Ô TỪ NGÀY (CÓ ICON LỊCH) --- *@
+        @* --- Ô TỪ NGÀY --- *@
         <div>
             <label class="form-label fw-bold small text-muted mb-0">Từ ngày:</label>
             <div class="position-relative" style="width: 140px;">
-                @* 1. Ô hiển thị Text (dd/MM/yyyy) *@
                 <input type="text" class="form-control bg-white pe-4" value="@fromDate.ToString("dd/MM/yyyy")" readonly />
-
-                @* 2. Icon Lịch *@
                 <i class="bi bi-calendar3 position-absolute top-50 end-0 translate-middle-y me-2 text-secondary"></i>
-
-                @* 3. Ô Date thật (Ẩn) *@
                 <input type="date" class="form-control position-absolute top-0 start-0 w-100 h-100"
                        style="opacity: 0; cursor: pointer;"
                        @bind="fromDate" @bind:format="yyyy-MM-dd" />
             </div>
         </div>
 
-        @* --- Ô ĐẾN NGÀY (CÓ ICON LỊCH) --- *@
+        @* --- Ô ĐẾN NGÀY --- *@
         <div>
             <label class="form-label fw-bold small text-muted mb-0">Đến ngày:</label>
             <div class="position-relative" style="width: 140px;">
@@ -44,6 +39,16 @@
             </div>
         </div>
 
+        @* 🚀 MỚI THÊM: Ô TÌM KIẾM ĐA NĂNG *@
+        <div>
+            <label class="form-label fw-bold small text-muted mb-0">Tìm kiếm:</label>
+            <div class="input-group shadow-sm" style="max-width: 250px;">
+                <input type="text" class="form-control border-primary"
+                       placeholder="Mã phiếu, Tên máy, Phòng ban..."
+                       @bind="searchKeyword" @bind:event="oninput" @onkeyup="ApplyFilters" />
+            </div>
+        </div>
+      
         @* Nút Lọc *@
         <button class="btn btn-primary fw-bold shadow-sm" @onclick="LoadData" title="Xem theo ngày">
             <i class="bi bi-search"></i>
@@ -56,7 +61,7 @@
     </div>
 </div>
 
-@* --- PHẦN DANH SÁCH (GIỮ NGUYÊN) --- *@
+@* --- PHẦN DANH SÁCH --- *@
 @if (allocations == null)
 {
     <div class="d-flex justify-content-center py-5">
@@ -77,6 +82,7 @@ else
             <thead class="table-light">
                 <tr>
                     <th>Tài sản</th>
+                    <th class="py-3">Mã phiếu</th>
                     <th>Chi tiết</th>
                     <th>Phòng ban / Người nhận</th>
                     <th>Ngày cấp</th>
@@ -89,6 +95,15 @@ else
                 {
                     <tr>
                         <td class="fw-bold text-primary">@item.AssetName</td>
+
+                        @* CỘT MÃ PHIẾU *@
+                        <td>
+                            <span class="badge bg-secondary bg-opacity-10 text-dark border border-secondary">
+                                CP-@(item.AllocationID.ToString("D4"))
+                            </span>
+                        </td>
+
+                        @* CỘT CHI TIẾT (SERIAL / SỐ LƯỢNG) *@
                         <td>
                             @if (!string.IsNullOrEmpty(item.Serial))
                             {
@@ -96,7 +111,6 @@ else
                             }
                             else
                             {
-
                                 <span class="text-muted">-</span>
                             }
                         </td>
@@ -118,7 +132,12 @@ else
                         <td class="text-center">
                             @if (item.Status == 1)
                             {
-                                <button class="btn btn-warning btn-sm fw-bold" @onclick="() => OpenModal(item)">
+                                @* 🚀 MỚI THÊM: NÚT SỬA *@
+                                <button class="btn btn-primary btn-sm fw-bold me-1 mb-1" @onclick="() => OpenEditModal(item)">
+                                    <i class="bi bi-pencil-square"></i> Sửa
+                                </button>
+
+                                <button class="btn btn-warning btn-sm fw-bold mb-1" @onclick="() => OpenModal(item)">
                                     <i class="bi bi-arrow-return-left me-1"></i> Thu hồi
                                 </button>
                             }
@@ -176,21 +195,92 @@ else
     </div>
 }
 
+@* 🚀🚀🚀 MỚI THÊM: MODAL SỬA CẤP PHÁT 🚀🚀🚀 *@
+@if (showEditModal)
+{
+    <div class="modal fade show d-block" style="background-color: rgba(0,0,0,0.5);" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-pencil-square me-2"></i>Sửa thông tin Cấp phát</h5>
+                    <button type="button" class="btn-close btn-close-white" @onclick="CloseEditModal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        Đang sửa cấp phát: <strong>@editingAllocation.AssetName</strong>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Ngày cấp:</label>
+                        <input type="date" class="form-control" @bind="editRequest.AllocatedDate" @bind:format="yyyy-MM-dd" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Khoa / Phòng nhận:</label>
+                        <select class="form-select" @bind="editRequest.DepartmentID">
+                            <option value="0">-- Chọn phòng ban --</option>
+                            @if (departments != null)
+                            {
+                                foreach (var d in departments)
+                                {
+                                    <option value="@d.DepartmentID">@d.DeptName</option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Số lượng cấp:</label>
+                        <input type="number" class="form-control" @bind="editRequest.Quantity" min="1" />
+                        <small class="text-danger"><i>*Lưu ý: Thay đổi số lượng sẽ tự động cập nhật lại tồn kho.</i></small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Ghi chú (Tên người nhận...):</label>
+                        <textarea class="form-control" @bind="editRequest.ReceiverName" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CloseEditModal">Hủy</button>
+                    <button type="button" class="btn btn-primary fw-bold" @onclick="SubmitEditAllocation">Lưu thay đổi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 @code {
     private DateTime fromDate = DateTime.Now.AddDays(-30);
     private DateTime toDate = DateTime.Now;
 
+    private string searchKeyword = "";
+    private List<Allocation>? allAllocations; // Lưu danh sách gốc để tìm kiếm cho mượt
     private List<Allocation>? allocations;
     private List<Allocation> pagedAllocations = new();
     private int currentPage = 1;
     private int pageSize = 15;
+
+    // Biến cho Thu hồi
     private bool showModal = false;
     private Allocation selectedItem = new();
     private ReturnRequest returnRequest = new ReturnRequest();
 
+    // 🚀 MỚI THÊM: Biến cho Sửa
+    private bool showEditModal = false;
+    private Allocation editingAllocation = new();
+    private EditAllocationRequest editRequest = new();
+    private DepartmentDTO[]? departments;
+
     protected override async Task OnInitializedAsync()
     {
         await LoadData();
+        await LoadDepartments(); // 🚀 MỚI THÊM: Tải danh sách phòng ban
+    }
+
+    private async Task LoadDepartments()
+    {
+        try { departments = await Http.GetFromJsonAsync<DepartmentDTO[]>("api/admin/departments"); }
+        catch { }
     }
 
     private async Task LoadData()
@@ -199,11 +289,36 @@ else
         {
             string fDate = fromDate.ToString("yyyy-MM-dd");
             string tDate = toDate.ToString("yyyy-MM-dd");
-            allocations = await Http.GetFromJsonAsync<List<Allocation>>($"api/warehouse/allocations?from={fDate}&to={tDate}");
-            currentPage = 1;
-            UpdatePagedList();
+
+            // 1. Lấy toàn bộ dữ liệu từ API ném vào allAllocations
+            allAllocations = await Http.GetFromJsonAsync<List<Allocation>>($"api/warehouse/allocations?from={fDate}&to={tDate}");
+
+            // 2. Gọi hàm lọc tìm kiếm
+            ApplyFilters();
         }
         catch (Exception ex) { Console.WriteLine($"Lỗi: {ex.Message}"); }
+    }
+
+    // 🚀 MỚI THÊM: Hàm Lọc Tìm Kiếm
+    private void ApplyFilters()
+    {
+        if (allAllocations == null) return;
+
+        var query = allAllocations.AsEnumerable();
+
+        if (!string.IsNullOrWhiteSpace(searchKeyword))
+        {
+            var kw = searchKeyword.Trim().ToLower();
+            query = query.Where(x =>
+                (x.AssetName ?? "").ToLower().Contains(kw) ||
+                (x.DepartmentName ?? "").ToLower().Contains(kw) ||
+                ($"cp-{x.AllocationID.ToString("D4")}").Contains(kw)
+            );
+        }
+
+        allocations = query.ToList();
+        currentPage = 1;
+        UpdatePagedList();
     }
 
     private async Task ShowAll()
@@ -213,12 +328,115 @@ else
         await LoadData();
     }
 
-    private void UpdatePagedList() { if (allocations != null) pagedAllocations = allocations.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList(); }
-    private void ChangePage(int page) { currentPage = page; UpdatePagedList(); }
-    private void OpenModal(Allocation item) { selectedItem = item; returnRequest = new ReturnRequest { Note = "", ReturnDate = DateTime.Now }; showModal = true; }
-    private void CloseModal() => showModal = false;
-    private async Task SubmitReturn() { if (string.IsNullOrWhiteSpace(returnRequest.Note)) { await JS.InvokeVoidAsync("alert", "Vui lòng nhập lý do!"); return; } var res = await Http.PostAsJsonAsync($"api/allocations/return/{selectedItem.AllocationID}", returnRequest); if (res.IsSuccessStatusCode) { await JS.InvokeVoidAsync("alert", "Thu hồi thành công!"); showModal = false; await LoadData(); } else { await JS.InvokeVoidAsync("alert", "Lỗi thu hồi!"); } }
+    private void UpdatePagedList()
+    {
+        if (allocations != null)
+            pagedAllocations = allocations.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
+    }
 
-    public class ReturnRequest { public string Note { get; set; } = ""; public DateTime ReturnDate { get; set; } = DateTime.Now; }
-    public class Allocation { public int AllocationID { get; set; } public string AssetName { get; set; } public string Serial { get; set; } public string DepartmentName { get; set; } public string ReceiverName { get; set; } public DateTime AllocatedDate { get; set; } public int Status { get; set; } }
+    private void ChangePage(int page)
+    {
+        currentPage = page;
+        UpdatePagedList();
+    }
+
+    // --- CÁC HÀM THU HỒI (GIỮ NGUYÊN) ---
+    private void OpenModal(Allocation item)
+    {
+        selectedItem = item;
+        returnRequest = new ReturnRequest { Note = "", ReturnDate = DateTime.Now };
+        showModal = true;
+    }
+
+    private void CloseModal() => showModal = false;
+
+    private async Task SubmitReturn()
+    {
+        if (string.IsNullOrWhiteSpace(returnRequest.Note))
+        {
+            await JS.InvokeVoidAsync("alert", "Vui lòng nhập lý do!");
+            return;
+        }
+
+        var res = await Http.PostAsJsonAsync($"api/allocations/return/{selectedItem.AllocationID}", returnRequest);
+
+        if (res.IsSuccessStatusCode)
+        {
+            await JS.InvokeVoidAsync("alert", "Thu hồi thành công!");
+            showModal = false;
+            await LoadData();
+        }
+        else
+        {
+            await JS.InvokeVoidAsync("alert", "Lỗi thu hồi!");
+        }
+    }
+
+    // 🚀🚀🚀 MỚI THÊM: CÁC HÀM SỬA CẤP PHÁT 🚀🚀🚀
+    private void OpenEditModal(Allocation item)
+    {
+        editingAllocation = item;
+        editRequest = new EditAllocationRequest
+        {
+            AllocatedDate = item.AllocatedDate,
+            DepartmentID = item.DepartmentID, // Lấy đúng phòng ban cũ
+            Quantity = item.Quantity > 0 ? item.Quantity : 1, // Lấy đúng số lượng cũ
+            ReceiverName = item.Note ?? "" // Ánh xạ phần Ghi chú/Người nhận vào form
+        };
+        showEditModal = true;
+    }
+
+    private void CloseEditModal() => showEditModal = false;
+
+    private async Task SubmitEditAllocation()
+    {
+        var res = await Http.PutAsJsonAsync($"api/allocations/{editingAllocation.AllocationID}", editRequest);
+        if (res.IsSuccessStatusCode)
+        {
+            showEditModal = false;
+            await LoadData();
+            StateHasChanged();
+            await Task.Delay(100); // Tránh lỗi đóng băng popup
+            await JS.InvokeVoidAsync("alert", "Sửa thông tin cấp phát thành công!");
+        }
+        else
+        {
+            await JS.InvokeVoidAsync("alert", "Lỗi: Không thể cập nhật! Vui lòng kiểm tra lại số lượng tồn kho.");
+        }
+    }
+
+    // --- CÁC CLASS ---
+    public class ReturnRequest
+    {
+        public string Note { get; set; } = "";
+        public DateTime ReturnDate { get; set; } = DateTime.Now;
+    }
+
+    public class EditAllocationRequest
+    {
+        public int DepartmentID { get; set; }
+        public int Quantity { get; set; }
+        public DateTime AllocatedDate { get; set; }
+        public string ReceiverName { get; set; } = "";
+    }
+
+    public class DepartmentDTO
+    {
+        public int DepartmentID { get; set; }
+        public string DeptName { get; set; }
+    }
+
+    public class Allocation
+    {
+        public int AllocationID { get; set; }
+        public string AssetName { get; set; }
+        public string Serial { get; set; }
+        public string DepartmentName { get; set; }
+        public string ReceiverName { get; set; }
+        public DateTime AllocatedDate { get; set; }
+        public int Status { get; set; }
+        public int Quantity { get; set; }
+        public int DepartmentID { get; set; }
+        public string Note { get; set; }
+    }
 }

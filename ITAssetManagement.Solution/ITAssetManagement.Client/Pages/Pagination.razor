@@ -2,31 +2,37 @@
 @if (TotalPages > 1)
 {
     <div class="d-flex justify-content-between align-items-center mt-3">
-        @* Hiển thị thông tin số dòng *@
+        @* Hiển thị thông tin số dòng (GIỮ NGUYÊN CODE CŨ CỦA BÁC) *@
         <div class="text-muted small">
             Hiển thị <strong>@(StartIndex + 1)</strong> - <strong>@EndIndex</strong> trong tổng số <strong>@TotalItems</strong> dòng
         </div>
 
-        @* Thanh phân trang *@
+        @* Thanh phân trang (ĐÃ NÂNG CẤP DẤU 3 CHẤM) *@
         <nav aria-label="Page navigation">
             <ul class="pagination pagination-sm mb-0 shadow-sm">
                 @* Nút Trước *@
                 <li class="page-item @(CurrentPage == 1 ? "disabled" : "")">
-                    <button class="page-link" @onclick="() => OnPageChanged.InvokeAsync(CurrentPage - 1)">Trước</button>
+                    <button class="page-link" @onclick="() => ChangePage(CurrentPage - 1)">Trước</button>
                 </li>
 
                 @* Các số trang *@
-                @for (int i = 1; i <= TotalPages; i++)
+                @foreach (var item in GetPageItems())
                 {
-                    var pageNumber = i;
-                    <li class="page-item @(CurrentPage == pageNumber ? "active" : "")">
-                        <button class="page-link" @onclick="() => OnPageChanged.InvokeAsync(pageNumber)">@pageNumber</button>
-                    </li>
+                    if (item.IsEllipsis)
+                    {
+                        <li class="page-item disabled"><span class="page-link border-0 text-muted">...</span></li>
+                    }
+                    else
+                    {
+                        <li class="page-item @(CurrentPage == item.PageNumber ? "active" : "")">
+                            <button class="page-link" @onclick="() => ChangePage(item.PageNumber)">@item.PageNumber</button>
+                        </li>
+                    }
                 }
 
                 @* Nút Sau *@
                 <li class="page-item @(CurrentPage == TotalPages ? "disabled" : "")">
-                    <button class="page-link" @onclick="() => OnPageChanged.InvokeAsync(CurrentPage + 1)">Sau</button>
+                    <button class="page-link" @onclick="() => ChangePage(CurrentPage + 1)">Sau</button>
                 </li>
             </ul>
         </nav>
@@ -42,4 +48,52 @@
     private int TotalPages => (int)Math.Ceiling((double)TotalItems / PageSize);
     private int StartIndex => (CurrentPage - 1) * PageSize;
     private int EndIndex => Math.Min(StartIndex + PageSize, TotalItems);
+
+    private async Task ChangePage(int page)
+    {
+        if (page >= 1 && page <= TotalPages && page != CurrentPage)
+        {
+            await OnPageChanged.InvokeAsync(page);
+        }
+    }
+
+    // 🚀 THUẬT TOÁN SINH DẤU BA CHẤM
+    private List<PageItem> GetPageItems()
+    {
+        var items = new List<PageItem>();
+
+        if (TotalPages <= 7)
+        {
+            for (int i = 1; i <= TotalPages; i++)
+                items.Add(new PageItem { PageNumber = i });
+        }
+        else
+        {
+            items.Add(new PageItem { PageNumber = 1 });
+
+            if (CurrentPage > 4)
+                items.Add(new PageItem { IsEllipsis = true });
+
+            int start = Math.Max(2, CurrentPage - 1);
+            int end = Math.Min(TotalPages - 1, CurrentPage + 1);
+
+            if (CurrentPage <= 4) end = 5;
+            if (CurrentPage >= TotalPages - 3) start = TotalPages - 4;
+
+            for (int i = start; i <= end; i++)
+                items.Add(new PageItem { PageNumber = i });
+
+            if (CurrentPage < TotalPages - 3)
+                items.Add(new PageItem { IsEllipsis = true });
+
+            items.Add(new PageItem { PageNumber = TotalPages });
+        }
+        return items;
+    }
+
+    private class PageItem
+    {
+        public int PageNumber { get; set; }
+        public bool IsEllipsis { get; set; }
+    }
 }
