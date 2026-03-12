@@ -164,9 +164,16 @@
                                         <Authorized Context="authContext">
                                             @if (item.Status == 0)
                                             {
-                                                <button class="btn btn-sm btn-warning fw-bold text-dark" @onclick="() => ReceiveTicket(item)" title="Tiếp nhận">
-                                                    <i class="bi bi-check2-square"></i> Đã nhận
+                                                <button class="btn btn-sm btn-success fw-bold text-white mb-1 w-100" @onclick="() => ClaimTicket(item.TicketID)" title="Tự nhận việc">
+                                                    <i class="bi bi-hand-index-thumb"></i> Nhận việc
                                                 </button>
+                                                <AuthorizeView Roles="SuperAdmin">
+                                                    <Authorized Context="adminCtx">
+                                                        <button class="btn btn-sm btn-warning fw-bold text-dark w-100" @onclick="() => OpenAssignModal(item)" title="Sếp chỉ định người sửa">
+                                                            <i class="bi bi-person-lines-fill"></i> Giao việc
+                                                        </button>
+                                                    </Authorized>
+                                                </AuthorizeView>
                                             }
                                             else if (item.Status == 1)
                                             {
@@ -246,15 +253,29 @@
                         <div class="row g-3">
                             <div class="col-md-6"><label class="fw-bold small text-secondary">Người đề nghị:</label><input type="text" class="form-control fw-bold" @bind="newTicketRequest.ReporterName" /></div>
                             <div class="col-md-6"><label class="fw-bold small text-secondary">Chức vụ:</label><input type="text" class="form-control" @bind="newTicketRequest.ReporterPosition" /></div>
+                            @* CHỌN KHOA PHÒNG TRƯỚC *@
                             <div class="col-md-6">
-                                <label class="fw-bold small text-secondary">Thiết bị hỏng:</label>
+                                <label class="fw-bold small text-secondary">Khoa / Phòng:</label>
+                                <select class="form-select fw-bold" value="@newTicketRequest.DepartmentID" @onchange="OnDepartmentChanged">
+                                    <option value="">-- Chọn khoa --</option>
+                                    @foreach (var d in departments)
+                                    {
+                                        <option value="@d.DepartmentID">@d.DeptName</option>
+                                    }
+                                </select>
+                            </div>
+
+                            @* RỒI MỚI HIỆN THIẾT BỊ CỦA KHOA ĐÓ *@
+                            <div class="col-md-6">
+                                <label class="fw-bold small text-secondary">Thiết bị hỏng / Sự cố:</label>
                                 @if (!isUnknownDevice)
                                 {
                                     <select class="form-select" @bind="newTicketRequest.AssetID">
                                         <option value="">-- Chọn thiết bị --</option>
+                                        <option value="0" class="text-danger fw-bold">-- 🔴 Sự cố khác (Mất mạng, phần mềm, ĐTC...) --</option>
                                         @foreach (var a in devices)
                                         {
-                                            <option value="@a.AssetID">@a.AssetName (@a.Location)</option>
+                                            <option value="@a.AssetID">@a.AssetName</option>
                                         }
                                     </select>
                                 }
@@ -266,16 +287,6 @@
                                     <input class="form-check-input" type="checkbox" id="chkUnknown" @bind="isUnknownDevice">
                                     <label class="form-check-label small text-muted" for="chkUnknown">Không tìm thấy thiết bị / Chưa xác định</label>
                                 </div>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="fw-bold small text-secondary">Khoa / Phòng:</label>
-                                <select class="form-select fw-bold" @bind="newTicketRequest.DepartmentID">
-                                    <option value="">-- Chọn khoa --</option>
-                                    @foreach (var d in departments)
-                                    {
-                                        <option value="@d.DepartmentID">@d.DeptName</option>
-                                    }
-                                </select>
                             </div>
                             <div class="col-md-12"><label class="fw-bold small text-secondary">Mô tả lỗi:</label><textarea class="form-control" rows="3" @bind="newTicketRequest.Description"></textarea></div>
                             <div class="col-md-12"><label class="fw-bold small text-secondary">File đính kèm (Nếu không biết tên thiết bị thì hãy chụp ảnh gửi vào đây):</label><InputFile OnChange="HandleFileSelected" class="form-control" /></div>
@@ -317,6 +328,10 @@
                             }
                         </div>
                     }
+
+                    <label class="fw-bold text-danger">Tình trạng hư hỏng thực tế (Sẽ in ra Tờ Trình Word):</label>
+                    <textarea class="form-control mb-3" @bind="completeRequest.DamageStatus" rows="2" placeholder="Nhập chẩn đoán của kỹ thuật (VD: Lỗi mainboard...)"></textarea>
+
                     <label>Giải pháp:</label><textarea class="form-control mb-3" @bind="completeRequest.Solution"></textarea>
 
                     <label class="fw-bold text-primary small">Linh kiện thay thế (Gõ để tìm):</label>
@@ -477,7 +492,7 @@
                         </p>
 
                         <p class="mt-4"><strong>I. Tên thiết bị:</strong> @(currentTicket.Asset?.AssetName ?? "....................") <span style="display:inline-block; width: 30px;"></span> <strong>Model:</strong> (Không có)</p>
-                        <p><strong>II. Tình trạng hư hỏng:</strong> @currentTicket.Description</p>
+                        <p><strong>II. Tình trạng hư hỏng:</strong> @(string.IsNullOrEmpty(currentTicket.DamageStatus) ? currentTicket.Description : currentTicket.DamageStatus)</p>
                         <p><strong>III. Biện pháp khắc phục:</strong> @currentTicket.Solution</p>
                         <p><strong>IV. Linh kiện thay thế:</strong> <span class="ms-2">@currentTicket.Note</span></p>
 
@@ -493,6 +508,38 @@
                         </div>
 
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@* MODAL PHÂN CÔNG VIỆC *@
+@if (showAssignModal && currentTicket != null)
+{
+    <div class="modal-backdrop fade show"></div>
+    <div class="modal fade show d-block" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content shadow-sm border-0">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-person-bounding-box me-2"></i>Phân công xử lý ca #@currentTicket.TicketID</h5>
+                    <button type="button" class="btn-close" @onclick="() => showAssignModal = false"></button>
+                </div>
+                <div class="modal-body bg-light">
+                    <p class="mb-2"><b>Thiết bị hỏng:</b> <span class="text-danger">@(currentTicket.Asset?.AssetName ?? "Chưa xác định")</span></p>
+                    <p class="mb-3"><b>Lỗi:</b> @currentTicket.Description</p>
+
+                    <label class="fw-bold small text-secondary">Chọn Kỹ thuật viên phụ trách:</label>
+                    <select class="form-select form-select-lg fw-bold text-primary shadow-sm" @bind="selectedAssigneeId">
+                        <option value="0">-- Bấm để chọn anh em IT --</option>
+                        @foreach (var it in itStaffs)
+                        {
+                            <option value="@it.UserID">@it.FullName (@it.Username)</option>
+                        }
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="() => showAssignModal = false">Hủy</button>
+                    <button class="btn btn-warning fw-bold text-dark" @onclick="SubmitAssign"><i class="bi bi-send-check me-1"></i> Chốt giao việc</button>
                 </div>
             </div>
         </div>
@@ -517,6 +564,9 @@
     private bool showDetailModal = false;
 
     private bool showWordPreviewModal = false;
+    private bool showAssignModal = false;
+    private int selectedAssigneeId = 0;
+    private List<UserDto> itStaffs = new List<UserDto>();
 
     private RepairTicket? currentTicket;
     private RepairTicket? previewTicket;
@@ -542,6 +592,7 @@
     {
         await LoadAssets();
         await LoadDepartments();
+        await LoadITStaff(); // 🚀 MỚI THÊM NÈ BÁC
         await LoadData();
     }
 
@@ -599,11 +650,31 @@
             var res = await Http.GetFromJsonAsync<Asset[]>("api/admin/assets");
             if (res != null)
             {
-                devices = res.Where(x => x.AssetTypeID >= 1 && x.AssetTypeID <= 4).ToArray();
+                // Chỉ lấy linh kiện (để admin dùng sửa chữa), KHÔNG load devices ở đây nữa
                 parts = res.Where(x => x.AssetTypeID >= 5).ToArray();
             }
         }
         catch { }
+    }
+    // 🚀 MỚI THÊM: KHI NGƯỜI DÙNG CHỌN KHOA -> GỌI API LẤY MÁY CỦA KHOA ĐÓ
+    private async Task OnDepartmentChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int deptId))
+        {
+            newTicketRequest.DepartmentID = deptId;
+            try
+            {
+                // Gọi API xịn xò anh em mình vừa viết ở Backend
+                var res = await Http.GetFromJsonAsync<Asset[]>($"api/admin/assets/department/{deptId}");
+                devices = res ?? Array.Empty<Asset>();
+            }
+            catch { devices = Array.Empty<Asset>(); }
+        }
+        else
+        {
+            newTicketRequest.DepartmentID = null;
+            devices = Array.Empty<Asset>(); // Nếu không chọn khoa thì làm rỗng danh sách máy
+        }
     }
     private async Task LoadDepartments() { try { var res = await Http.GetFromJsonAsync<Department[]>("api/admin/departments"); if (res != null) departments = res; } catch { } }
 
@@ -699,13 +770,27 @@
 
     private async Task SubmitCreate()
     {
-        if (!isUnknownDevice && newTicketRequest.AssetID == 0) { await JS.InvokeVoidAsync("alert", "Chọn thiết bị!"); return; }
-        if (isUnknownDevice) newTicketRequest.AssetID = null;
+        if (newTicketRequest.DepartmentID == null || newTicketRequest.DepartmentID == 0)
+        {
+            await JS.InvokeVoidAsync("alert", "Vui lòng chọn Khoa/Phòng trước!"); return;
+        }
+
+        // Nếu chọn "Sự cố khác" (value = 0) hoặc tick ô "Không xác định" -> Cho phép null
+        if (newTicketRequest.AssetID == 0 || isUnknownDevice)
+        {
+            newTicketRequest.AssetID = null;
+        }
+        else if (newTicketRequest.AssetID == null)
+        {
+            await JS.InvokeVoidAsync("alert", "Vui lòng chọn thiết bị hỏng hoặc chọn 'Sự cố khác'!"); return;
+        }
+
         newTicketRequest.DinhKemUrl = uploadedFileUrl;
         newTicketRequest.LoaiFile = isFileImage ? "Image" : "Video";
 
         var res = await Http.PostAsJsonAsync("api/repairs", newTicketRequest);
         if (res.IsSuccessStatusCode) { showCreateModal = false; await LoadData(); }
+        else await JS.InvokeVoidAsync("alert", "Có lỗi xảy ra khi tạo phiếu!");
     }
 
     // 🚀 BÁO LỖI HẾT HÀNG & TỰ ĐỘNG RESET DROPDOWN
@@ -772,6 +857,7 @@
         public string? Note { get; set; }
         public DateTime? RepairDate { get; set; }
         public string? ReporterPosition { get; set; }
+        public string? DamageStatus { get; set; } // 🚀 MỚI THÊM
     }
 
     public class Asset
@@ -804,6 +890,7 @@
 
     public class CompleteRepairRequest
     {
+        public string? DamageStatus { get; set; } // 🚀 MỚI THÊM
         public string Solution { get; set; } = string.Empty;
         public List<RepairItemDto> Parts { get; set; } = new();
     }
@@ -826,7 +913,82 @@
         public string FullName { get; set; }
         public int DepartmentID { get; set; }
     }
+    // --- HÀM LẤY DANH SÁCH NHÂN VIÊN TỪ DATABASE ---
+    private async Task LoadITStaff()
+    {
+        try
+        {
+            var res = await Http.GetFromJsonAsync<UserDto[]>("api/admin/users");
+            if (res != null)
+            {
+                // Danh sách 11 anh tài phòng CNTT
+                var danhSachIT = new List<string>
+                {
+                    "Nguyễn Quốc Dũng", "Nguyễn Thị Hương", "Nguyễn Thành Đông",
+                    "Nguyễn Duy Giáp", "Đỗ Hoàng Anh", "Nguyễn Đức Hùng",
+                    "Đoàn Thái Sơn", "Trịnh Trung Hiếu", "Nguyễn Thị Mai",
+                    "Nguyễn Thị Thu Hà", "Nguyễn Kiên Cường"
+                };
 
+                // Lọc: Chỉ giữ lại những tài khoản có Tên (FullName) nằm trong danh sách trên
+                itStaffs = res.Where(u => danhSachIT.Contains(u.FullName.Trim())).ToList();
+            }
+        }
+        catch { }
+    }
+
+    // --- HÀM 1: IT TỰ BẤM NHẬN VIỆC ---
+    private async Task ClaimTicket(int ticketId)
+    {
+        var res = await Http.PutAsync($"api/repairs/{ticketId}/claim", null);
+        if (res.IsSuccessStatusCode)
+        {
+            await LoadData();
+            await JS.InvokeVoidAsync("alert", "Ngon lành! Bác đã xí được ca này!");
+        }
+        else
+        {
+            var error = await res.Content.ReadAsStringAsync();
+            await JS.InvokeVoidAsync("alert", "Lỗi: " + error);
+        }
+    }
+
+    // --- HÀM 2: SẾP MỞ POPUP GIAO VIỆC ---
+    private void OpenAssignModal(RepairTicket t)
+    {
+        currentTicket = t;
+        selectedAssigneeId = 0;
+        showAssignModal = true;
+    }
+
+    // --- HÀM 3: SẾP BẤM NÚT CHỐT GIAO VIỆC ---
+    private async Task SubmitAssign()
+    {
+        if (selectedAssigneeId == 0)
+        {
+            await JS.InvokeVoidAsync("alert", "Sếp chưa chọn kỹ thuật viên kìa!"); return;
+        }
+
+        var res = await Http.PutAsJsonAsync($"api/repairs/{currentTicket.TicketID}/assign", selectedAssigneeId);
+        if (res.IsSuccessStatusCode)
+        {
+            showAssignModal = false;
+            await LoadData();
+            await JS.InvokeVoidAsync("alert", "Đã phân công công việc");
+        }
+        else
+        {
+            var error = await res.Content.ReadAsStringAsync();
+            await JS.InvokeVoidAsync("alert", "Lỗi: " + error);
+        }
+    }
+
+    public class UserDto
+    {
+        public int UserID { get; set; }
+        public string Username { get; set; } = string.Empty;
+        public string FullName { get; set; } = string.Empty;
+    }
     public class UploadResult
     {
         public string Url { get; set; }

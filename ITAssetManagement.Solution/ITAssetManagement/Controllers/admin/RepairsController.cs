@@ -43,8 +43,8 @@ namespace ITAssetManagement.Controllers.Admin
             }
             else
             {
-                // Nhân viên thì chỉ lấy phiếu của mình
-                query = query.Where(x => x.UserID == currentUserId)
+                // Nhân viên thì chỉ lấy phiếu của mình 
+                query = query.Where(x => x.UserID == currentUserId || x.AssignedToUserID == currentUserId)
                              .OrderByDescending(x => x.CreatedDate);
             }
 

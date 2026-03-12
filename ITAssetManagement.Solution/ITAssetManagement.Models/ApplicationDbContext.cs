@@ -22,6 +22,7 @@ namespace ITAssetManagement.Models
         public DbSet<AuditLog> AuditLogs { get; set; } = null!;
         public DbSet<InventoryCheck> InventoryChecks { get; set; } = null!;
         public DbSet<RepairTicket> RepairTickets { get; set; } = null!;
+        public DbSet<Notification> Notifications { get; set; } = null!;
         public DbSet<RepairTicketDetail> RepairTicketDetails { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -69,6 +70,17 @@ namespace ITAssetManagement.Models
                       .WithMany()
                       .HasForeignKey(rt => rt.DepartmentID)
                       .OnDelete(DeleteBehavior.SetNull);
+                // D. Liên kết Người tạo phiếu (Người báo hỏng)
+                entity.HasOne(rt => rt.User)
+                      .WithMany()
+                      .HasForeignKey(rt => rt.UserID)
+                      .OnDelete(DeleteBehavior.Restrict);
+
+                // E. Liên kết Người nhận việc (Anh IT sửa chữa)
+                entity.HasOne(rt => rt.AssignedToUser)
+                      .WithMany()
+                      .HasForeignKey(rt => rt.AssignedToUserID)
+                      .OnDelete(DeleteBehavior.Restrict);
             });
 
             // 4. Định dạng tiền tệ
@@ -94,7 +106,15 @@ namespace ITAssetManagement.Models
                       .HasForeignKey(u => u.DepartmentID) // Khóa ngoại là DepartmentID
                       .OnDelete(DeleteBehavior.Restrict); // QUAN TRỌNG: Chặn xóa cascade
             });
-          
-        }
+            // 👇👇👇 7. CẤU HÌNH BẢNG NOTIFICATION (MỚI THÊM) 👇👇👇
+            modelBuilder.Entity<Notification>().ToTable("Notification");
+
+            modelBuilder.Entity<Notification>()
+                .HasOne(n => n.User)
+                .WithMany()
+                .HasForeignKey(n => n.UserID)
+                .OnDelete(DeleteBehavior.Cascade); // Nếu xóa tài khoản IT thì xóa luôn thông báo của họ
+
+        } 
     }
-}
+   }

@@ -272,5 +272,27 @@ namespace ITAssetManagement.Service.Services
             await _unitOfWork.CompleteAsync();
             return true;
         }
+        // 7. LẤY TÀI SẢN ĐANG SỬ DỤNG THEO KHOA/PHÒNG (Dùng cho Dropdown Báo hỏng)
+        public async Task<IEnumerable<AssetResponse>> GetAssetsByDepartmentAsync(int departmentId)
+        {
+            var allocationRepo = _unitOfWork.GetRepository<AssetAllocation>();
+            var assetRepo = _unitOfWork.GetRepository<Asset>();
+
+            // 1. Tìm trong bảng Cấp phát: Lấy những mã máy đang cấp cho Khoa này (Status = 1 là Đang dùng)
+            var activeAssetIds = await allocationRepo.GetAll()
+                .Where(x => x.DepartmentID == departmentId && x.Status == 1)
+                .Select(x => x.AssetID)
+                .Distinct()
+                .ToListAsync();
+
+            // 2. Lấy thông tin chi tiết của các máy đó từ bảng Kho
+            var assets = await assetRepo.GetAll()
+                .Include(a => a.AssetType)
+                .Include(a => a.Supplier)
+                .Where(a => activeAssetIds.Contains(a.AssetID))
+                .ToListAsync();
+
+            return _mapper.Map<IEnumerable<AssetResponse>>(assets);
+        }
     }
 }

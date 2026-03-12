@@ -15,6 +15,9 @@ namespace ITAssetManagement.Service.Interfaces
 
         Task<bool> CancelTicketAsync(int ticketId, string reason);
 
-        Task<bool> CompleteRepairAsync(int ticketId, string solution, List<RepairItemDto> parts, int userId);
+        
+        Task<bool> CompleteRepairAsync(int ticketId, string damageStatus, string solution, List<RepairItemDto> parts, int userId);
+        Task<bool> ClaimTicketAsync(int ticketId, int userId);
+        Task<bool> AssignTicketAsync(int ticketId, int assignToUserId, int actionUserId);
     }
 }

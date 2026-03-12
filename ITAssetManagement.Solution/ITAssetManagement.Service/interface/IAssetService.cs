@@ -24,6 +24,7 @@ namespace ITAssetManagement.Service.Interfaces
 
         // 5. Xóa tài sản
         Task<bool> DeleteAssetAsync(int id);
-
+        //7. Lấy tai sản theo phòng ban 
+        Task<IEnumerable<AssetResponse>> GetAssetsByDepartmentAsync(int departmentId);
     }
 }

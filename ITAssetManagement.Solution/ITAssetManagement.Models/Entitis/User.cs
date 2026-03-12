@@ -40,7 +40,7 @@ namespace ITAssetManagement.Models.Entitis
         public virtual ICollection<AssetAllocation> AssetAllocations { get; set; } = new List<AssetAllocation>();
         public virtual ICollection<AuditLog> AuditLogs { get; set; } = new List<AuditLog>();
         public virtual ICollection<InventoryCheck> InventoryChecks { get; set; } = new List<InventoryCheck>();
-        public virtual ICollection<RepairTicket> RepairTickets { get; set; } = new List<RepairTicket>();
+        //public virtual ICollection<RepairTicket> RepairTickets { get; set; } = new List<RepairTicket>();
         public virtual Department? ManagedDepartment { get; set; }  // Nếu là manager phòng ban
     }
 }

@@ -97,7 +97,7 @@ namespace ITAssetManagement.Controllers.Api
                 var claimId = User.FindFirst("UserID")?.Value ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 if (!string.IsNullOrEmpty(claimId)) int.TryParse(claimId, out currentUserId);
 
-                var result = await _repairService.CompleteRepairAsync(id, request.Solution, request.Parts, currentUserId);
+                var result = await _repairService.CompleteRepairAsync(id, request.DamageStatus, request.Solution, request.Parts, currentUserId);
 
                 if (result) return Ok(new { message = "Đã cập nhật hoàn thành và trừ kho linh kiện!" });
 
@@ -139,7 +139,7 @@ namespace ITAssetManagement.Controllers.Api
                     ["Chuc_Vu"] = repair.ReporterPosition ?? "....................",
                     ["Ten_Thiet_Bi"] = repair.Asset?.AssetName ?? "....................",
                     ["Model"] = repair.Asset?.Model ?? "....................",
-                    ["Tinh_Trang"] = repair.Description ?? "....................",
+                    ["Tinh_Trang"] = !string.IsNullOrWhiteSpace(repair.DamageStatus) ? repair.DamageStatus: (repair.Description ?? "...................."),
                     ["Bien_Phap"] = repair.Solution ?? "....................",
                     ["DS_Linh_Kien"] = repair.Note ?? "...................."
                 };
@@ -155,6 +155,53 @@ namespace ITAssetManagement.Controllers.Api
             catch (Exception ex)
             {
                 return BadRequest("Lỗi xuất file: " + ex.Message);
+            }
+        }
+        // --- 5. PUT: TỰ NHẬN VIỆC (Dành cho anh em IT) ---
+        [HttpPut("{id}/claim")]
+        public async Task<IActionResult> ClaimTicket(int id)
+        {
+            try
+            {
+                // Lấy ID của người đang bấm nút
+                int currentUserId = 0;
+                var claimId = User.FindFirst("UserID")?.Value ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (!string.IsNullOrEmpty(claimId)) int.TryParse(claimId, out currentUserId);
+
+                if (currentUserId == 0) return Unauthorized("Không xác định được tài khoản.");
+
+                var result = await _repairService.ClaimTicketAsync(id, currentUserId);
+                if (result) return Ok(new { message = "Nhận việc thành công!" });
+
+                return BadRequest("Không thể nhận việc.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message); // Báo lỗi nếu có người nhận mất rồi
+            }
+        }
+
+        // --- 6. PUT: SẾP PHÂN CÔNG (Dành cho Admin/SuperAdmin) ---
+        [HttpPut("{id}/assign")]
+        public async Task<IActionResult> AssignTicket(int id, [FromBody] int assignToUserId)
+        {
+            try
+            {
+                // Lấy ID của Sếp đang thao tác
+                int actionUserId = 0;
+                var claimId = User.FindFirst("UserID")?.Value ?? User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (!string.IsNullOrEmpty(claimId)) int.TryParse(claimId, out actionUserId);
+
+                if (actionUserId == 0) return Unauthorized("Không xác định được tài khoản.");
+
+                var result = await _repairService.AssignTicketAsync(id, assignToUserId, actionUserId);
+                if (result) return Ok(new { message = "Phân công thành công!" });
+
+                return BadRequest("Không thể phân công.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
     }

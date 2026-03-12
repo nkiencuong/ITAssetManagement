@@ -38,5 +38,14 @@ namespace ITAssetManagement.Controllers.Admin
             }
             return Ok(asset);
         }
+        // --- 🚀 MỚI THÊM: LẤY MÁY THEO KHOA PHÒNG ---
+        // GET: api/admin/assets/department/{departmentId}
+        // Chức năng: Lấy danh sách máy đang dùng của 1 khoa cụ thể để báo hỏng
+        [HttpGet("department/{departmentId}")]
+        public async Task<IActionResult> GetByDepartment(int departmentId)
+        {
+            var result = await _assetService.GetAssetsByDepartmentAsync(departmentId);
+            return Ok(result);
+        }
     }
 }

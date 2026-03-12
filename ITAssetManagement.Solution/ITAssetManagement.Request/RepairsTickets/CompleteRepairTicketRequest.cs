@@ -19,5 +19,6 @@ namespace ITAssetManagement.Request.RepairTickets
         public List<RepairItemDto> Parts { get; set; } = new List<RepairItemDto>();
 
         public DateTime CompletedDate { get; set; } = DateTime.Now;
+        public string? DamageStatus { get; set; }
     }
 }

@@ -125,7 +125,7 @@ namespace ITAssetManagement.Service.Services
         }
 
         // 5. HOÀN THÀNH SỬA CHỮA (🔥 ĐÃ SỬA: Xử lý AssetID nullable)
-        public async Task<bool> CompleteRepairAsync(int ticketId, string solution, List<RepairItemDto> parts, int userId)
+        public async Task<bool> CompleteRepairAsync(int ticketId, string damageStatus, string solution, List<RepairItemDto> parts, int userId)
         {
             var repairRepo = _unitOfWork.GetRepository<RepairTicket>();
             var assetRepo = _unitOfWork.GetRepository<Asset>();
@@ -149,7 +149,10 @@ namespace ITAssetManagement.Service.Services
                 targetDepartmentID = mainAsset.DepartmentID;
             }
 
-            ticket.Status = 2; ticket.RepairDate = DateTime.Now; ticket.Solution = solution;
+            ticket.Status = 2;
+            ticket.RepairDate = DateTime.Now;
+            ticket.Solution = solution;
+            ticket.DamageStatus = damageStatus;
 
             decimal totalCost = 0;
             List<string> partNames = new List<string>();
@@ -214,6 +217,86 @@ namespace ITAssetManagement.Service.Services
                 recordId: ticketId,
                 details: $"Đã sửa xong '{mainAsset?.AssetName ?? "Thiết bị chưa xác định"}'. Giải pháp: {solution}. Linh kiện: {ticket.Note}",
                 userId: userId
+            );
+
+            return true;
+        }
+        // --- 6. TỰ NHẬN VIỆC (IT tự bấm) ---
+        public async Task<bool> ClaimTicketAsync(int ticketId, int userId)
+        {
+            var repairRepo = _unitOfWork.GetRepository<RepairTicket>();
+            var userRepo = _unitOfWork.GetRepository<User>(); // Thêm repo User để lấy tên
+
+            var ticket = await repairRepo.GetByIdAsync(ticketId);
+            if (ticket == null) throw new Exception("Không tìm thấy phiếu sửa chữa!");
+            if (ticket.AssignedToUserID != null && ticket.AssignedToUserID != userId)
+                throw new Exception("Chậm chân rồi bác ơi! Ca này đã có đồng nghiệp khác nhận!");
+
+            // Lấy tên anh IT
+            var linh = await userRepo.GetByIdAsync(userId);
+            string tenLinh = linh?.FullName ?? $"Kỹ thuật viên (ID: {userId})";
+
+            ticket.AssignedToUserID = userId;
+            ticket.Status = 1;
+
+            repairRepo.Update(ticket);
+            await _unitOfWork.CompleteAsync();
+
+            // Ghi Log có Tên
+            await _auditLogService.CreateLogAsync(
+                action: "Nhận việc",
+                tableName: "RepairTicket",
+                recordId: ticketId,
+                details: $"{tenLinh} đã chủ động tiếp nhận xử lý ca này.",
+                userId: userId
+            );
+
+            return true;
+        }
+
+        // --- 7. SẾP PHÂN CÔNG VIỆC (CÓ BẮN THÔNG BÁO) ---
+        public async Task<bool> AssignTicketAsync(int ticketId, int assignToUserId, int actionUserId)
+        {
+            var repairRepo = _unitOfWork.GetRepository<RepairTicket>();
+            var userRepo = _unitOfWork.GetRepository<User>();
+            var notifRepo = _unitOfWork.GetRepository<Notification>(); // 🚀 GỌI BẢNG THÔNG BÁO RA
+
+            var ticket = await repairRepo.GetByIdAsync(ticketId);
+            if (ticket == null) throw new Exception("Không tìm thấy phiếu sửa chữa!");
+
+            // Lấy tên Sếp và tên Anh IT để ghi Log và Thông báo cho hay
+            var sep = await userRepo.GetByIdAsync(actionUserId);
+            var linh = await userRepo.GetByIdAsync(assignToUserId);
+            string tenSep = sep?.FullName ?? $"Sếp (ID: {actionUserId})";
+            string tenLinh = linh?.FullName ?? $"Kỹ thuật viên (ID: {assignToUserId})";
+
+            ticket.AssignedToUserID = assignToUserId;
+            ticket.Status = 1;
+
+            repairRepo.Update(ticket);
+
+            // 🚀🚀🚀 TẠO THÔNG BÁO GỬI CHO ANH IT 🚀🚀🚀
+            var thongBao = new Notification
+            {
+                UserID = assignToUserId, // Gửi đích danh cho anh IT này
+                Title = "Sếp vừa giao việc mới! 🚨",
+                Message = $"{tenSep} vừa phân công bạn xử lý sự cố #{ticketId}: {ticket.Description}",
+                RelatedUrl = "/repairs", // Bấm vào thông báo sẽ nhảy ra trang này
+                IsRead = false, // Chưa đọc (Màu đỏ)
+                CreatedAt = DateTime.Now
+            };
+            await notifRepo.AddAsync(thongBao);
+
+            // Lưu toàn bộ vào Database
+            await _unitOfWork.CompleteAsync();
+
+            // Ghi Log hệ thống
+            await _auditLogService.CreateLogAsync(
+                action: "Phân công",
+                tableName: "RepairTicket",
+                recordId: ticketId,
+                details: $"{tenSep} đã chỉ định {tenLinh} xử lý ca này.",
+                userId: actionUserId
             );
 
             return true;

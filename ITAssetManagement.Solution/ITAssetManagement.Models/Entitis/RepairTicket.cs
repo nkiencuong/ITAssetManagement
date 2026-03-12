@@ -52,6 +52,13 @@ namespace ITAssetManagement.Models.Entitis
 
         [ForeignKey("DepartmentID")]
         public virtual Department? Department { get; set; }
+        [StringLength(500)]
+        public int? AssignedToUserID { get; set; } // ID của nhân viên IT nhận việc
+
+        [ForeignKey("AssignedToUserID")]
+        public virtual User? AssignedToUser { get; set; } // Link tới bảng User để lấy tên
+        public string? DamageStatus { get; set; } // MỚI: Tình trạng hư hỏng thực tế do IT chốt
         public virtual ICollection<RepairTicketDetail> RepairDetails { get; set; }
+
     }
 }

@@ -19,10 +19,13 @@ namespace ITAssetManagement.Client.Models
         public string? DinhKemUrl { get; set; }
         public string? LoaiFile { get; set; }
         public string? Solution { get; set; }
-        // Các biến object để hiển thị tên (Mapping từ API)
+        public int? AssignedToUserID { get; set; }
+        public string? AssignedToUserName { get; set; } // Để hiển thị tên anh IT lên bảng
+        //Các biến object để hiển thị tên(Mapping từ API)
         public Asset? Asset { get; set; }
         public Asset? ReplacedAsset { get; set; }
         public Department? Department { get; set; }
+        public string? DamageStatus { get; set; }
         public List<RepairTicketDetail>? RepairDetails { get; set; }
     }
 }
