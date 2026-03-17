@@ -15,7 +15,7 @@ namespace ITAssetManagement.Service.Interfaces
         Task<IEnumerable<AllocationHistoryResponse>> GetAllocationHistoryAsync();
 
         // 3. Thu hồi (Phải có tham số DateTime returnDate)
-        Task<bool> ReturnAssetAsync(int allocationId, string returnNote, DateTime returnDate);
+        Task<bool> ReturnAssetAsync(int allocationId, string returnNote, DateTime returnDate, int returnQty, bool isBroken);
         //4. Sửa chữa thông tin cấp phát
         Task<bool> UpdateAllocationAsync(int allocationId, EditAllocationRequest request, int actionUserId);
     }

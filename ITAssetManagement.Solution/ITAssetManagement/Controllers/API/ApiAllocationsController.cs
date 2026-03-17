@@ -63,7 +63,7 @@ namespace ITAssetManagement.Controllers.Api
             try
             {
                 // Gọi Service thu hồi
-                var result = await _allocationService.ReturnAssetAsync(id, request.Note, request.ReturnDate);
+                var result = await _allocationService.ReturnAssetAsync(id, request.Note, request.ReturnDate, request.ReturnQty, request.IsBroken);
 
                 if (result)
                 {
@@ -105,5 +105,7 @@ namespace ITAssetManagement.Controllers.Api
     {
         public string Note { get; set; } = string.Empty;
         public DateTime ReturnDate { get; set; } = DateTime.Now;
+        public int ReturnQty { get; set; }
+        public bool IsBroken { get; set; }
     }
 }

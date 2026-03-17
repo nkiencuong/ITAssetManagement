@@ -27,5 +27,6 @@ namespace ITAssetManagement.Request.Allocations
         public int Quantity { get; set; }
         public DateTime AllocatedDate { get; set; }
         public string ReceiverName { get; set; } = "";
+        public decimal Price { get; set; }
     }
 }

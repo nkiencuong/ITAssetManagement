@@ -85,6 +85,7 @@ else
                     <th class="py-3">Mã phiếu</th>
                     <th>Chi tiết</th>
                     <th>Phòng ban / Người nhận</th>
+                    <th>Đơn giá</th>
                     <th>Ngày cấp</th>
                     <th>Trạng thái</th>
                     <th class="text-center">Tác vụ</th>
@@ -118,6 +119,11 @@ else
                             <div class="fw-bold">@item.DepartmentName</div>
                             <small class="text-muted">👤 @(item.ReceiverName ?? "Chưa xác định")</small>
                         </td>
+
+                        <td class="text-danger fw-bold text-end">
+                            @item.Price.ToString("N0") đ
+                        </td>
+
                         <td>@item.AllocatedDate.ToString("dd/MM/yyyy")</td>
                         <td>
                             @if (item.Status == 1)
@@ -160,7 +166,7 @@ else
     }
 }
 
-@* --- MODAL THU HỒI (GIỮ NGUYÊN) --- *@
+@* --- MODAL THU HỒI (ĐÃ NÂNG CẤP CHỌN SỐ LƯỢNG) --- *@
 @if (showModal)
 {
     <div class="modal fade show d-block" style="background-color: rgba(0,0,0,0.5);" tabindex="-1">
@@ -171,9 +177,24 @@ else
                     <button type="button" class="btn-close" @onclick="CloseModal"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="alert alert-info">
+                    <div class="alert alert-info mb-3">
                         Đang thu hồi: <strong>@selectedItem?.AssetName</strong><br />
                         Từ: <strong>@selectedItem?.DepartmentName</strong>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label class="form-label fw-bold text-primary">Đang dùng:</label>
+                            <input type="text" class="form-control" value="@selectedItem?.Quantity cái" disabled />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-bold text-danger">Số lượng thu hồi:</label>
+                            <input type="number" class="form-control" @bind="returnRequest.Quantity" min="1" max="@selectedItem?.Quantity" />
+                            @if (returnRequest.Quantity > selectedItem?.Quantity)
+                            {
+                                <small class="text-danger">Không được vượt quá @selectedItem?.Quantity</small>
+                            }
+                        </div>
                     </div>
 
                     <div class="mb-3">
@@ -182,13 +203,33 @@ else
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Lý do thu hồi / Tình trạng:</label>
-                        <textarea class="form-control" @bind="returnRequest.Note" rows="3" placeholder="Ví dụ: Hỏng main, Nhân viên nghỉ việc..."></textarea>
+                        <label class="form-label fw-bold">Lý do thu hồi / Ghi chú <span class="text-danger">*</span>:</label>
+                        <textarea class="form-control" @bind="returnRequest.Note" rows="3" placeholder="Ví dụ: Máy in bị kẹt giấy, thu hồi 1 cái về phòng IT sửa..."></textarea>
+                    </div>
+                    <div class="mt-4 p-3 border rounded bg-white shadow-sm">
+                        <div class="form-check form-switch d-flex justify-content-between align-items-center">
+                            <div>
+                                <label class="form-check-label fw-bold text-dark" for="checkBroken">Tình trạng tài sản</label>
+                                <div class="text-muted small">Tích vào nếu máy không còn sử dụng được</div>
+                            </div>
+                            <input class="form-check-input h4 m-0" type="checkbox" role="switch" id="checkBroken"
+                                   @bind="returnRequest.IsBroken" style="cursor: pointer;">
+                        </div>
+
+                        @if (returnRequest.IsBroken)
+                        {
+                            <div class="alert alert-danger mt-2 mb-0 py-2 small animate__animated animate__fadeIn">
+                                <i class="bi bi-exclamation-triangle-fill"></i> Hệ thống sẽ ghi nhận hỏng và <strong>không cộng vào kho</strong>.
+                            </div>
+                        }
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" @onclick="CloseModal">Hủy bỏ</button>
-                    <button type="button" class="btn btn-primary" @onclick="SubmitReturn">✅ Xác nhận</button>
+                    <button type="button" class="btn btn-primary" @onclick="SubmitReturn"
+                            disabled="@(returnRequest.Quantity < 1 || returnRequest.Quantity > selectedItem?.Quantity)">
+                         Xác nhận
+                    </button>
                 </div>
             </div>
         </div>
@@ -234,7 +275,14 @@ else
                         <input type="number" class="form-control" @bind="editRequest.Quantity" min="1" />
                         <small class="text-danger"><i>*Lưu ý: Thay đổi số lượng sẽ tự động cập nhật lại tồn kho.</i></small>
                     </div>
-
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Đơn giá (VNĐ):</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" @bind="editRequest.Price" min="0" step="1000" />
+                            <span class="input-group-text fw-bold text-danger">VNĐ</span>
+                        </div>
+                        <small class="text-muted"><i>Sửa giá trị của thiết bị tại thời điểm cấp phát.</i></small>
+                    </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold">Ghi chú (Tên người nhận...):</label>
                         <textarea class="form-control" @bind="editRequest.ReceiverName" rows="2"></textarea>
@@ -344,7 +392,14 @@ else
     private void OpenModal(Allocation item)
     {
         selectedItem = item;
-        returnRequest = new ReturnRequest { Note = "", ReturnDate = DateTime.Now };
+        // Mặc định gán số lượng thu hồi bằng số lượng đang cấp
+        returnRequest = new ReturnRequest
+        {
+            Note = "",
+            ReturnDate = DateTime.Now,
+            Quantity = item.Quantity > 0 ? item.Quantity : 1,
+            IsBroken = false
+        };
         showModal = true;
     }
 
@@ -381,7 +436,8 @@ else
             AllocatedDate = item.AllocatedDate,
             DepartmentID = item.DepartmentID, // Lấy đúng phòng ban cũ
             Quantity = item.Quantity > 0 ? item.Quantity : 1, // Lấy đúng số lượng cũ
-            ReceiverName = item.Note ?? "" // Ánh xạ phần Ghi chú/Người nhận vào form
+            ReceiverName = item.Note ?? "" ,// Ánh xạ phần Ghi chú/Người nhận vào form
+            Price = item.Price
         };
         showEditModal = true;
     }
@@ -410,6 +466,8 @@ else
     {
         public string Note { get; set; } = "";
         public DateTime ReturnDate { get; set; } = DateTime.Now;
+        public int Quantity { get; set; } // 🚀 MỚI THÊM CÁI NÀY
+        public bool IsBroken { get; set; }
     }
 
     public class EditAllocationRequest
@@ -418,6 +476,7 @@ else
         public int Quantity { get; set; }
         public DateTime AllocatedDate { get; set; }
         public string ReceiverName { get; set; } = "";
+        public decimal Price { get; set; }
     }
 
     public class DepartmentDTO
@@ -438,5 +497,6 @@ else
         public int Quantity { get; set; }
         public int DepartmentID { get; set; }
         public string Note { get; set; }
+        public decimal Price { get; set; }
     }
 }

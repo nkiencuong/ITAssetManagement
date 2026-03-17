@@ -18,5 +18,6 @@ namespace ITAssetManagement.Response.Allocations
         public int Status { get; set; } // <--- Phải có trường này
         public int Quantity { get; set; }
         public int DepartmentID { get; set; }
+        public decimal Price { get; set; }
     }
 }

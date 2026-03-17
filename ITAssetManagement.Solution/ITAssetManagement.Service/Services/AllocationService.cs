@@ -103,7 +103,7 @@ namespace ITAssetManagement.Service.Services
             }
         }
 
-        // --- 2. XEM LỊCH SỬ (Giữ nguyên) ---
+        // --- 2. XEM LỊCH SỬ (🚀 ĐÃ FIX LỖI 0đ) ---
         public async Task<IEnumerable<AllocationHistoryResponse>> GetAllocationHistoryAsync()
         {
             var allocations = await _unitOfWork.GetRepository<AssetAllocation>().GetAllAsync();
@@ -126,17 +126,19 @@ namespace ITAssetManagement.Service.Services
                             AllocatedDate = h.AllocatedDate,
                             Note = h.Note,
                             Status = h.Status,
-
-                            // 🚀 BÁC THÊM 2 DÒNG NÀY VÀO CHỖ NÀY:
                             Quantity = h.Quantity,
-                            DepartmentID = h.DepartmentID
+                            DepartmentID = h.DepartmentID,
+                            // 🚀 LẤY ĐƠN GIÁ TỪ BẢNG TÀI SẢN (ASSET) NÉM SANG FRONTEND
+                            Price = a.Price
                         };
+
 
             return query.OrderByDescending(x => x.AllocatedDate).ToList();
         }
 
-        // --- 3. THU HỒI TÀI SẢN (Giữ nguyên) ---
-        public async Task<bool> ReturnAssetAsync(int allocationId, string returnNote, DateTime returnDate)
+        // --- 3. THU HỒI TÀI SẢN (🚀 ĐÃ NÂNG CẤP THU HỒI 1 PHẦN) ---
+        // Lưu ý: Đã thêm tham số returnQty
+        public async Task<bool> ReturnAssetAsync(int allocationId, string returnNote, DateTime returnDate, int returnQty, bool isBroken)
         {
             try
             {
@@ -146,23 +148,46 @@ namespace ITAssetManagement.Service.Services
 
                 var allocation = await allocationRepo.GetByIdAsync(allocationId);
                 if (allocation == null) throw new Exception("Không tìm thấy phiếu cấp phát!");
+                if (allocation.Status == 2) throw new Exception("Tài sản này đã được thu hồi hết rồi!");
 
-                if (allocation.Status == 2) throw new Exception("Tài sản này đã được thu hồi rồi!");
+                // Kiểm tra số lượng thu hồi hợp lệ không
+                if (returnQty <= 0 || returnQty > allocation.Quantity)
+                    throw new Exception("Số lượng thu hồi không hợp lệ!");
 
-                // Cập nhật trạng thái
-                allocation.Status = 2; // Đã thu hồi
-                allocation.ReturnedDate = returnDate;
-                allocation.Note = string.IsNullOrEmpty(allocation.Note)
-                                  ? $"Thu hồi: {returnNote}"
-                                  : allocation.Note + $" | Thu hồi: {returnNote}";
+                // Trừ số lượng đang dùng
+                allocation.Quantity -= returnQty;
+
+                // Ghi log lý do
+                string log = $"Thu hồi {returnQty} cái: {returnNote}";
+                allocation.Note = string.IsNullOrEmpty(allocation.Note) ? log : allocation.Note + $" | {log}";
+
+                // Nếu thu hồi hết sạch thì mới đổi trạng thái thành Đã Thu Hồi (2)
+                if (allocation.Quantity == 0)
+                {
+                    allocation.Status = 2;
+                    allocation.ReturnedDate = returnDate;
+                }
                 allocationRepo.Update(allocation);
 
-                // Cộng lại kho
+                //  Cộng trả lại kho
+
                 var asset = await assetRepo.GetByIdAsync(allocation.AssetID);
                 if (asset != null)
                 {
-                    asset.Quantity += allocation.Quantity;
-                    if (asset.Quantity > 0) asset.Status = 0; // Sẵn sàng
+                    // Chỉ cộng vào kho nếu máy KHÔNG hỏng (isBroken == false)
+                    if (!isBroken)
+                    {
+                        asset.Quantity += returnQty;
+                        if (asset.Quantity > 0) asset.Status = 0; // Sẵn sàng sử dụng
+                    }
+                    else
+                    {
+                        // Nếu máy hỏng: Không cộng Quantity (Kho không tăng số lượng dùng được)
+                        // Mình ghi chú thêm vào phiếu cấp phát để sau này biết tại sao thiếu máy
+                        allocation.Note += $" | Thu hồi {returnQty} cái bị hỏng (Không nhập kho)";
+                    }
+
+                    // Luôn Update asset vì có thể trạng thái hoặc thông tin khác thay đổi
                     assetRepo.Update(asset);
                 }
 
@@ -171,11 +196,11 @@ namespace ITAssetManagement.Service.Services
                 {
                     AssetID = allocation.AssetID,
                     Type = "IN",
-                    Quantity = allocation.Quantity,
+                    Quantity = returnQty, // 🚀 Ghi đúng số lượng vừa thu hồi
                     Date = returnDate,
                     DepartmentID = allocation.DepartmentID,
                     UserID = allocation.UserID,
-                    Note = $"Thu hồi: {returnNote}",
+                    Note = log,
                     ReferenceNo = $"RETURN-{allocation.AllocationID}"
                 };
                 await transRepo.AddAsync(transaction);
@@ -184,10 +209,11 @@ namespace ITAssetManagement.Service.Services
                     action: "Thu hồi",
                     tableName: "AssetAllocation",
                     recordId: allocation.AllocationID,
-                    details: $"Đã thu hồi tài sản '{asset?.AssetName}' (Phiếu #{allocationId})",
+                    details: $"Đã thu hồi {returnQty} tài sản '{asset?.AssetName}' (Phiếu #{allocationId})",
                     userId: 1
                 );
 
+                await _unitOfWork.CompleteAsync();
                 return true;
             }
             catch (Exception)
@@ -229,6 +255,8 @@ namespace ITAssetManagement.Service.Services
             allocation.AllocatedDate = request.AllocatedDate;
             allocation.Note = request.ReceiverName;
 
+            // 🚀🚀🚀 CẬP NHẬT ĐƠN GIÁ VÀO KHO 🚀🚀🚀
+            asset.Price = request.Price;
             asset.Status = asset.Quantity > 0 ? 0 : 1;
 
             allocationRepo.Update(allocation);
@@ -239,3 +267,4 @@ namespace ITAssetManagement.Service.Services
         }
     }
 }
+    

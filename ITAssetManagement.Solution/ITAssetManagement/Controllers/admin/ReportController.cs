@@ -115,14 +115,14 @@ namespace ITAssetManagement.API.Controllers
             headerRange.Style.Font.FontColor = XLColor.White; headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             ws.Row(4).Height = 35;
 
-            var groupedData = data.GroupBy(x => new { x.AssetName, x.AssetTypeName })
-                .Select(g => new {
-                    AssetName = g.Key.AssetName,
-                    IsMayMoc = new[] { "Máy tính", "Máy in", "Máy Scan", "Các loại khác" }.Contains(g.Key.AssetTypeName),
-                    Price = g.Max(i => i.Price),
-                    TotalQty = g.Sum(i => i.Quantity),
-                    TotalAmount = g.Sum(i => i.Quantity * i.Price)
-                }).ToList();
+            var groupedData = data.GroupBy(x => new { x.AssetName, x.AssetTypeName, x.Price })
+             .Select(g => new {
+                 AssetName = g.Key.AssetName,
+                 IsMayMoc = new[] { "Máy tính", "Máy in", "Máy Scan", "Các loại khác" }.Contains(g.Key.AssetTypeName),
+                 Price = g.Key.Price, // Lấy giá từ Key đã gộp
+                 TotalQty = g.Sum(i => i.Quantity),
+                 TotalAmount = g.Sum(i => i.Quantity * i.Price)
+             }).ToList();
 
             int currentRow = 5;
             void DrawSection(string title, IEnumerable<dynamic> items)
@@ -216,15 +216,15 @@ namespace ITAssetManagement.API.Controllers
             headerRange.Style.Font.FontColor = XLColor.White; headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             headerRange.Style.Alignment.WrapText = true; ws.Row(4).Height = 35;
 
-            var groupedData = data.GroupBy(x => new { x.AssetName, x.AssetTypeName })
-                .Select(g => new {
-                    AssetName = g.Key.AssetName,
-                    IsMayMoc = new[] { "Máy tính", "Máy in", "Máy Scan", "Các loại khác" }.Contains(g.Key.AssetTypeName),
-                    Price = g.Max(i => i.Price),
-                    TotalXuat = g.Sum(i => i.Quantity),
-                    Depts = g.GroupBy(d => d.DepartmentName).ToDictionary(d => d.Key, d => d.Sum(i => i.Quantity)),
-                    TotalAmount = g.Sum(i => i.Quantity * i.Price)
-                }).ToList();
+            var groupedData = data.GroupBy(x => new { x.AssetName, x.AssetTypeName, x.Price })
+            .Select(g => new {
+                AssetName = g.Key.AssetName,
+                IsMayMoc = new[] { "Máy tính", "Máy in", "Máy Scan", "Các loại khác" }.Contains(g.Key.AssetTypeName),
+                Price = g.Key.Price, // Lấy giá từ Key
+                TotalXuat = g.Sum(i => i.Quantity),
+                Depts = g.GroupBy(d => d.DepartmentName).ToDictionary(d => d.Key, d => d.Sum(i => i.Quantity)),
+                TotalAmount = g.Sum(i => i.Quantity * i.Price)
+            }).ToList();
 
             int currentRow = 5;
             void DrawSection(string title, IEnumerable<dynamic> items)

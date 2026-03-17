@@ -1,0 +1,67 @@
+﻿@using ITAssetManagement.Models.Entitis
+@inject HttpClient Http
+
+<div class="dropdown">
+    <div class="position-relative me-3" style="cursor: pointer;" data-bs-toggle="dropdown">
+        <i class="bi bi-bell fs-5 text-secondary"></i>
+        @if (unreadCount > 0)
+        {
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.6rem;">
+                @unreadCount
+            </span>
+        }
+    </div>
+
+    <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="min-width: 320px; max-height: 400px; overflow-y: auto;">
+        <li><h6 class="dropdown-header fw-bold">Thông báo mới nhất</h6></li>
+
+        @if (notifications != null && notifications.Any())
+        {
+            foreach (var n in notifications)
+            {
+                <li>
+                    <div class="dropdown-item py-2 border-bottom shadow-none">
+                        <div class="d-flex justify-content-between">
+                            <strong class="text-primary small">Hệ thống</strong>
+                            <small class="text-muted" style="font-size: 0.7rem;">#@n.NotificationID</small>
+                        </div>
+                        <div class="text-wrap small text-dark mt-1">@n.Message</div>
+                    </div>
+                </li>
+            }
+        }
+        else
+        {
+            <li><span class="dropdown-item text-center text-muted py-3">Không có thông báo mới</span></li>
+        }
+    </ul>
+</div>
+
+@code {
+    private List<Notification> notifications = new();
+    private int unreadCount = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        try
+        {
+            // Gọi đến API của bác để lấy danh sách thông báo
+            // Bác kiểm tra xem Controller của bác có route này chưa nhé
+            var result = await Http.GetFromJsonAsync<List<Notification>>("api/notifications");
+            if (result != null)
+            {
+                notifications = result.OrderByDescending(x => x.NotificationID).Take(5).ToList();
+                unreadCount = notifications.Count;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Lỗi gọi API chuông: " + ex.Message);
+        }
+    }
+}
