@@ -37,6 +37,7 @@
                         <option value="">-- Tất cả Nhập & Xuất --</option>
                         <option value="Nhập">Chỉ xem Nhập kho</option>
                         <option value="Xuất">Chỉ xem Xuất kho</option>
+                        <option value="Thu hồi">Chỉ xem Thu hồi</option>
                     </select>
                 </div>
 
@@ -136,11 +137,34 @@
                                 <th class="py-3">Mã phiếu</th>
                                 <th class="py-3">Giao Dịch</th>
                                 <th class="py-3">Tên tài sản / Linh kiện</th>
-                                <th class="py-3">Đối Tác / Nơi nhận</th>
+
+                                @* 🚀 ĐỔI TÊN CỘT THEO LOẠI GIAO DỊCH *@
+                                @if (selectedTransType == "Thu hồi")
+                                {
+                                    <th class="py-3">Khoa / Phòng trả</th>
+                                }
+                                else if (selectedTransType == "Xuất")
+                                {
+                                    <th class="py-3">Khoa / Phòng nhận</th>
+                                }
+                                else
+                                {
+                                    <th class="py-3">Đối Tác / Nơi nhận</th>
+                                }
+
                                 <th class="py-3 text-center">SL</th>
                                 <th class="py-3 text-end">Đơn giá</th>
                                 <th class="py-3 text-end">Thành tiền</th>
-                                <th class="py-3">Ghi chú</th>
+
+                                @* 🚀 CỘT GHI CHÚ ĐỔI THÀNH LÝ DO NẾU LÀ THU HỒI *@
+                                @if (selectedTransType == "Thu hồi")
+                                {
+                                    <th class="py-3">Lý do thu hồi</th>
+                                }
+                                else
+                                {
+                                    <th class="py-3">Ghi chú</th>
+                                }
                             </tr>
                         </thead>
                         <tbody>
@@ -160,9 +184,12 @@
 
                                             <span class="badge bg-success"><i class="bi bi-box-arrow-up me-1"></i>Cấp phát</span>
                                         }
+                                        else if (item.Type.Contains("Thu hồi"))
+                                        {
+                                            <span class="badge bg-danger"><i class="bi bi-arrow-return-left me-1"></i>Thu hồi</span>
+                                        }
                                         else
                                         {
-
                                             <span class="badge bg-warning text-dark"><i class="bi bi-tools me-1"></i>Sửa chữa</span>
                                         }
                                     </td>

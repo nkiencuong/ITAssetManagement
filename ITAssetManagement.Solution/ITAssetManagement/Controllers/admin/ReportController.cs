@@ -304,7 +304,7 @@ namespace ITAssetManagement.API.Controllers
 
             bool getNhap = string.IsNullOrEmpty(transType) || transType == "Nhập";
             bool getXuat = string.IsNullOrEmpty(transType) || transType == "Xuất";
-
+            bool getThuHoi = string.IsNullOrEmpty(transType) || transType == "Thu hồi";
             // A. LẤY DỮ LIỆU NHẬP KHO
             if (getNhap && filterDeptId == 0)
             {
@@ -391,6 +391,52 @@ namespace ITAssetManagement.API.Controllers
                         Price = price,
                         TotalAmount = r.Quantity * price,
                         Note = r.RepairTicket?.Asset != null ? $"Thay cho: {r.RepairTicket.Asset.AssetName}" : "Thay thế"
+                    });
+                }
+            }
+            // C. LẤY DỮ LIỆU THU HỒI TỪ BẢNG CẤP PHÁT (Status = 2)
+            if (getThuHoi)
+            {
+                var queryT = _context.AssetAllocations
+                    .Include(a => a.Asset).ThenInclude(t => t.AssetType)
+                    .Include(a => a.Department)
+                    .Include(a => a.User)
+                    // Lọc những thiết bị có Status = 2 (Thu hồi) và nằm trong khoảng thời gian trả
+                    .Where(a => a.Status == 2 &&
+                                a.ReturnedDate != null &&
+                                a.ReturnedDate.Value.Date >= fromDate.Date &&
+                                a.ReturnedDate.Value.Date <= toDate.Date);
+
+                if (filterDeptId > 0) queryT = queryT.Where(a => a.DepartmentID == filterDeptId);
+
+                var returns = await queryT.ToListAsync();
+
+                if (selectedTypes.Any())
+                    returns = returns.Where(a => a.Asset != null && a.Asset.AssetType != null && selectedTypes.Contains(a.Asset.AssetType.TypeName)).ToList();
+
+                foreach (var a in returns)
+                {
+                    decimal price = a.Asset?.Price ?? 0;
+                    result.Add(new WarehouseHistoryResponse
+                    {
+                        TransactionID = a.AllocationID,
+                        // Bắt buộc lấy ReturnedDate vì đây là báo cáo thu hồi
+                        Date = a.ReturnedDate ?? a.AllocatedDate,
+                        ReferenceNo = "TH-" + a.AllocationID,
+                        Type = "Thu hồi", // Chữ này để giao diện Blazor bắt được và hiện màu đỏ
+                        AssetName = a.Asset != null ? a.Asset.AssetName : "N/A",
+                        AssetTypeName = (a.Asset != null && a.Asset.AssetType != null) ? a.Asset.AssetType.TypeName : "",
+
+                        // DepartmentName lúc này tự động mang ý nghĩa là "Khoa/Phòng trả"
+                        DepartmentName = a.Department != null ? a.Department.DeptName : "N/A",
+
+                        UserName = a.User != null ? a.User.Username : "N/A",
+                        Quantity = a.Quantity, // Lấy luôn số lượng đã cấp phát bị thu hồi về
+                        Price = price,
+                        TotalAmount = a.Quantity * price,
+
+                        // Lấy cột Note để làm "Lý do thu hồi"
+                        Note = a.Note ?? ""
                     });
                 }
             }

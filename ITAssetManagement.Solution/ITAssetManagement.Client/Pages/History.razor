@@ -15,8 +15,26 @@
                 <label class="me-2 fw-bold small">Đến:</label>
                 <input type="date" class="form-control form-control-sm" @bind="toDate" />
             </div>
+            @* 🚀 1. MỚI THÊM: DROPDOWN LỌC LOẠI GIAO DỊCH *@
+            <div class="d-flex align-items-center border-start ps-2 ms-1">
+                <label class="me-2 fw-bold small text-primary">Loại GD:</label>
+                <select class="form-select form-select-sm border-primary fw-bold" style="width: 140px;" value="@selectedType" @onchange="OnTypeChanged">
+                    <option value="">-- Tất cả --</option>
+                    <option value="IN">Chỉ xem Nhập</option>
+                    <option value="OUT">Chỉ xem Xuất</option>
+                    <option value="REPAIR">Sửa chữa</option>
+                </select>
+            </div>
+            @* 🚀 THÊM Ô TÌM KIẾM Ở ĐÂY *@
+            <input type="text" class="form-control form-control-sm"
+                   placeholder="Tìm tên thiết bị, phòng ban, mã phiếu..."
+                   style="width: 280px;"
+                   @bind="keyword"
+                   @bind:event="oninput"
+                   @onkeyup="ApplyFilter" />
+
             <button class="btn btn-primary btn-sm" @onclick="LoadData">
-                🔍 Tìm kiếm
+                🔍 Tải lại
             </button>
         </div>
     </div>
@@ -86,13 +104,21 @@
                             </tr>
                         }
                     </tbody>
+                    @* 🚀 MỚI THÊM: DÒNG TỔNG SỐ LƯỢNG *@
+                    @* <tfoot class="table-light fw-bold border-top border-2">
+                        <tr>
+                            <td colspan="4" class="text-end py-3 text-primary text-uppercase">TỔNG SỐ LƯỢNG TRÊN LƯỚI:</td>
+                            <td class="text-danger fs-5 py-3">@filteredList.Sum(x => x.Quantity)</td>
+                            <td colspan="3"></td>
+                        </tr>
+                    </tfoot> *@
                 </table>
             </div>
 
             @* 👇 THANH PHÂN TRANG 👇 *@
             <div class="card-footer bg-white border-0 py-3">
                 <Pagination CurrentPage="@currentPage"
-                            TotalItems="@historyList.Count"
+                            TotalItems="@filteredList.Count"
                             PageSize="@pageSize"
                             OnPageChanged="ChangePage" />
             </div>
@@ -102,7 +128,16 @@
 
 @code {
     private List<WarehouseHistoryResponse> historyList = new();
-
+    //  TÌM KIẾM
+    private List<WarehouseHistoryResponse> filteredList = new();
+    private string keyword = "";
+    //  THÊM 2 CÁI NÀY ĐỂ HỨNG SỰ KIỆN TỪ DROPDOWN
+    private string selectedType = "";
+    private void OnTypeChanged(ChangeEventArgs e)
+    {
+        selectedType = e.Value?.ToString() ?? "";
+        ApplyFilter(); // GỌi hàm lọc ngay khi chọn
+    }
     // 👇 PHÂN TRANG
     private List<WarehouseHistoryResponse> pagedHistory = new();
     private int currentPage = 1;
@@ -129,11 +164,11 @@
             if (toDate.HasValue) queryParams.Add($"toDate={toDate.Value:yyyy-MM-dd}");
             if (queryParams.Count > 0) queryUrl += "?" + string.Join("&", queryParams);
 
-            historyList = await Http.GetFromJsonAsync<List<WarehouseHistoryResponse>>(queryUrl);
+            // Tải danh sách gốc từ API
+            historyList = await Http.GetFromJsonAsync<List<WarehouseHistoryResponse>>(queryUrl) ?? new List<WarehouseHistoryResponse>();
 
-            // 👇 RESET TRANG & CẮT DỮ LIỆU
-            currentPage = 1;
-            UpdatePagedList();
+            // 👇 GỌI HÀM LỌC SAU KHI TẢI XONG
+            ApplyFilter();
         }
         catch (Exception ex)
         {
@@ -144,13 +179,49 @@
             isLoading = false;
         }
     }
+    // ĐỂ XỬ LÝ TÌM KIẾM
+    private void ApplyFilter()
+    {
+        if (historyList == null) return;
+
+        var query = historyList.AsEnumerable();
+
+        // Lọc theo Dropdown (Nhập / Xuất)
+        if (!string.IsNullOrEmpty(selectedType))
+        {
+            if (selectedType == "IN")
+                query = query.Where(x => x.Type == "IN" || x.Type == "Nhập kho");
+            else if (selectedType == "OUT")
+                query = query.Where(x => x.Type == "OUT" || x.Type == "Xuất kho" || x.Type == "Cấp phát");
+            else if (selectedType == "REPAIR")
+                query = query.Where(x => x.Type == "OUT_REPAIR" || x.Type == "REPAIR" || x.Type == "Sửa chữa");
+        }
+
+        // Lọc theo Chữ nhập vào
+        if (!string.IsNullOrWhiteSpace(keyword))
+        {
+            var kw = keyword.ToLower();
+            query = query.Where(x =>
+                (x.AssetName != null && x.AssetName.ToLower().Contains(kw)) ||
+                (x.DepartmentName != null && x.DepartmentName.ToLower().Contains(kw)) ||
+                (x.ReferenceNo != null && x.ReferenceNo.ToLower().Contains(kw))
+            );
+        }
+
+        // Gán lại danh sách đã lọc
+        filteredList = query.ToList();
+
+        // Sau khi lọc xong, đưa trang về 1 và cắt dữ liệu
+        currentPage = 1;
+        UpdatePagedList();
+    }
 
     // 👇 LOGIC PHÂN TRANG
     private void UpdatePagedList()
     {
-        if (historyList != null)
+        if (filteredList != null)
         {
-            pagedHistory = historyList.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
+            pagedHistory = filteredList.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
         }
     }
 

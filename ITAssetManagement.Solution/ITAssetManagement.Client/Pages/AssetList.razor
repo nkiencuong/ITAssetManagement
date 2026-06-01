@@ -494,11 +494,50 @@ else
     private void OpenAllocateModal() { allocationRequest = new AllocateRequest { AllocatedDate = DateTime.Now, Quantity = 1 }; showAllocateModal = true; }
     private void CloseAllocateModal() => showAllocateModal = false;
 
-    private async Task SubmitAllocation() {
-        if (allocationRequest.DepartmentID == 0) { await JS.InvokeVoidAsync("alert", "Chọn Phòng ban!"); return; }
+    private async Task SubmitAllocation()
+    {
+        if (allocationRequest.DepartmentID == 0)
+        {
+            await JS.InvokeVoidAsync("alert", "Chọn Phòng ban!");
+            return;
+        }
+
         allocationRequest.AssetIds = selectedAssetIds.ToList();
-        var res = await Http.PostAsJsonAsync("api/allocations", allocationRequest);
-        if (res.IsSuccessStatusCode) { showAllocateModal = false; selectedAssetIds.Clear(); await LoadData(); await JS.InvokeVoidAsync("alert", "Xuất thành công!"); }
+
+        try
+        {
+            var res = await Http.PostAsJsonAsync("api/allocations", allocationRequest);
+
+            // 🚀 BẮT LỖI TẠI ĐÂY (NẾU KHO KHÔNG ĐỦ HÀNG)
+            if (!res.IsSuccessStatusCode)
+            {
+                // Bóc lỗi 400 từ Backend ra (Cái lỗi mà ghi là "Tài sản ... không đủ tồn kho")
+                var errorMsg = await res.Content.ReadAsStringAsync();
+
+                // Nếu api trả về cục JSON thì ta làm sạch chuỗi
+                if (errorMsg.Contains("message"))
+                {
+                    var jsonError = System.Text.Json.JsonDocument.Parse(errorMsg);
+                    errorMsg = jsonError.RootElement.GetProperty("message").GetString();
+                }
+
+                // Hiển thị Popup cảnh báo cực mạnh!
+                await JS.InvokeVoidAsync("alert", "❌ " + errorMsg);
+                return; // ⛔ Dừng lại, không đóng Modal, không LoadData lại
+            }
+
+            // Nếu chạy xuống được đây nghĩa là đủ kho, cấp phát thành công
+            showAllocateModal = false;
+            selectedAssetIds.Clear();
+            await LoadData();
+
+            await Task.Delay(100); // Đợi 1 chút cho UI mượt
+            await JS.InvokeVoidAsync("alert", "✅ Xuất kho thành công!");
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("alert", "Lỗi mạng hoặc máy chủ: " + ex.Message);
+        }
     }
 
     private async Task OpenEditModal(int id) { editingAsset = await Http.GetFromJsonAsync<Asset>($"api/admin/assets/{id}"); showEditModal = true; }
